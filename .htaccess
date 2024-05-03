@@ -1,0 +1,6 @@
+ErrorDocument 400 /WE4A-Project/error400.php
+ErrorDocument 401 /WE4A-Project/error401.php
+ErrorDocument 403 /WE4A-Project/error403.php
+ErrorDocument 404 /WE4A-Project/error404.php
+ErrorDocument 500 /WE4A-Project/error500.php
+ErrorDocument 503 /WE4A-Project/error503.php

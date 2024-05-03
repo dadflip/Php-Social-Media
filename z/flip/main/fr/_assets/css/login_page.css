@@ -1,0 +1,99 @@
+/* Style pour le header */
+header {
+    background-color: #002007; /* Vert foncé */
+    color: white; /* Blanc */
+    text-align: center;
+    padding: 1em;
+}
+
+/* Style pour les conteneurs rectangulaires cliquables */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.login-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #002007; /* Vert foncé */
+    color: white; /* Blanc */
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 300px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-option:hover {
+    background-color: #005409; /* Vert foncé plus foncé */
+}
+
+.login-option i {
+    margin-right: 10px;
+}
+
+.register-link {
+    text-decoration: none;
+    color: #002007; /* Vert foncé */
+}
+
+/* Style pour le formulaire de connexion */
+.container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9); /* Fond semi-transparent */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.form-heading {
+    text-align: center;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.form-container input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.form-container button {
+    width: calc(50% - 5px);
+    padding: 10px;
+    background-color: #002007; /* Vert foncé */
+    color: white; /* Blanc */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.form-container button:hover {
+    background-color: #005409; /* Vert foncé plus foncé */
+}
+
+.error-message {
+    color: red;
+    margin-bottom: 10px;
+}
+
+.close-button {
+    cursor: pointer;
+    color: #002007; /* Vert foncé */
+    text-align: center;
+    margin-top: 20px;
+}

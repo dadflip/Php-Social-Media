@@ -1,0 +1,23 @@
+{
+    "PATH_MODULES": "\/WE4A-Project\/app\/@modules",
+    "PATH_DATA": "\/WE4A-Project\/app\/data",
+    "PATH_JSON": "\/WE4A-Project\/app\/json",
+    "PATH_ROUTES": "\/WE4A-Project\/app\/routes",
+    "PATH_TEMPLATES": "\/WE4A-Project\/app\/templates",
+    "PATH_FR": "\/WE4A-Project\/app\/fr",
+    "PATH_EN": "\/WE4A-Project\/app\/en",
+    "PATH_CSS_DIR": "\/WE4A-Project\/css",
+    "PATH_IMG_DIR": "\/WE4A-Project\/img",
+    "PATH_JS_DIR": "\/WE4A-Project\/js",
+    "PATH_PHP_DIR": "\/WE4A-Project\/php",
+    "PATH_SQL_DIR": "\/WE4A-Project\/sql",
+    "PATH_API_DIR": "\/WE4A-Project\/api",
+    "PATH_ROOT": "\/",
+    "UP": "\/..",
+    "2UP": "\/..\/..",
+    "3UP": "\/..\/..\/..",
+    "PATH_BASE_PATH": "\/WE4A-Project\/app",
+    "PATH_CUICUI_APP": "\/WE4A-Project\/app",
+    "PATH_CUICUI_PROJECT": "\/WE4A-Project",
+    "INTER_PROJECT_PATH": "\/WE4A-Project\/app"
+}

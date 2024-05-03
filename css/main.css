@@ -1,0 +1,376 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    max-width: 100vw;
+    height: 100vh;
+    font-family: sans-serif;
+    background-color: var(--background);
+    color: var(--text-color);
+}
+
+
+hr {
+  border: none; /* Supprimer la bordure par défaut */
+  height: 1px; /* Définir la hauteur de la ligne */
+  background-color: #ccc; /* Définir la couleur de fond */
+  margin: 20px 0; /* Ajouter de l'espace autour de la ligne */
+}
+
+
+.notification {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+}
+
+.notification.unread {
+    font-weight: bold;
+}
+
+.notification p {
+    margin: 0;
+}
+
+.delete-btn {
+    color: red;
+    cursor: pointer;
+}
+
+a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+a:hover{
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.titlebar {
+    display: grid;
+    border-bottom: 2px solid var(--border-color);
+    box-shadow: 0px 2px 1rem 1px #0072ff82;
+    background-color: var(--dark-background);
+    grid-template-columns: 1fr 1fr 1fr;
+    width: 100%;
+    margin: 0;
+    text-align: center;
+    /* position: fixed;
+    top: 0; */
+    /* text-transform: uppercase; */
+    /* z-index: 10000; */
+}
+
+.title-user {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.user > img {
+    width: 4em;
+    height: 4em;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+}
+
+.user {
+    margin-right: 1em;
+    display: flex;
+    justify-content: flex-end;
+    column-gap: 0.5em;
+    align-items: center;
+}
+
+
+.profile {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.logo {
+    background-image: url(../img/icon-rmbg.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 10vh;
+    height: 10vh;
+    margin: 5px;
+    border: none;
+    border-radius: 50%;
+    box-shadow: none;
+    background-color: transparent;
+    cursor: pointer;
+    transition: transform 0.3s ease; /* Transition smooth */
+}
+
+.logo:hover {
+    transform: scale(1.1); /* Agrandir légèrement au survol */
+    background-color: black;
+}
+
+
+.container {
+    display: flex;
+    grid-template-columns: 5fr 1fr;
+    margin: 0 1em;
+    margin-top: 2%;
+    height: auto;
+    /* max-height: 75%; */
+    /* overflow: hidden; */
+    column-gap: 1em;
+}
+
+.center-column {
+    display: flex;
+    flex: 5;
+    overflow: scroll;
+    height: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    align-items: center;
+}
+
+.right-panel {
+    display: flex;
+    height: inherit;
+    justify-content: center;
+    padding: 0.5em;
+    width: 10%
+}
+
+#right-links {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    height: fit-content;
+}
+
+.main-container {
+    display: flex;
+    height: calc(90% - 5vh);
+    align-items: center;
+    justify-content: center;
+}
+
+.main-content {
+    display: flex;
+    column-gap: 1em;
+    --magin-gap: 150px;
+    margin-top: var(--magin-gap);
+    margin-bottom: var(--magin-gap);
+    height: calc(100% - var(--magin-gap));
+    justify-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: space-between;
+}
+
+/*button {
+    border-radius: 50px;
+    border-style: solid;
+    padding: 0.5em;
+    font-size: inherit;
+    background-color: var(--dark-background);
+    border-color: var(--border-color);
+    color: var(--text-color);
+    box-shadow: 0.5rem 0.5rem 1rem var(--dark-background);
+    cursor: pointer;
+    width: 500px;
+    height: 50px;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s;
+}*/
+
+button:hover {
+    background-color: var(--light-background);
+    color: var(--dark-background);
+    transform: scale(1.05); /* Agrandir légèrement le bouton */
+}
+
+input, textarea {
+    font-size: 1rem;
+    border-radius: 0.25em;
+    margin: 0.5em 0;
+    padding: 0.25em;
+    background-color: var(--input);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    box-shadow: 0rem 0rem 1rem 0px var(--shadow-color);
+    /* text-align: center; Centrer le texte */
+}
+
+input[type="radio"] {
+    /* visibility: hidden;
+    height: 0;
+    width: 0; */
+    padding: 0;
+    margin: 0;
+}
+
+input[type="submit"] {
+    width: 200px;
+    height: 50px;
+    color: var(--secondary-text-color);
+}
+
+input:focus {
+    outline: none;
+    border: 1px solid var(--text-color);
+}
+
+input:hover {
+    transition: border, 0.1s;
+    border: 1px solid var(--text-color);
+}
+
+.content {
+    border: 1px solid var(--border-color);
+    background-color: var(--dark-background);
+}
+
+.menu {
+    visibility: hidden;
+    transform: translateX(-200%);
+}
+
+a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.3s; /* Ajouter une transition smooth */
+    position: relative;
+}
+
+a:hover {
+    color: var(--hover-color); /* Changer la couleur du texte au survol */
+}
+
+.navbar {
+    border-radius: inherit;
+    transition: transform 0.3s ease;
+    transform: translateY(100%);
+}
+
+.navbar.active {
+    transform: translateY(0);
+}
+
+nav {
+    --border-size: 2px;
+    display: flex;
+    justify-content: space-evenly;
+    background-color: #000000ba;
+    box-shadow: 0 0 2rem black;
+    border-top: var(--border-size) solid var(--border-color);
+    /* visibility: hidden; */
+    translate: translateY(200%);
+    border: 1px solid #fff;
+    position: fixed;
+    bottom: 30px;
+    width: auto;
+    height: auto;
+    /* flex-wrap: wrap; */
+    /* flex-direction: row; */
+    /* align-content: flex-end; */
+}
+
+nav > a {
+    font-size: 1em;
+    height: 50px;
+    border-radius: 10px;
+    margin: 5px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, font-size 0.3s;
+    flex-wrap: wrap;
+}
+
+nav > a:hover, nav > a:focus {
+    background-color: var(--light-background);
+    font-size: 1.25em; /* Augmenter légèrement la taille du texte au survol */
+}
+
+div#toasts {
+    position: fixed;
+    bottom: 10px;
+    right: 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+    width: 15%;
+    z-index: 100;
+}
+
+.toast {
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 1rem 2rem;
+    margin: 0.5rem;
+    width: 95%;
+    height: 100px;
+}
+
+.toast.info {
+    color: rebeccapurple;
+}
+
+.toast.success {
+    color: green;
+}
+
+.toast.error {
+    color: red;
+}
+
+.error-msg {
+    color: red;
+    font-size: 0.75em;
+    font-weight: bold;
+}
+
+.error-container {
+    background-color: var(--dark-background);
+    padding: 1em;
+    border: 2px solid var(--border-color);
+    border-right: 2px solid var(--border-color);
+    border-top: 2px solid var(--border-color);
+    grid-column: 2;
+}
+
+@keyframes slide-in {
+    from {
+        transform: translateY(200%);
+        visibility: hidden;
+    }
+    to {
+        transform: translateY(0);
+        visibility: visible;
+    }    
+}
+
+@keyframes slide-out {
+    from {
+        transform: translateY(0);
+        visibility: visible;
+    }
+    to {
+        transform: translateY(200%);
+        visibility: hidden;
+    }    
+}
+
+

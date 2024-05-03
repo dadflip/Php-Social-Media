@@ -1,0 +1,90 @@
+/* Create a top navigation bar with a black background color  */
+.topnav {
+  background-color: #333;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+/* Change the color of links on hover */
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+/* Create a right-aligned (split) link inside the navigation bar */
+.topnav a.split {
+  float: right;
+  background-color: #04AA6D;
+  color: white;
+}
+
+
+.left-panel-nav ul {
+  list-style-type: none; /* Supprime les puces de la liste */
+  padding: 0; /* Supprime le remplissage par défaut */
+}
+
+.left-panel-nav li {
+  margin-bottom: 1px; /* Réduit l'espacement vertical entre les éléments de liste */
+}
+
+.left-panel-nav a {
+  text-decoration: none; /* Supprime le soulignement par défaut des liens */
+  color: blue; /* Couleur du texte des liens */
+  display: block; /* Permet aux liens de remplir tout l'espace disponible dans leurs éléments li */
+  padding: 8px; /* Ajoute un remplissage autour du texte des liens */
+  font-size: 10px; /* Réduit la taille de la police */
+}
+
+.left-panel-nav a:hover {
+  background-color: #e0e0e0; /* Change la couleur de fond lorsque le lien est survolé */
+  color: darkblue; /* Change la couleur du texte lorsqu'il est survolé */
+}
+
+
+
+
+// --------------------------------------------------------------------
+
+
+.notifications {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.notifications h2 {
+  margin-top: 0;
+}
+
+.notifications ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.notifications ul li {
+  margin-bottom: 5px;
+}
+
+.notifications ul li a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.notifications ul li a:hover {
+  background-color: #f0f0f0;
+}

@@ -1,0 +1,14 @@
+{
+    "questions": [
+        {
+            "question": "Quelle est la capitale de la France ?",
+            "options": ["Paris", "Londres", "Rome", "Berlin"],
+            "answer": "Paris"
+        },
+        {
+            "question": "Qui a peint Mona Lisa ?",
+            "options": ["Leonardo da Vinci", "Vincent van Gogh", "Pablo Picasso", "Michel-Ange"],
+            "answer": "Leonardo da Vinci"
+        }
+    ]
+}

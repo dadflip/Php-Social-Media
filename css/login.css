@@ -1,0 +1,57 @@
+.login-form, .register-form {
+    position: fixed;
+    top: 30%;
+    min-width: 800px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-bottom: 0;
+    padding: 1em;
+    font-size: 1em;
+    aspect-ratio: 1 / 1;
+    height: 50vh;
+    border: 1px solid #fff;
+    border-radius: 0.5em;
+    box-shadow: 0rem 0rem 2rem 1px rgb(55 117 255 / 64%);
+    scrollbar-color: white transparent;
+
+    /* Pour les navigateurs WebKit */
+    &::-webkit-scrollbar {
+        width: 10px; /* Largeur de la barre de défilement */
+        background-color: transparent; /* Fond de la barre de défilement */
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: transparent; /* Couleur de la barre de défilement */
+    }
+
+    /* Pour les autres navigateurs */
+    scrollbar-width: thin; /* Largeur de la barre de défilement */
+    scrollbar-color: white transparent;
+}
+
+.input-field {
+    display: flex;
+    padding: 0.2em;
+    margin: initial;
+    flex-flow: column;
+    align-items: center;
+    width: 90%;
+    align-content: center;
+    flex-direction: column;
+
+    label {
+        text-transform: math-auto;
+    }
+
+    &.invalid {
+        border: 1px solid red;
+    }
+
+    &.valid {
+        border: 1px solid green;
+    }
+}

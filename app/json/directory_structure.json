@@ -1,0 +1,175 @@
+{
+    "files": [
+        "defs.functions.php",
+        "defs.paths.form.txt",
+        "defs.paths.php",
+        "defs.php",
+        "index.php"
+    ],
+    "subdirectories": {
+        "@modules": {
+            "files": [],
+            "subdirectories": {
+                "@Ajax": {
+                    "files": [
+                        "txt"
+                    ],
+                    "subdirectories": {
+                        ".php": {
+                            "files": [],
+                            "subdirectories": {
+                                "media16991262": {
+                                    "files": [
+                                        "16991262_img65b76af2eb7e9.jfif",
+                                        "16991262_img65b76b56aa3b7.jpg",
+                                        "16991262_img65b76b9e93d05.PNG",
+                                        "16991262_img65b7769c33ebb.PNG",
+                                        "16991262_img65b7771cd635f.jpg",
+                                        "16991262_img65b77799e99a0.jpg",
+                                        "16991262_img65b777c68bb9c.jfif",
+                                        "16991262_img65b7782346a57.PNG",
+                                        "16991262_img65c3a2aa3eed0.jfif",
+                                        "16991262_vid65b76c082ceaf.mp4"
+                                    ],
+                                    "subdirectories": []
+                                }
+                            }
+                        }
+                    }
+                },
+                "@CuicuiAlgorithm": {
+                    "files": [
+                        "algo.php"
+                    ],
+                    "subdirectories": []
+                },
+                "@CuicuiComponents": {
+                    "files": [
+                        "IndexElement.php",
+                        "NavBar.php",
+                        "RightPanel.php"
+                    ],
+                    "subdirectories": []
+                },
+                "@CuicuiDB": {
+                    "files": [
+                        "CuicuiErr.php",
+                        "CuicuiManager.php"
+                    ],
+                    "subdirectories": []
+                },
+                "@CuicuiMethods": {
+                    "files": [
+                        "create_error.php",
+                        "disconnect.php",
+                        "getRegisterForm.php"
+                    ],
+                    "subdirectories": []
+                },
+                "@LostAndFound": {
+                    "files": [
+                        "Examples.php",
+                        "scripts.php",
+                        "tweet.php"
+                    ],
+                    "subdirectories": []
+                }
+            }
+        },
+        "admin": {
+            "files": [
+                "index.php",
+                "main.php"
+            ],
+            "subdirectories": {
+                "database": {
+                    "files": [
+                        "database.php",
+                        "db_config.php",
+                        "index.php"
+                    ],
+                    "subdirectories": []
+                }
+            }
+        },
+        "data": {
+            "files": [
+                "check_paths.php",
+                "project_info.json"
+            ],
+            "subdirectories": []
+        },
+        "en": {
+            "files": [
+                "index.php",
+                "mainpage.php",
+                "options.php",
+                "post.php",
+                "router.php",
+                "stats.php",
+                "template_menu_fr.php",
+                "txt.txt",
+                "userprofile.php"
+            ],
+            "subdirectories": {
+                "auth": {
+                    "files": [
+                        "login.php",
+                        "register.php"
+                    ],
+                    "subdirectories": []
+                }
+            }
+        },
+        "fr": {
+            "files": [
+                "chat.php",
+                "delete_notification.php",
+                "index.php",
+                "mainpage.php",
+                "notify.php",
+                "options.php",
+                "post.php",
+                "router.php",
+                "stats.php",
+                "template_menu_fr.php",
+                "txt.txt",
+                "user.php"
+            ],
+            "subdirectories": {
+                "auth": {
+                    "files": [
+                        "login.php",
+                        "register.php"
+                    ],
+                    "subdirectories": []
+                }
+            }
+        },
+        "json": {
+            "files": [
+                "directory_structure.json",
+                "normalized_paths.json",
+                "php_files.json"
+            ],
+            "subdirectories": []
+        },
+        "templates": {
+            "files": [
+                "_ErrorTemplate.php",
+                "_Main.php",
+                "_RegisterForm1.php",
+                "_RegisterForm2.php"
+            ],
+            "subdirectories": []
+        },
+        "toast-notification": {
+            "files": [
+                "index.html",
+                "script.js",
+                "style.css"
+            ],
+            "subdirectories": []
+        }
+    }
+}

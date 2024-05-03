@@ -1,0 +1,15 @@
+
+<!-- Formulaire pour tester les redirections -->
+<form method="post">
+    <label for="path">Choisir un chemin :</label>
+    <select name="path" id="path">
+        <?php
+foreach ($path_manager->getNormalizedPaths() as $variable => $value) : ?>
+            <option value="<?php
+echo $value; ?>"><?php
+echo $variable; ?></option>
+        <?php
+endforeach; ?>
+    </select>
+    <button type="submit">Tester</button>
+</form>

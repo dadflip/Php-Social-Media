@@ -1,0 +1,573 @@
+@keyframes horizJello {
+    0% {
+        transform: scale3d(1, 1, 1);
+    }
+
+    30% {
+        transform: scale3d(1.25, 0.75, 1);
+    }
+
+    40% {
+        transform: scale3d(0.75, 1.25, 1);
+    }
+
+    50% {
+        transform: scale3d(1.15, 0.85, 1);
+    }
+
+    65% {
+        transform: scale3d(0.95, 1.05, 1);
+    }
+
+    75% {
+        transform: scale3d(1.05, 0.95, 1);
+    }
+
+    100% {
+        transform: scale3d(1, 1, 1);
+    }
+}
+
+
+@keyframes elementSwing {
+    0% {
+        opacity: 0;
+        transform: rotateX(70deg);
+        transform-origin: top;
+    }
+
+    100% {
+        opacity: 1;
+        transform: rotateX(0deg);
+        transform-origin: top;
+    }
+}
+
+// --------------------------------------------
+html, body, .header, .container, .right-column, .right-panel {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    box-sizing: border-box;
+    height: 100vh;
+
+    justify-content: center;
+    align-items: center;
+}
+
+main {
+    justify-content: center;
+    align-items: stretch; /* Ajustez la hauteur des éléments pour qu'ils s'étirent pour occuper tout l'espace vertical disponible */
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 0px;
+    width: 85%;
+    height: 90vh; /* Utilisez une valeur relative de la hauteur de la vue (viewport height) pour garantir une hauteur maximale tout en restant responsive */
+    margin-left: auto;
+    margin-right: auto;
+    overflow: auto;
+
+    box-shadow: -2px 5px 5px 1px rgba(40,154,166,0.3);
+    -webkit-box-shadow: -2px 5px 5px 1px rgba(40,154,166,0.3);
+    -moz-box-shadow: -2px 5px 5px 1px rgba(40,154,166,0.3);
+}
+
+
+button {
+    background-color: #0a0909;
+    color: white;
+    padding: 0.7em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+
+button.page_button1 {
+    background-color: #5719E7;
+    color: white;
+    padding: 0.7em;
+    border: none;
+    cursor: pointer;
+}
+
+button.page_button1:hover {
+    background-color: #555;
+}
+
+.social_button {
+    border: 2px solid white;
+    border-radius: 50%;
+    background-color: blue;
+    color: white;
+    width: 40px;
+    height: 40px;
+    font-size: 15px; /* Taille de l'icône */
+    margin-right: 10px; /* Espacement entre les boutons */
+    line-height: 0px; /* Centrer l'icône verticalement */
+}
+
+.social_button:hover {
+    background-color: darkblue;
+}
+
+
+
+.container {
+    display: flex;
+    height: 100%; /* Modification de la hauteur pour s'adapter au contenu */
+    width: auto;
+    animation: elementSwing 2s ease 0s 1 normal forwards;
+}
+
+.left-column,
+.right-column {
+    flex: 1; /* Les colonnes gauche et droite prennent 1 part égale de l'espace disponible */
+    display: flex;
+    flex-direction: column;
+}
+
+.center-column {
+    flex: 4; /* La colonne du milieu prend 2 parts de l'espace disponible, donc elle sera deux fois plus large que les autres */
+    display: flex;
+    flex-direction: column;
+}
+
+.left-panel,
+.center-panel,
+.right-panel {
+    flex: 1;
+    background-color: #f0f0f0;
+    border: 1px dashed #000000;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 10px;
+    display: flex;
+    overflow: scroll;
+}
+
+.left-panel{
+    justify-content: left;
+    align-items: center;
+}
+
+.center-panel{
+    justify-content: center;
+    align-items: center;
+}
+
+.right-panel{
+    justify-content: right;
+    align-items: center;
+}
+
+
+.center-main-panel {
+    flex: 10;
+    background-color: #f1f1f1;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 10px;
+    display: block;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+}
+
+.header, .footer {
+    background-color: #137AEF;
+    border-radius: 10px;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    width: 85%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: -2px 5px 5px 1px rgba(40,154,166,0.3);
+    -webkit-box-shadow: -2px 5px 5px 1px rgba(40,154,166,0.3);
+    -moz-box-shadow: -2px 5px 5px 1px rgba(40,154,166,0.3);
+}
+
+.header {
+    flex-direction: column;
+    border-radius: 10px 10px 0px 0px;
+    -webkit-border-radius: 10px 10px 0px 0px;
+    -moz-border-radius: 10px 10px 0px 0px;
+}
+
+.footer {
+    border-radius: 0px 0px 10px 10px;
+    -webkit-border-radius: 0px 0px 10px 10px;
+    -moz-border-radius: 0px 0px 10px 10px;
+}
+
+/*---------------- flip boxes ----------------------------
+
+/* Styliser la barre de défilement */
+.scrollable-content::-webkit-scrollbar,
+.commentaires::-webkit-scrollbar,
+.flip-box-container::-webkit-scrollbar,
+.scrollable-content::-webkit-scrollbar,
+.resultats::-webkit-scrollbar {
+    width: 10px; /* Largeur de la barre de défilement */
+    border-radius: 10px;
+    border: 1px dotted #000;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb,
+.commentaires::-webkit-scrollbar-thumb,
+.flip-box-container::-webkit-scrollbar-thumb,
+.scrollable-content::-webkit-scrollbar-thumb,
+.resultats::-webkit-scrollbar-thumb {
+    background-color: #4CAF50; /* Couleur de la poignée de la barre de défilement */
+    border-radius: 5px; /* Bordure de la poignée de la barre de défilement */
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+    background-color: #f0f0f0; /* Couleur de fond de la barre de défilement */
+}
+
+/*-----------------------*/
+
+.post-frame {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.post-frame img {
+    width: 100%;
+    height: auto;
+}
+
+.post-frame p {
+    margin-top: 10px;
+}
+
+/*--------------*/
+.resultats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%; /* Ajustez la largeur maximale de .resultats à 95% de la largeur disponible */
+}
+
+.flip-box-container {
+    text-align: center;
+    width: 100%;
+}
+
+
+.flip-box {
+    background-color: transparent;
+    border-radius: 20px;
+    width: 100%; /* Utilisez des valeurs relatives pour une meilleure adaptabilité */
+    height: 300px;
+    perspective: 1000px;
+    margin: 2px;
+    display: block;
+    overflow: auto;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    animation: horizJello 1s ease 0s 1 normal forwards;
+}
+
+.flip-box-inner {
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.5s;
+    transform-origin: center center;
+}
+
+.flip-box.clickable .flip-box-inner.flipped {
+    transform: rotateY(180deg);
+}
+
+.flip-box-front,
+.flip-box-back {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.5s;
+}
+
+.flip-box-front {
+    background-color: #ffffff65;
+    color: #000;
+    text-align: center;
+    /*border: 1px solid #000;*/
+    border-radius: 20px;
+    transform: rotateY(0deg);
+    display: flex;
+    flex-direction: column;
+}
+
+.flip-box-back {
+    background-color: #ffffff7e;
+    color: #005515;
+    text-align: center;
+    /*border: 1px solid #004113;*/
+    border-radius: 20px;
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: column;
+}
+
+.flip-box.clickable {
+    cursor: pointer;
+}
+
+.no-flip {
+    cursor: auto; /* Désactive le curseur pointer pour les éléments non cliquables */
+}
+
+.cadre {
+    border: 0.5px solid #f0f0f0;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 90%;
+    height: 90%; /* Utilisez des valeurs relatives */
+    overflow: auto;
+    align-items: center;
+    position: relative;
+    border-radius: 10px;
+    background-color: #000000;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.cadre img,
+.cadre video {
+    max-width: 100%;
+    max-height: 100%;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+
+.scrollable-content {
+    max-height: 200px;
+    overflow-y: auto;
+    text-align: center;
+    margin: 20px 5%;
+    /* box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); */
+    border-radius: 10px;
+    font-size: 12px;
+    color: rgb(0, 0, 0);
+    border: 0.5px solid #f1f1f1;
+    /* font-weight: bold; */
+}
+
+/* Styliser la barre de défilement */
+.scrollable-content::-webkit-scrollbar,
+.commentaires::-webkit-scrollbar,
+.flip-box-container::-webkit-scrollbar,
+.scrollable-content::-webkit-scrollbar,
+.resultats::-webkit-scrollbar {
+    width: 10px; /* Largeur de la barre de défilement */
+    border-radius: 10px;
+    border: 1px dotted #000;
+}
+
+.scrollable-content::-webkit-scrollbar-thumb,
+.commentaires::-webkit-scrollbar-thumb,
+.flip-box-container::-webkit-scrollbar-thumb,
+.scrollable-content::-webkit-scrollbar-thumb,
+.resultats::-webkit-scrollbar-thumb {
+    background-color: #4CAF50; /* Couleur de la poignée de la barre de défilement */
+    border-radius: 5px; /* Bordure de la poignée de la barre de défilement */
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+    background-color: #f0f0f0; /* Couleur de fond de la barre de défilement */
+}
+
+.actions {
+    text-align: center;
+    border-radius: 20px;
+    /* background-color: #008CBA; */
+    /* margin: 5px 0; */
+    position: flex;
+    bottom: 0;
+    left: 50px;
+    right: 0;
+    background-color: white;
+    padding: 10px;
+    /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+    /* display: flex; */
+    flex-direction: row;
+    /* width: 60%; */
+    /* border: 1px solid #4CAF50; */
+}
+
+.action-icon {
+    margin: 0 10px;
+    font-size: 15px;
+    cursor: pointer;
+    color: #000000;
+}
+
+.commentaires {
+    margin-top: 10px;
+    display: block;
+    align-items: center;
+}
+
+.commentaires textarea {
+    height: 50%;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    overflow: auto;
+    resize: none;
+    border-radius: 10px;
+    border: none; /* Supprimer la bordure */
+}
+
+.commentaires .envoyer-commentaire {
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+
+
+.profil-section {
+    text-align: center;
+    margin-bottom: 20px; /* Ajustez la marge selon votre préférence */
+}
+
+.profil-section img {
+    width: 50px; /* Ajustez la taille de l'icône de profil selon votre préférence */
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 5px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);        
+}
+
+.loading-icon {
+position: fixed;
+top: 40%;
+left: 50%;
+transform: translate(-50%, -50%);
+z-index: 4; /* Au-dessus de tout, y compris la barre de recherche, les résultats et le bouton Back */
+}
+
+
+/* Animation de rotation */
+@keyframes rotate {
+0% {
+    transform: rotate(0deg) scale(1);
+}
+100% {
+    transform: rotate(360deg) scale(0.8);
+}
+}
+
+/* Appliquer l'animation à l'icône */
+.loading-logo {
+animation: rotate 0.5s linear forwards; /* 2s de rotation, arrêt après 2 secondes */
+}
+
+.user-info-bar {
+background-color: transparent;
+max-width: 40%;
+color: #fff; /* Couleur du texte */
+padding: 10px; /* Espacement interne */
+text-align: right; /* Alignement du texte à droite */
+}
+
+.user-avatar {
+width: 60px; /* Ajustez la taille de l'avatar selon vos besoins */
+height: 60px;
+border-radius: 50%; /* Pour obtenir une forme circulaire */
+margin-left: 89%; /* Espacement entre le nom et l'avatar */
+}
+
+.user-name {
+font-weight: bold; /* Pour mettre en gras le nom de l'utilisateur */
+margin-right: 10px; /* Espacement entre le nom et le bord droit */
+}
+
+/* Ajouter ces styles pour rendre la surbrillance visible */
+.surligne {
+background-color: #008CBA;
+font-weight: bold;
+}
+
+
+#newTopicForm {
+max-width: 800px; /* Ajustez la largeur maximale du formulaire selon vos besoins */
+margin: 20px auto; /* Centre le formulaire horizontalement avec une marge autour */
+max-height: 500px; /* Ajustez la hauteur maximale selon vos besoins */
+overflow-y: auto;
+box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+text-align: center;
+border-radius: 10px;
+}
+
+#newTopicForm input[type="file"]::-webkit-file-upload-button {
+width: 80%;
+background-color: #00506b;
+border-radius: 10px;;
+}
+
+/* Style des champs de saisie (input, textarea, select) */
+input[type="text"],
+input[type="button"],
+textarea,
+select {
+width: 90%; /* Remplir la largeur du conteneur parent */
+padding: 8px; /* Ajoutez un rembourrage pour un meilleur aspect visuel */
+margin-left: 10px; /* Marge en bas pour l'espace entre les champs de saisie */
+box-sizing: border-box; /* Inclut le rembourrage et la bordure dans la largeur/hauteur totale */
+}
+
+/* Style du bouton */
+input[type="submit"] {
+background-color: #4CAF50; /* Couleur de fond */
+color: white; /* Couleur du texte */
+padding: 10px 15px; /* Rembourrage pour le bouton */
+border: none; /* Pas de bordure */
+border-radius: 5px; /* Coins arrondis */
+cursor: pointer; /* Curseur de type pointeur au survol */
+}
+
+input[type="submit"]:hover {
+background-color: #45a049; /* Couleur de fond au survol */
+}
+
+/* Style pour le bouton d'affichage/masquage du formulaire */
+button {
+background-color: #008CBA;
+color: white;
+padding: 10px 15px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+

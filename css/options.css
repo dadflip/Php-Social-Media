@@ -1,0 +1,190 @@
+.floating-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+.options-main {
+    margin: 2%;
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+    gap: 1em;
+}
+
+
+.options-container {
+    flex: 1;
+    margin-left: 10%;
+    background-color: var(--background-color-c);
+    padding: 1em;
+    border-left: 2px solid var(--border-color);
+    border-right: 2px solid var(--border-color);
+    border-top: 2px solid var(--border-color);
+}
+
+/* fieldset {
+    border: 2px solid var(--border-color);
+    border-radius: 0.5em;
+    margin: 0;
+    display: grid;
+    gap: 2em;
+    flex-wrap: wrap;
+    align-items: center;
+    flex-direction: row;
+    justify-items: stretch;
+    justify-content: center;
+} */
+
+.forms-content{
+    border: 2px solid var(--border-color);
+    border-radius: 0.5em;
+    margin: 0;
+
+}
+
+.radio-button:hover + label{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.user-info {
+    padding: 1em;
+    margin: 1em;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5em;
+}
+
+.uid {
+    color: var(--secondary-text-color);
+    font-weight: normal;
+    margin: 0;
+}
+
+.uid-name {
+    display: flex;
+    margin: 0 1em 1em;
+    justify-content:left;
+    row-gap: 1em;
+    align-items: flex-end;
+    /* text-align: center; */
+    flex-flow: row;
+    
+}
+
+#bio-field {
+    resize: vertical;
+    max-height: 5em;
+    min-height: 2em;
+    overflow: auto;
+    width: calc(100% - 2em);
+    margin: 0 1em;
+    padding: 0.2em;
+    margin-top: 1em;
+    font-family: inherit;
+}
+
+label[for="biography"] {
+    text-decoration: underline;
+    font-size: 1.25em;
+    margin-left: 1em;
+}
+
+
+
+form {   
+    width: 100%;
+    display: flex;
+    /* flex-flow: column; */
+    align-items: center;
+}
+
+.forms {
+    display: flex;
+    padding: 1em;
+    flex-flow: column;
+    column-gap: 1em;
+    row-gap: 1em;
+}
+
+.interface-forms {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+}
+
+label {
+    margin-right: 0.5em;
+}
+
+.user-pfp {
+    width: 6em;
+    height: 6em;
+    border-radius: 50%;
+    margin: 0;
+    display: block;
+    border: 1px solid var(--border-color);
+}
+
+.clickable:hover {
+    cursor: pointer;
+}
+
+.user-info-change {
+    display: flex;
+    flex-flow: column;
+}
+
+/*.user-info-change > fieldset {
+    display: flex;
+    flex-flow: column;
+}*/
+
+.user-info-change > fieldset > label {
+    font-weight: bold;
+}
+
+.user-info-change > fieldset > input{
+    margin: 0.5em 0;
+}
+
+/* select, input[type="text"], input[type="file"], input[type="submit"] {
+    padding: 2em;
+    border: 1px solid #cccccc;
+    box-sizing: border-box;
+    outline: none;
+    background-color: var(--flip-box-back-color);
+} */
+
+.username {
+    margin: 0;
+}
+
+.usernames {
+    margin-left: 0.5em;
+    display: flex;
+    flex-flow: column;
+}
+
+button#followButton, button#saveButton {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 2em;
+}
+
+button#followButton:hover, button#saveButton:hover {
+    background-color: #45a049; /* Changement de couleur au survol */
+}

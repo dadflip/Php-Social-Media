@@ -1,0 +1,84 @@
+#user-input {
+    background-color: var(--dark-background);
+    color :var(--text-color);
+
+    margin: 0 7.5em 0;
+    padding: 0.5em;
+
+    resize: none;
+    border: none;
+
+    font-size: 1em;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+
+    transition: height 0.2s;
+    height: 1em;
+}
+
+#user-input:hover, #user-input:focus {
+    border: 1px solid var(--accent);
+}
+
+#user-input:focus {
+    outline: none;
+    margin-bottom: 0;
+
+    transition: height 0.2s;
+    height: 5em;
+}
+
+.middle {
+    display: grid;
+    row-gap: 1em;
+    grid-template-rows: 5fr 1fr;
+}
+
+.right-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.right-menu:first-child{
+    border-top: none;
+}
+
+.right-menu:last-child{
+    border-bottom: none;
+}
+
+.rmenu-elm {
+    padding: 0.5em 0;
+    border-bottom: 1px solid var(--accent);
+    border-top: 1px solid var(--accent);
+    text-align: center;
+}
+
+.tweet {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0.5em;
+    border: 1px solid var(--accent);
+    border-radius: 0.5em;
+    margin: 0.5em;
+}
+
+.tweet-userinfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    width: 100%;
+}
+
+.tweet-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: left;
+    width: 100%;
+}
+
+.tweet-content > p {
+    margin: 0;
+}

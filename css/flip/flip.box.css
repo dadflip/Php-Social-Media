@@ -1,0 +1,594 @@
+/* -------------------------------------------------------- */
+.tab-content {
+    display: flex;
+    position: inherit;
+    background-color: var(--background-color);
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+    justify-content: space-around;
+    width: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.resultats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    background: transparent;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.flip-box-container {
+    text-align: center;
+    width: 100%;
+}
+
+
+.flip-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+
+    margin: 0.5em;
+    background-color: transparent;
+
+    width: calc(100% - 0.5em);
+    /* max-width: 50%; */
+    height: 350px;
+    /* perspective: 1000px; */
+}
+
+.flip-box-inner {
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.5s;
+    transform-origin: center center;
+}
+
+.flip-box.clickable .flip-box-inner.flipped {
+    transform: rotateY(180deg);
+}
+
+.flip-box-front,
+.flip-box-back {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.5s;
+}
+
+.flip-box-front {
+    background-color: var(--flip-box-front-color);
+    border: 1px solid var(--flip-box-border-color);
+    color: var(--flip-box-text-color);
+    text-align: center;
+    transform: rotateY(0deg);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-content: space-between;
+}
+
+.flip-box-back {
+    background-color: var(--flip-box-back-color);
+    color: var(--flip-box-back-text-color);
+    text-align: center;
+    transform: rotateY(180deg);
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    align-content: center;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: space-around;
+}
+
+.flip-box.clickable {
+    cursor: pointer;
+}
+
+.no-flip {
+    cursor: auto; /* Désactive le curseur pointer pour les éléments non cliquables */
+}
+
+/* Style pour la flipbox */
+.flip-box h5{ 
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: -webkit-fill-available;
+    padding: 0px 20px;
+}
+
+.flip-box h6 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: -webkit-fill-available;
+    padding: 0px 20px;
+}
+
+/* Style pour le nom d'utilisateur */
+.user-name {
+    margin-right: 10px; /* Espacement entre le nom d'utilisateur et le bouton Suivre */
+}
+
+/* Style pour l'icône du profil utilisateur */
+.user-icon {
+    margin-right: 10px; /* Espacement entre l'icône et le nom d'utilisateur */
+}
+
+/* Style pour le bouton Suivre */
+.follow-section {
+    display: inline-flex;
+    align-items: center;
+}
+
+
+/* -------------------------------------------------------- */
+/* Style pour le bouton Suivre */
+.follow-button {
+    background: linear-gradient(0deg, var(--follow-button-bg-start) 0%, var(--follow-button-bg-end) 100%);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 20px;
+}
+
+/* Style pour le survol du bouton Suivre */
+.follow-button:hover {
+    background-color: var(--follow-button-hover-bg); /* Couleur de fond au survol */
+}
+
+.sup-cadre {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+    height: 95%;
+    width: -webkit-fill-available;
+    align-content: center;
+    align-items: center;
+    justify-items: self-end;
+}
+
+
+.cadre {
+    /* border: 0.5px solid #f0f0f0; */
+    padding: 10px;
+    margin: 10px;
+    /* margin-right: 75px; */
+    width: 20em;
+    height: 10em;
+    overflow: hidden;
+    justify-self: center;
+    position: absolute;
+    border-radius: 10px;
+    background-color: #000000;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.cadre img, .cadre video {
+    max-width: 10em;
+    max-height: 10em;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.cadre img {
+    cursor: zoom-in;
+}
+
+video#videoPlayer {
+    position: absolute;
+    left: 50;
+    top: 50;
+}
+
+span#keywordsSection {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+span.keyword-bubble {
+    margin: 0.2em;
+    background-color: #0056b3;
+    padding: 0.1em;
+    border-radius: 0.5em;
+}
+
+
+/* Style de la fenêtre modale */
+.modal {
+    position: fixed;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+}
+
+.modal img {
+    border-radius: 0.5em;
+    margin: 0.2em;
+}
+
+.modal button {
+    border-style: solid;
+    padding: 0.5em;
+    font-size: inherit;
+    background-color: #060f42;
+    border-color: var(--border-color);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, transform 0.3s;
+}
+
+/* Contenu de la fenêtre modale */
+.modal-content {
+  margin: auto; /* Centrez le contenu de la fenêtre modale */
+  display: block;
+  width: 80%; /* Largeur du contenu de la fenêtre modale */
+  max-width: 800px; /* Largeur maximale du contenu de la fenêtre modale */
+  padding: 50px;
+}
+
+/* Style pour fermer le bouton de la fenêtre modale */
+.close {
+  position: absolute; /* Le bouton de fermeture est positionné de manière absolue */
+  top: 15px; /* Position du bouton de fermeture en haut */
+  right: 35px; /* Position du bouton de fermeture à droite */
+  color: #f1f1f1; /* Couleur du texte du bouton de fermeture */
+  font-size: 40px; /* Taille de la police du bouton de fermeture */
+  font-weight: bold; /* Police en gras */
+  transition: 0.3s; /* Effet de transition pour le survol */
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb; /* Couleur du texte du bouton de fermeture au survol */
+  text-decoration: none; /* Aucune décoration de texte au survol */
+  cursor: pointer; /* Curseur de la souris en forme de main au survol */
+}
+
+/* Style pour la flipbox */
+.keywords {
+    display: flex;
+    align-items: center;
+    width: -webkit-fill-available;
+    padding: 0px 20px;
+}
+
+/* Style pour les liens des mots-clés */
+.keyword-link {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 20px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+/* Style pour le survol des liens des mots-clés */
+.keyword-link:hover {
+    background-color: #0056b3;
+    cursor: pointer;
+}
+
+
+.scrollable-content {
+    height: -webkit-fill-available;
+    flex: 10;
+    overflow-y: auto;
+    text-align: center;
+    margin: 20px 1%;
+    font-size: 12px;
+    background-color: #0000004a;
+    font-weight: bold;
+}
+
+/* Styliser la barre de défilement */
+.comments-zone::-webkit-scrollbar,
+.scrollable-content::-webkit-scrollbar,
+.commentaires::-webkit-scrollbar,
+.flip-box-container::-webkit-scrollbar,
+.scrollable-content::-webkit-scrollbar,
+.resultats::-webkit-scrollbar {
+    width: 10px; /* Largeur de la barre de défilement */
+    border-radius: 10px;
+    border: 1px dotted #000;
+}
+
+.comments-zone::-webkit-scrollbar-thumb,
+.scrollable-content::-webkit-scrollbar-thumb,
+.commentaires::-webkit-scrollbar-thumb,
+.flip-box-container::-webkit-scrollbar-thumb,
+.scrollable-content::-webkit-scrollbar-thumb,
+.resultats::-webkit-scrollbar-thumb {
+    background-color: #000131; /* Couleur de la poignée de la barre de défilement */
+    border-radius: 5px; /* Bordure de la poignée de la barre de défilement */
+}
+
+.scrollable-content::-webkit-scrollbar-track {
+    background-color: #f0f0f0; /* Couleur de fond de la barre de défilement */
+}
+
+.post {
+    min-width: 60em;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.comments-zone {
+    flex: 1;
+    max-height: 50em;
+    overflow: auto;
+}
+
+.actions {
+    text-align: center;
+    background-color: var(--action-zone-bg);
+    left: 50px;
+    right: 0;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    height: 10em;
+    border-radius: 0.2em;
+    margin: 20px 1%;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.action-icon {
+    margin: 0 10px;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: var(--action-icon-color);
+}
+
+.commentaires {
+    min-height: -webkit-fill-available;
+    display: flex;
+    border: 1px solid #fff;
+    margin: 0.3em;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.commentaires textarea {
+    background-color: var(--textarea-bg);
+    min-height: 2.5em;
+    width: 90%;
+    max-height: 3em;
+    border-radius: 0.5em;
+    margin: 0.3em;
+    overflow: auto;
+    resize: none;
+    border: none;
+    padding: 0.2em;
+}
+
+.commentaires .envoyer-commentaire {
+    cursor: pointer;
+    height: 2.5em;
+    max-height: 3em;
+    background: linear-gradient(0deg, var(--send-button-bg-start) 0%, var(--send-button-bg-end) 100%);
+    color: white;
+    border: none;
+}
+
+.envoyer-commentaire:hover {
+    transform: none;
+    color: #ffffff;
+    background: linear-gradient(0deg, #008cff3f 0%, #3449ff91 100%);
+}
+
+.profil-section {
+    text-align: center;
+    margin-bottom: 20px; /* Ajustez la marge selon votre préférence */
+}
+
+.profil-section img {
+    width: 50px; /* Ajustez la taille de l'icône de profil selon votre préférence */
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 5px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);        
+}
+
+.loading-icon {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 4; /* Au-dessus de tout, y compris la barre de recherche, les résultats et le bouton Back */
+}
+
+/* Animation de rotation */
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    100% {
+        transform: rotate(360deg) scale(0.8);
+    }
+}
+
+
+.comments-display {
+    justify-items: center;
+    margin: 0.2em;
+}
+
+.comment {
+    padding: 0.5em;
+    margin: 0.2em;
+    border: 1px solid;
+    justify-items: center;
+    align-content: space-evenly;
+}
+
+.response-zone.no-flip {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    background-color: #0000001f;
+}
+
+.comment {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.replies {
+    margin-left: 20px;
+}
+
+.toggle-replies-btn {
+    background-color: #f4f4f4;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin-top: 5px;
+}
+
+.response-zone {
+    margin-top: 10px;
+}
+
+.mention-link {
+    color: #009dff; /* Couleur du texte */
+    text-decoration: none; /* Suppression du soulignement */
+    cursor: pointer; /* Curseur en forme de main au survol */
+    font-weight: bold; /* Texte en gras */
+    font-size: 1.2em;
+}
+
+.mention-link:hover {
+    color: #0077cc; /* Couleur du texte au survol */
+}
+
+i.far.fa-user {
+    margin: 0.3em;
+    color: #0056b3;
+}
+
+.fenetre-flottante {
+    display: grid;
+    background-color: #000000e3;
+    color: #000;
+    border: 2px solid #000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    position: absolute;
+    padding: 20px;
+    z-index: 2000;
+    gap: 1em;
+    max-width: 400px;
+    justify-content: space-between;
+    align-content: space-between;
+    justify-items: center;
+}
+
+.fenetre-flottante a {
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    padding: 0.5em;
+}
+
+.fenetre-flottante a:hover {
+    color: #ffffff;
+    background-color: #003cff;
+    border-radius: 1em;
+}
+
+.bouton-fermer {
+    cursor: pointer;
+    background-color: #ff0000;
+    color: #fff;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 5px;
+}
+
+.bouton-fermer:hover {
+    background-color: #cc0000;
+}
+
+.chat-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.chat-messages {
+    height: 300px;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.user-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    justify-items: center;
+}
+
+.user-card {
+    width: 90%;
+    height: 20em;
+    background-color: #f0f0f00f;
+    border-radius: 8px;
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.user-card:hover {
+    background-color: #006fcf;
+}
+
+.user-card p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}

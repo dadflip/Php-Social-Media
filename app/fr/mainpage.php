@@ -11,6 +11,7 @@ include '../defs.functions.php';
 includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
 includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexElement']);
 includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['NavBar']);
+includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['SearchBar']);
 
 
 $cuicui_manager = new CuicuiManager($database_configs, DATASET);
@@ -54,6 +55,7 @@ if ($result) {
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
+
     <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . '/' . $_SESSION["theme"] . ".css" ?>>
     <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/main.css" ?>>
     <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/flip/flip.style.css" ?>>
@@ -69,136 +71,160 @@ if ($result) {
     }
     ?>
 
+    <div id="barre-recherche" class="search-bar">
+        <input type="text" id="recherche-input" placeholder="Rechercher...">
+        <div id="filtres" class="filtres-dropdown">
+            <div id="filtres-select">
+                <div class="filtre active" data-value="user"><i class="fas fa-user"></i><span>Utilisateur</span></div>
+                <div class="filtre" data-value="post"><i class="fas fa-file-alt"></i><span>Post</span></div>
+                <div class="filtre" data-value="media"><i class="fas fa-image"></i><span>Média</span></div>
+                <div class="filtre" data-value="date"><i class="far fa-calendar-alt"></i><span>Date</span></div>
+                <div class="filtre" data-value="titre"><i class="fas fa-heading"></i><span>Titre</span></div>
+                <div class="filtre" data-value="populaires"><i class="fas fa-thumbs-up"></i><span>Populaires</span></div>
+                <div class="filtre" data-value="categorie"><i class="fas fa-tags"></i><span>Catégorie</span></div>
+                <div class="filtre active" data-value="contenu"><i class="fas fa-align-left"></i><span>Contenu</span></div>
+            </div>
+        </div>
+        <button id="bouton-recherche">
+            <i class="fas fa-search"></i>
+        </button>
+    </div>
+
+
     <main class="container">
-        <div class="center-column">
-            <div class="center-main-panel">
-                <div class="center-panel">
-                    <div class="tabs-container">
-                        <div class="tab active" data-tab="tab1" onclick="showTab('tab1')">
-                            <i class="fas fa-dove"></i> Cui Cui Box
+        <div class="app">
+            <div class="center-column">
+                <div class="center-main-panel">
+                    <div class="center-panel">
+                        <div class="tabs-container">
+                            <div class="tab active" data-tab="tab1" onclick="showTab('tab1')">
+                                <i class="fas fa-dove"></i> Cui Cui Box
+                            </div>
+                            <?php
+                            if (isset($_SESSION["UID"])) {
+                            ?>
+                                <div class="tab" data-tab="tab2" onclick="showTab('tab2')">
+                                    <i class="fas fa-comments"></i> Chat
+                                </div>
+                                <div class="tab" data-tab="tab3" onclick="showTab('tab3')">
+                                    <i class="fas fa-users"></i> Amis
+                                </div>
+                                <div class="tab notifications-badge" data-tab="tab4" onclick="showTab('tab4')">
+                                    <?php
+                                    //echo count($notifications) ;
+                                    $countUnread = 0;
+                                    ?>
+
+                                    <?php
+                                    if (count($notifications) > 0) {
+                                        foreach ($notifications as $notification) {
+                                            if (!$notification['is_read']) {
+                                                $countUnread++;
+                                            }
+                                        }
+                                    }
+                                    ?>
+
+                                    <span class="badge badge-red"><?php echo '(' . $countUnread . ')'; ?></span>
+                                    <i class="fas fa-bell"></i>
+                                    Notifications
+                                </div>
+                            <?php
+                            }
+                            ?>
+                            <br>
                         </div>
+
                         <?php
                         if (isset($_SESSION["UID"])) {
                         ?>
-                            <div class="tab" data-tab="tab2" onclick="showTab('tab2')">
-                                <i class="fas fa-comments"></i> Chat
-                            </div>
-                            <div class="tab" data-tab="tab3" onclick="showTab('tab3')">
-                                <i class="fas fa-users"></i> Amis
-                            </div>
-                            <div class="tab notifications-badge" data-tab="tab4" onclick="showTab('tab4')">
-                                <?php
-                                //echo count($notifications) ;
-                                $countUnread = 0;
-                                ?>
+                            <!-- Bouton pour afficher le formulaire (Nouveau sujet)-->
+                            <button onclick="toggleForm()" type="button" class="page_button1" title="FLIPBOX">
+                                <i class="fas fa-plus"></i> <!-- Nouvelle icône pour le bouton flip -->
+                            </button>
 
-                                <?php
-                                if (count($notifications) > 0) {
-                                    foreach ($notifications as $notification) {
-                                        if (!$notification['is_read']) {
-                                            $countUnread++;
-                                        }
-                                    }
-                                }
-                                ?>
+                            <!-- Bouton pour ajouter des médias avec une icône d'appareil photo -->
+                            <button onclick="postImage()" type="button" class="social_button" title="Ajouter des médias">
+                                <i class="fas fa-camera"></i>
+                            </button>
 
-                                <span class="badge badge-red"><?php echo '(' . $countUnread . ')'; ?></span>
-                                <i class="fas fa-bell"></i>
-                                Notifications
-                            </div>
+                            <!-- Bouton pour poster des images avec une icône d'appareil photo -->
+                            <button onclick="addMedia()" type="button" class="social_button" title="Poster une image">
+                                <i class="fas fa-image"></i>
+                            </button>
+
+                            <!-- Bouton pour enregistrer du son avec une icône de microphone -->
+                            <button onclick="recordAudio()" type="button" class="social_button" title="Enregistrer du son">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+
+                            <!-- Bouton pour enregistrer le flux vidéo avec une icône de caméscope -->
+                            <button onclick="stream()" type="button" class="social_button" title="stream">
+                                <i class="fas fa-video"></i>
+                            </button>
+
+
+                            <!-- Ajoutez d'autres boutons avec d'autres fonctionnalités ici -->
                         <?php
                         }
                         ?>
-                        <br>
                     </div>
 
-                    <?php
-                    if (isset($_SESSION["UID"])) {
-                    ?>
-                        <!-- Bouton pour afficher le formulaire (Nouveau sujet)-->
-                        <button onclick="toggleForm()" type="button" class="page_button1" title="FLIPBOX">
-                            <i class="fas fa-plus"></i> <!-- Nouvelle icône pour le bouton flip -->
-                        </button>
+                    <div id="tab1" class="tab-content wow animate__fadeIn" data-wow-duration="1s" data-wow-delay="1.5s">
+                        <div id="resultats" class="resultats"><br></div>
+                    </div>
 
-                        <!-- Bouton pour ajouter des médias avec une icône d'appareil photo -->
-                        <button onclick="postImage()" type="button" class="social_button" title="Ajouter des médias">
-                            <i class="fas fa-camera"></i>
-                        </button>
+                    <div id="tab2" class="tab-content" style="display: none;">
+                        <div id="userList"></div>
+                    </div>
 
-                        <!-- Bouton pour poster des images avec une icône d'appareil photo -->
-                        <button onclick="addMedia()" type="button" class="social_button" title="Poster une image">
-                            <i class="fas fa-image"></i>
-                        </button>
+                    <div id="tab3" class="tab-content" style="display: none;">
+                        Contenu des Amis
+                    </div>
 
-                        <!-- Bouton pour enregistrer du son avec une icône de microphone -->
-                        <button onclick="recordAudio()" type="button" class="social_button" title="Enregistrer du son">
-                            <i class="fas fa-microphone"></i>
-                        </button>
-
-                        <!-- Bouton pour enregistrer le flux vidéo avec une icône de caméscope -->
-                        <button onclick="stream()" type="button" class="social_button" title="stream">
-                            <i class="fas fa-video"></i>
-                        </button>
-
-
-                        <!-- Ajoutez d'autres boutons avec d'autres fonctionnalités ici -->
-                    <?php
-                    }
-                    ?>
-                </div>
-
-                <div id="tab1" class="tab-content wow animate__fadeIn" data-wow-duration="1s" data-wow-delay="1.5s">
-                    <div id="resultats" class="resultats"><br></div>
-                </div>
-
-                <div id="tab2" class="tab-content" style="display: none;">
-                    <div id="userList"></div>
-                </div>
-
-                <div id="tab3" class="tab-content" style="display: none;">
-                    Contenu des Amis
-                </div>
-
-                <div id="tab4" class="tab-content" style="display: none;">
-                    <div class="content">
-                        <h1>Notifications</h1>
-                        <?php if (count($notifications) > 0) : ?>
-                            <?php foreach ($notifications as $notification) : ?>
-                                <div class="notification <?php echo $notification['is_read'] ? '' : 'unread'; ?>">
-                                    <p><?php echo $notification['text_content']; ?></p>
-                                    <?php if ($notification['notification_id']) : ?>
-                                        <p><?php echo $notification['title']; ?></p>
-                                        <p><?php echo $notification['c_datetime']; ?></p>
-                                        <p><?php echo $notification['notification_type']; ?></p>
-                                    <?php endif; ?>
-                                    <span><button class="delete-btn" data-id=<?php echo $notification['notification_id']; ?>>Supprimer</button></span>
+                    <div id="tab4" class="tab-content" style="display: none;">
+                        <div class="content">
+                            <h1>Notifications</h1>
+                            <?php if (count($notifications) > 0) : ?>
+                                <?php foreach ($notifications as $notification) : ?>
+                                    <div class="notification <?php echo $notification['is_read'] ? '' : 'unread'; ?>">
+                                        <p><?php echo $notification['text_content']; ?></p>
+                                        <?php if ($notification['notification_id']) : ?>
+                                            <p><?php echo $notification['title']; ?></p>
+                                            <p><?php echo $notification['c_datetime']; ?></p>
+                                            <p><?php echo $notification['notification_type']; ?></p>
+                                        <?php endif; ?>
+                                        <span><button class="delete-btn" data-id=<?php echo $notification['notification_id']; ?>>Supprimer</button></span>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <div class="no-notifs">
+                                    <p>Aucune notification</p>
                                 </div>
-                            <?php endforeach; ?>
-                        <?php else : ?>
-                            <div class="no-notifs">
-                                <p>Aucune notification</p>
-                            </div>
-                        <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="right-panel wow animate__fadeInRight" data-wow-duration="1s" data-wow-delay="2s">
-            <section id="right-links">
-                <ul>
-                    <li><a href="#">Découvrir</a></li>
-                    <li><a href="#">Langue</a></li>
-                    <li><a href="#">Politique de confidentialité</a></li>
-                    <li><a href="<?php echo $appdir['PATH_API_DIR'] ?>">API</a></li>
-                    <li><a href="#">FAQ</a></li>
-                    <li><a href="#">Assistance</a></li>
-                    <li><a href="#">Termes et conditions</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
+            <div class="right-panel wow animate__fadeInRight" data-wow-duration="1s" data-wow-delay="2s">
+                <section id="right-links">
 
-                <p> &copy; Cuicui App 2024</p>
-            </section>
+                    <ul>
+                        <?php echo getNavbarContents() ?>
+                        <li><a href="#">Découvrir</a></li>
+                        <li><a href="#">Langue</a></li>
+                        <li><a href="#">Politique de confidentialité</a></li>
+                        <li><a href="<?php echo $appdir['PATH_API_DIR'] ?>">API</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Assistance</a></li>
+                        <li><a href="#">Termes et conditions</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+
+                    <p> &copy; Cuicui App 2024</p>
+                </section>
+            </div>
         </div>
     </main>
 
@@ -305,12 +331,6 @@ if ($result) {
     </div>
 
 
-
-    <nav class="navbar" id="sliding-menu">
-        <?php echo getNavbarContents() ?>
-    </nav>
-
-
     <script>
         // Sélection de l'élément input pour l'image
         const input = document.querySelector('input[type="file"]');
@@ -354,7 +374,8 @@ if ($result) {
     window.__ajx__ = "<?php echo $appdir['PATH_PHP_DIR'] . '/ajax/main/'; ?>";
 </script>
 <script>
-    window.__u__ = <?php echo $_SESSION['UID']; ?>
+    window.__u__ = '<?php echo $_SESSION['UID']; ?>';
+    window.__img_u__ = "<?php $_SESSION["pfp_url"]; ?>"
 </script>
 <?php includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['scripts']); ?>
 
@@ -382,10 +403,42 @@ if ($result) {
     }
 </script>
 
+<style>
+    #filtres-select {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 10px;
+    }
+
+    .filtre {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        padding: 0.1em;
+        justify-content: space-between;
+    }
+
+    .filtre i {
+        color: #000;
+    }
+
+    .filtre span {
+        color: #000;
+    }
+
+    .filtre.active {
+        background-color: #ccc;
+        /* Couleur pour indiquer l'activation */
+    }
+</style>
 
 <script>
     //Envoyer des données au serveur
     $(document).ready(function() {
+
+        // Appeler la méthode pour construire les flipbox au chargement de la page
+        construireFlipboxRecommandees();
 
         // Attachez l'événement clic aux flipboxes générées dynamiquement
         $('#resultats').on('click', '.flip-box.clickable', function() {
@@ -446,31 +499,48 @@ if ($result) {
             }
         });
 
+        $(document).ready(function() {
+            // Gérer le clic sur les filtres
+            $('.filtre').click(function() {
+                $(this).toggleClass('active');
+                // Ajoutez votre logique pour gérer les filtres sélectionnés ici
+                var filtresSelectionnes = [];
+                $('.filtre.active').each(function() {
+                    filtresSelectionnes.push($(this).data('value'));
+                });
+                console.log("Filtres sélectionnés :", filtresSelectionnes);
+            });
+        });
+
         //-------------------------------------------------------------------------------------------------
 
-        // Gérer la saisie dans la barre de recherche
-        $('#barre-recherche').on('input', function() {
-            var recherche = $(this).val().trim(); // Récupérer la valeur de la barre de recherche et supprimer les espaces vides
+        // Variables pour le délai de saisie et le timeout de recherche
+        var typingDelay = 500; // Délai de saisie en millisecondes
+        var searchTimeout;
 
-            // Fermer le menu lorsque du texte est saisi dans la barre de recherche
-            $('#menu').hide();
+        // Fonction pour gérer la saisie dans la barre de recherche
+        $('#barre-recherche input[type="text"]').on('input', function() {
+            // Réinitialiser le délai de recherche à chaque saisie
+            clearTimeout(searchTimeout);
 
-            // Reconstruire les flipboxes si la barre de recherche est vide
-            if (recherche == '') {
-                console.log('check')
-                construireFlipboxRecommandees();
-            }
+            // Démarrer le délai de saisie
+            searchTimeout = setTimeout(function() {
+                var recherche = $('#barre-recherche input[type="text"]').val().trim();
+
+                // Vérifier si la valeur de recherche n'est pas vide
+                if (recherche !== '') {
+                    // Effectuer la recherche
+                    effectuerRecherche();
+                } else {
+                    // La valeur de recherche est vide, vous pouvez gérer cela ici si nécessaire
+                    console.log('La valeur de recherche est vide');
+
+                    // Construire les flipbox si la valeur de recherche est vide
+                    construireFlipboxRecommandees();
+                }
+            }, typingDelay);
         });
 
-        // Attacher la fonction de recherche à l'événement de saisie dans la barre de recherche
-        $("#barre-recherche").on("input", function() {
-            // Déclencher la recherche après un léger délai (par exemple, 300 ms) pour éviter une recherche à chaque frappe
-            clearTimeout(window.rechercheTimeout);
-            window.rechercheTimeout = setTimeout(effectuerRecherche, 300);
-        });
-
-        // Appeler la méthode pour construire les flipbox au chargement de la page
-        construireFlipboxRecommandees();
     });
 
     // Attachez l'événement clic aux flipboxes générées dynamiquement
@@ -508,6 +578,299 @@ if ($result) {
             });
         });
     });
+
+
+
+
+
+
+
+
+
+    //------------------------ Recherches et Resultats ---------------------------------
+
+    function effectuerRecherche(termeRecherche = '') {
+        // Si aucun terme de recherche n'est spécifié, récupérer le terme depuis la barre de recherche
+        if (termeRecherche === '') {
+            termeRecherche = $('#barre-recherche input[type="text"]').val();
+        }
+
+        // Récupérer les filtres sélectionnés à partir de la grille d'icônes
+        var filtresSelectionnes = {};
+        $('.filtre.active').each(function() {
+            var filtre = $(this).data('value');
+            filtresSelectionnes[filtre] = true; // Utiliser le nom du filtre comme clé avec une valeur booléenne true
+        });
+
+        // Convertir les clés en une liste de filtres
+        var filterList = Object.keys(filtresSelectionnes);
+
+        // Afficher les filtres sélectionnés dans la console
+        console.log("Filtres sélectionnés :", filterList);
+
+        // Afficher le logo de chargement et ajuster sa position et sa taille
+        var $loadingIcon = $(".loading-icon");
+        var $searchBar = $(".search-bar");
+
+        // Effectuer la requête AJAX vers le script de recherche (search.php)
+        $.ajax({
+            url: window.__ajx__ + "search.php",
+            type: "GET",
+            data: {
+                q: termeRecherche,
+                filters: filterList // Envoyer la liste des filtres sélectionnés
+            },
+            dataType: "json",
+            success: function(resultats) {
+                // Afficher les résultats dynamiquement avec surbrillance en utilisant le terme de recherche
+                console.log(resultats);
+                console.log(termeRecherche);
+                afficherResultatsAvecTitre(resultats, termeRecherche);
+            },
+            error: function(xhr, status, error) {
+                console.error("Erreur lors de la requête AJAX. XHR : ", xhr);
+                console.error('Erreur Ajax :', error);
+            }
+        });
+    }
+
+    // Ajouter un gestionnaire d'événements sur chaque lien cliquable pour effectuer une recherche au clic
+    $(document).on('click', '.keyword-link', function(e) {
+        e.preventDefault(); // Empêcher le comportement par défaut du lien
+        var keyword = $(this).text(); // Récupérer le mot-clé cliqué
+        // Effectuer la recherche avec le mot-clé comme terme de recherche
+        effectuerRecherche(keyword);
+    });
+
+
+    // Fonction pour afficher les résultats avec un titre et un bouton retour
+    function afficherResultatsAvecTitre(resultats, termeRecherche) {
+        // Créer le titre
+        var titre = $('<h2>').text("Résultats pour '" + termeRecherche + "'");
+
+        // Créer le bouton retour
+        var boutonRetour = $('<button>')
+            .text('Retour')
+            .addClass('btn btn-primary btn-retour') // Ajouter des classes Bootstrap pour le style
+            .css({
+                'margin-top': '10px', // Ajouter une marge supérieure pour l'espacement
+                'font-size': '16px' // Changer la taille de la police
+            })
+            .on('click', function() {
+                construireFlipboxRecommandees(); // Appeler la fonction construireFlipboxes pour reconstruire les éléments
+            });
+
+        // Créer un conteneur div pour le titre et le bouton retour
+        var divTitreRetour = $('<div>')
+            .append(titre, boutonRetour)
+            .addClass('titre-retour-container'); // Ajouter une classe pour le style CSS
+
+        // Créer un conteneur div pour les résultats
+        var divResultats = $('<div>').attr('id', 'resultats');
+
+        // Ajouter le titre, le bouton retour et les résultats au conteneur principal
+        var container = $('<div>').addClass('resultats-container').append(divTitreRetour, divResultats);
+
+        // Vider le conteneur actuel et ajouter le nouveau conteneur au document
+        $('#resultats').empty().append(container);
+
+        // Afficher les résultats dynamiquement avec surbrillance en utilisant le terme de recherche
+        afficherResultatsAvecSurbrillance(resultats, termeRecherche);
+    }
+
+
+
+    // Fonction pour afficher les résultats de recherche
+    function afficherResultatsAvecSurbrillance(resultats, termeRecherche) {
+        // Effacer les résultats précédents
+        // $("#resultats").empty();
+
+        var recommandMaxSize = 15;
+        var i = 0;
+
+        // Afficher les nouveaux résultats dans des flipboxes
+        while (i < resultats.length && i < recommandMaxSize) {
+            var resultat = resultats[i];
+            console.log(resultat.textId);
+
+            // Récupérer les valeurs de keywords et category
+            var keywords = resultat && resultat.tags ? resultat.tags : 'all';
+            var category = resultat && resultat.category ? resultat.category : '';
+
+            likesData[resultat.textId] = resultat.likes;
+            dislikesData[resultat.textId] = resultat.dislikes;
+
+            var flipbox = '<hr><div class="post">';
+
+            // Construction de la flipbox
+            flipbox += '<div class="flip-box clickable" data-keywords="' + keywords + '" data-category="' + category + '" data-title="' + resultat.title + '" data-text-id="' + resultat.textId + '">';
+
+
+            flipbox += '<div class="flip-box-inner">';
+            flipbox += '<div class="flip-box-front">';
+
+            flipbox += '<h5 class="user-info">';
+
+            // Ajouter une section pour l'image de profil
+            flipbox += '<div class="profile-image">';
+            flipbox += '<img src="' + resultat.profile_pic_url + '" alt="Profile Image">';
+            flipbox += '</div>';
+
+            // Ajouter une section pour le nom d'utilisateur
+            flipbox += '<a class="no-flip" href="' + window.__u_url__ + '?@userid=@' + resultat.username + '" class="user-name">';
+            flipbox += '<i style="margin: 8px;" class="fas fa-user"></i>' + resultat.username;
+            flipbox += '</a>';
+
+            // Ajouter une section pour le bouton Suivre
+            flipbox += '<span class="follow-section no-flip">';
+            flipbox += '<span class="user-icon"></span>';
+            flipbox += '<div class="follow-button" onclick="followUser(' + resultat.users_uid + ')">Suivre</div>';
+            // Ajouter un bouton pour signaler l'utilisateur
+            flipbox += '<div class="report-button" onclick="reportUser(' + resultat.users_uid + ')">Signaler</div>';
+            flipbox += '</span>';
+
+            flipbox += '</h5>';
+
+            if (resultat.media_type === 'image') {
+                flipbox += '<div class="sup-cadre">';
+                flipbox += '<div class="cadre">';
+                flipbox += '<img class="media-center no-flip" src="' + resultat.media_url + '" alt="Image">';
+                flipbox += '</div>';
+
+                // Ajouter une zone avec des sous-zones
+                flipbox += '<div class="action-zone no-flip">';
+                // Ajouter des icônes cliquables et d'autres contenus
+                flipbox += '<div class="download-icon" onclick="downloadContent()"><i class="fas fa-download"></i></div>';
+                flipbox += '<div class="other-content">Autre contenu ici</div>';
+                flipbox += '</div>'; // Fermer la div action-zone
+                flipbox += '</div>';
+
+            } else if (resultat.media_type === 'video') {
+                flipbox += '<div class="sup-cadre">';
+                flipbox += '<div class="cadre">';
+                flipbox += '<video class="media-center no-flip" controls>';
+                flipbox += '<source src="' + resultat.media_url + '" type="video/mp4">';
+                flipbox += 'Votre navigateur ne supporte pas la lecture de la vidéo.';
+                flipbox += '</video>';
+                flipbox += '</div>';
+
+                // Ajouter une zone avec des sous-zones
+                flipbox += '<div class="action-zone no-flip">';
+                // Ajouter des icônes cliquables et d'autres contenus
+                flipbox += '<div class="download-icon" onclick="downloadContent()"><i class="fas fa-download"></i></div>';
+                flipbox += '<div class="other-content">Autre contenu ici</div>';
+                flipbox += '</div>'; // Fermer la div action-zone
+                flipbox += '</div>';
+
+            } else {
+                flipbox += '<div class="sup-cadre">';
+                flipbox += '<br>';
+
+                // Ajouter une zone avec des sous-zones
+                flipbox += '<div class="action-zone no-flip">';
+                // Ajouter des icônes cliquables et d'autres contenus
+                flipbox += '<div class="download-icon" onclick="downloadContent()"><i class="fas fa-download"></i></div>';
+                flipbox += '<div class="other-content">Autre contenu ici</div>';
+                flipbox += '</div>'; // Fermer la div action-zone
+                flipbox += '</div>';
+            }
+
+            flipbox += '<h6>' + resultat.title + '</h6>';
+            flipbox += '<div class="keywords">';
+
+            // Vérifier si resultat.keywords est défini et est une chaîne
+            if (typeof resultat.tags === 'string') {
+                // Séparer la chaîne en un tableau de mots-clés en utilisant la virgule comme délimiteur
+                var keywordsArray = resultat.tags.split(',');
+                // Boucle pour chaque mot-clé
+                keywordsArray.forEach(function(keyword) {
+                    // Supprimer les espaces inutiles autour du mot-clé
+                    keyword = keyword.trim();
+                    // Diviser le mot-clé en mots individuels
+                    var words = keyword.split(' ');
+                    // Boucle pour chaque mot individuel
+                    words.forEach(function(word) {
+                        // Ajouter un lien cliquable pour chaque mot individuel
+                        flipbox += '<a href="#" class="keyword-link">' + word + '</a>';
+                    });
+                    // Ajouter un espace entre les mots-clés
+                    flipbox += ' ';
+                });
+            } else {
+                // Si resultat.keywords n'est pas une chaîne, l'afficher directement
+                flipbox += '<span class="keyword"></span>';
+            }
+
+            flipbox += '</div>';
+
+            flipbox += '<div class="flipbox-button no-flip">';
+            flipbox += '<a href="view.php?post=' + resultat.textId + '">';
+            flipbox += '<button class="flipbox-button-icon"><i class="fas fa-external-link-alt"></i></button>';
+            flipbox += '</a>';
+            flipbox += '</div>';
+
+            flipbox += '</div>';
+
+            flipbox += '<div class="flip-box-back">';
+            flipbox += '<div class="scrollable-content">';
+            flipbox += '<p>' + resultat.text_content + '</p>';
+            flipbox += '</div>';
+            if (window.__u__) {
+                flipbox += '<div class="actions no-flip">';
+                flipbox += '<label class="action-icon no-flip"><input type="radio" name="likeDislike_' + resultat.textId + '" value="like" onclick="likeDislike(\'' + resultat.textId + '\', this.value)"> <i style="color: green;" class="fas fa-thumbs-up"></i> <span class="likes-container" data-likes="' + (likesData[resultat.textId] || 0) + '">' + (likesData[resultat.textId] || 0) + '</span></label>';
+                flipbox += '<label class="action-icon no-flip"><input type="radio" name="likeDislike_' + resultat.textId + '" value="dislike" onclick="likeDislike(\'' + resultat.textId + '\', this.value)"> <i style="color: red;" class="fas fa-thumbs-down"></i> <span class="dislikes-container" data-dislikes="' + (dislikesData[resultat.textId] || 0) + '">' + (dislikesData[resultat.textId] || 0) + '</span></label>';
+                flipbox += '<span class="action-icon no-flip" onclick="mettreEnFavori(\'' + resultat.textId + '\')"><i style="color: white;" class="fas fa-heart"></i></span>';
+                flipbox += '<span class="action-icon no-flip" onclick="faireUnDon(\'' + resultat.textId + '\')"><i style="color: yellow;" class="fas fa-donate"></i></span>';
+                flipbox += '</div>';
+            }
+            flipbox += '</div>';
+            flipbox += '</div>';
+
+            flipbox += '</div>';
+
+            if (window.__u__) {
+                flipbox += '<div class="comments-zone">';
+                flipbox += '<div class="commentaires no-flip">';
+
+
+                // Construction des commentaires associés au post
+                if (resultat.comments && resultat.comments.length > 0) {
+                    flipbox += '<div class="comments-display">';
+                    flipbox += buildCommentsHTML(resultat.comments);
+                    flipbox += '</div>'; // Fin de la div comments-zone
+                }
+
+                flipbox += '<textarea class="response-zone-textarea no-flip" id="zoneCommentaire' + resultat.textId + '" placeholder="Ajouter un commentaire"></textarea>';
+                flipbox += '<button class="envoyer-commentaire no-flip" onclick="envoyerCommentaire(\'' + resultat.textId + '\')">Envoyer</button>';
+                flipbox += '</div>';
+                flipbox += '</div>';
+            }
+
+            // Ajouter la flipbox à la liste des résultats
+            $("#resultats").append(flipbox);
+            i++;
+        }
+    }
+
+    // Fonction pour mettre en surbrillance le texte de recherche dans les résultats
+    function mettreEnSurbrillance(texteRecherche, contenu) {
+        // Vérifier si le contenu est défini
+        if (typeof contenu !== "undefined") {
+            // Créer une expression régulière pour rechercher le texte de recherche de manière insensible à la casse
+            var regex = new RegExp("(" + escapeRegex(texteRecherche) + ")", "ig");
+
+            // Remplacer le texte correspondant par le même texte enveloppé de balises <span> pour la surbrillance
+            var resultatSurligne = contenu.replace(
+                regex,
+                '<span class="surligne">$1</span>'
+            );
+
+            return resultatSurligne;
+        } else {
+            // Retourner une chaîne vide si le contenu est indéfini
+            return "";
+        }
+    }
 </script>
 
 </html>

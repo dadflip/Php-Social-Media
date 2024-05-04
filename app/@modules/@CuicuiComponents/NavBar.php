@@ -11,38 +11,38 @@ function getNavbarContents() {
 
     switch($GLOBALS['LANG']) {
         case "fr":
-            $contents .= "<a href='" . $_hom . "' id='home'>Accueil</a>";
+            $contents .= "<li><a href='" . $_hom . "' id='home'>Accueil</a></li>";
             if(isset($_SESSION["username"])) {
-                $contents .= "<a href='".$_mai."' id='mainpage'>Page principale</a>";
-                $contents .= "<a href='".$_opt."' id='options'>Options</a>";
-                $contents .= "<a href='".$_sta."' id='stats'>Statistiques</a>";
-                $contents .= "<a href='".$_dis."' id='logout'>Déconnexion</a>";
+                $contents .= "<li><a href='".$_mai."' id='mainpage'>Page principale</a></li>";
+                $contents .= "<li><a href='".$_opt."' id='options'>Options</a></li>";
+                $contents .= "<li><a href='".$_sta."' id='stats'>Statistiques</a></li>";
+                $contents .= "<li><a href='".$_dis."' id='logout'>Déconnexion</a></li>";
             }else{
-                $contents .= "<a href='". $_log ."' id='login'>Connexion</a>";
-                $contents .= "<a href='". $_sig ."' id='register'>Créer un compte</a>";
+                $contents .= "<li><a href='". $_log ."' id='login'>Connexion</a></li>";
+                $contents .= "<li><a href='". $_sig ."' id='register'>Créer un compte</a></li>";
             }
             break;
         case "en":
-            $contents .= "<a href='" . $_hom . "' id='home'>Home</a>";
+            $contents .= "<li><a href='" . $_hom . "' id='home'>Home</a></li>";
             if(isset($_SESSION["username"])) {
-                $contents .= "<a href='".$_mai."' id='mainpage'>Main</a>";
-                $contents .= "<a href='".$_opt."' id='options'>Settings</a>";
-                $contents .= "<a href='".$_sta."' id='stats'>Statistics</a>";
-                $contents .= "<a href='".$_dis."' id='logout'>Log Out</a>";
+                $contents .= "<li><a href='".$_mai."' id='mainpage'>Main</a></li>";
+                $contents .= "<li><a href='".$_opt."' id='options'>Settings</a></li>";
+                $contents .= "<li><a href='".$_sta."' id='stats'>Statistics</a></li>";
+                $contents .= "<li><a href='".$_dis."' id='logout'>Log Out</a></li>";
             }else{
-                $contents .= "<a href='". $_log ."' id='login'>Log In</a>";
-                $contents .= "<a href='". $_sig ."' id='register'>Sign In</a>";
+                $contents .= "<li><a href='". $_log ."' id='login'>Log In</a></li>";
+                $contents .= "<li><a href='". $_sig ."' id='register'>Sign In</a></li>";
             }
             break;
         default:
-            $contents .= "<a href='#' id='home'>Home page</a>";
+            $contents .= "<li><a href='#' id='home'>Home page</a></li>";
             if(isset($_SESSION["username"])) {
-                $contents .= "<a href='".$_mai."' id='mainpage'>Main page</a>";
-                $contents .= "<a href='".$_opt."' id='options'>Options</a>";
-                $contents .= "<a href='".$_dis."' id='logout'>Log out</a>";
+                $contents .= "<li><a href='".$_mai."' id='mainpage'>Main page</a></li>";
+                $contents .= "<li><a href='".$_opt."' id='options'>Options</a></li>";
+                $contents .= "<li><a href='".$_dis."' id='logout'>Log out</a></li>";
             }else{
-                $contents .= "<a href='".$_log."' id='login'>Log in</a>";
-                $contents .= "<a href='".$_sig."' id='register'>Sign in</a>";
+                $contents .= "<li><a href='".$_log."' id='login'>Log in</a></li>";
+                $contents .= "<li><a href='".$_sig."' id='register'>Sign in</a></li>";
             }
     }
     return $contents;

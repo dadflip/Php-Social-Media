@@ -1,16 +1,15 @@
-* {
-    --light-background: rgb(80, 97, 135);
-    --background: rgb(37, 56, 119);
-    --dark-background: rgb(26, 43, 82);
-    --accent: rgb(80, 97, 135);
-    --border-color: var(--light-background);
-    --text-color: whitesmoke;
-    --secondary-text-color: var(--accent);
-
-    --button-color: rgb(26, 103, 220);
-    --button-hover: rgb(26, 103, 220);
-    --input: var(--light-background);
-    --background-color: var(--dark-background);
+:root {
+    --light-background: #f3f3f3;
+    --background: #5777e3;
+    --dark-background: #080808;
+    --accent: #0c2e49;
+    --border-color: #e0e0e0;
+    --text-color: #fff;
+    --text-color-2: #000;
+    --secondary-text-color: #666;
+    --button-color: #4CAF50;
+    --button-hover: #45a049;
+    --input: #fff;
     --flip-box-front-color: #ffffff00;
     --flip-box-back-color: #ffffff00;
     --flip-box-border-color: #fff;
@@ -20,11 +19,10 @@
     --follow-button-bg-end: #009dff;
     --follow-button-hover-bg: #0056b3;
     --background-color-a: #0008ff;
-    --background-color-b: #009dff;
-    --background-color-c: #060f42;
-    --text-color: #fff;
-    --scrollbar-track-color: #f1f1f104;
-    --scrollbar-thumb-color: #5372ffa8;
-    --scrollbar-thumb-hover-color: #ffffff;
+    --background-color-b: #000323;
+    --background-color-c: #131241;
+    --scrollbar-track-color: #f1f1f1;
+    --scrollbar-thumb-color: #888;
+    --scrollbar-thumb-hover-color: #555;
     --shadow-color: #00000010;
 }

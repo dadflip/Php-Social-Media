@@ -1,0 +1,98 @@
+
+#bottom-links {
+    background-color: #f2f2f2; /* Couleur de fond */
+    padding: 20px; /* Espacement intérieur */
+}
+
+#bottom-links ul {
+    list-style-type: none; /* Supprimer les puces de la liste */
+    margin: 0; /* Supprimer les marges par défaut */
+    padding: 0; /* Supprimer les rembourrages par défaut */
+}
+
+#bottom-links ul li {
+    display: inline-block; /* Afficher les éléments de liste en ligne */
+    margin-right: 20px; /* Espacement entre les éléments de liste */
+}
+
+#bottom-links ul li:last-child {
+    margin-right: 0; /* Supprimer la marge à droite du dernier élément de liste */
+}
+
+#bottom-links ul li a {
+    color: #333; /* Couleur du texte des liens */
+    text-decoration: none; /* Supprimer le soulignement par défaut des liens */
+    font-size: 14px; /* Taille de la police des liens */
+}
+
+#bottom-links p {
+    margin-top: 20px; /* Espacement entre la liste et le paragraphe */
+    font-size: 12px; /* Taille de la police du paragraphe */
+    color: #666; /* Couleur du texte du paragraphe */
+}
+
+/* Style général pour les boutons */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Style pour les boutons de couleur primaire */
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* Style pour les boutons de couleur secondaire */
+.btn-secondary {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+/* Style pour les boutons de couleur de succès */
+.btn-success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+/* Style pour les boutons de couleur d'avertissement */
+.btn-warning {
+    background-color: #ffc107;
+    color: #000;
+}
+
+/* Style pour les boutons de couleur d'erreur */
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+/* Style pour les boutons de couleur d'information */
+.btn-info {
+    background-color: #17a2b8;
+    color: #fff;
+}
+
+/* Style pour les boutons avec effet d'ombre */
+.btn-shadow {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Style pour les boutons avec bordure */
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid #007bff;
+    color: #007bff;
+}
+
+/* Hover effect */
+.btn:hover {
+    opacity: 0.8;
+}

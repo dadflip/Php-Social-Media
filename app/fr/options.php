@@ -47,54 +47,65 @@ if ($user_info == NULL && $cuicui_manager->getError() == ErrorTypes::NoConnectio
     <?php
     echo createTitleBar("Mon profil");
     ?>
-    <div class="main-content">
-        <div class="options-container">
-            <div class="user-info">
-                <div class="uid-name">
-                    <img src=<?php echo $user_info->getProfilePicture(); ?> class="user-pfp clickable" id="user-pfp">
-                    <div class="usernames">
-                        <h1 class="username"><?php echo $user_info->getUsername(); ?></h1>
-                        <h2 class="uid"><?php echo $user_info->getHandle(); ?></h2>
+    <main class="container">
+        <div class="main-content">
+            <div class="options-container">
+                <div class="user-info">
+                    <div class="uid-name">
+                        <img src=<?php echo $user_info->getProfilePicture(); ?> class="user-pfp clickable" id="user-pfp">
+                        <div class="usernames">
+                            <h1 class="username"><?php echo $user_info->getUsername(); ?></h1>
+                            <h2 class="uid"><?php echo $user_info->getHandle(); ?></h2>
+                        </div>
                     </div>
+                    <label for="biography">Biographie:</label>
+                    <textarea id="bio-field" class="biography" rows="5" name="biography"><?php echo $user_info->bio ?></textarea>
                 </div>
-                <label for="biography">Biographie:</label>
-                <textarea id="bio-field" class="biography" rows="5" name="biography"><?php echo $user_info->bio ?></textarea>
-            </div>
-            <div class="forms">
-                <form method="get" class="theme-select" id="theme-select">
-                    <fieldset>
-                        <legend>Changer de thème</legend>
-                        <input type="radio" value="dark" id="dark" name="theme" class="radio-button theme-button">
-                        <label for="dark">Sombre</label>
-                        <input type="radio" value="blue" id="blue" name="theme" class="radio-button theme-button">
-                        <label for="blue">Bleu</label>
-                        <input type="radio" value="light" id="light" name="theme" class="radio-button theme-button">
-                        <label for="light">Clair</label>
-                    </fieldset>
-                </form>
-                <form method="get" action="#" class="lang-select">
-                    <fieldset>
-                        <legend>Changer la langue de l'interface</legend>
-                        <input type="radio" value="fr" id="fr" name="lang" class="radio-button">
-                        <label for="fr">Français</label>
-                        <input type="radio" value="en" id="en" name="lang" class="radio-button">
-                        <label for="en">Anglais</label>
-                    </fieldset>
-                </form>
-                <form method="post" class="user-info-change" id="info-change">
-                    <fieldset>
-                        <legend>Changer vos informations</legend>
-                        <label for="username-input">Pseudonyme</label>
-                        <input name="username-input" type="text" value=<?php echo $user_info->getUsername(); ?> required minlength="4" maxlength="30" autocomplete="off">
-                        <label for="email-input">Adresse E-mail</label>
-                        <input name="email-input" type="email" value=<?php echo $user_info->getUsername(); ?> required maxlength="50">
-                        <label for="profile-picture-input" class="custom-file-upload">Changer de photo de profil</label>
-                        <input name="profile-picture-input" type="file" accept="image/png, image/jpeg" id="change-pfp">
-                        <label for="change-birthday">Changer la date de naissance</label>
-                        <input type="date" name="change-birthday" id="change-birthday" value="2003-09-12">
-                    </fieldset>
-                    <button id="saveButton" type="submit">Changer le profil</button>
-                </form>
+                <div class="forms">
+                    <form method="get" class="theme-select" id="theme-select">
+                        <fieldset>
+                            <legend>Changer de thème</legend>
+                            <input type="radio" value="dark" id="dark" name="theme" class="radio-button theme-button">
+                            <label for="dark">Sombre</label>
+                            <input type="radio" value="blue" id="blue" name="theme" class="radio-button theme-button">
+                            <label for="blue">Bleu</label>
+                            <input type="radio" value="light" id="light" name="theme" class="radio-button theme-button">
+                            <label for="light">Clair</label>
+                        </fieldset>
+                    </form>
+                    <form method="get" action="#" class="lang-select">
+                        <fieldset>
+                            <legend>Changer la langue de l'interface</legend>
+                            <input type="radio" value="fr" id="fr" name="lang" class="radio-button">
+                            <label for="fr">Français</label>
+                            <input type="radio" value="en" id="en" name="lang" class="radio-button">
+                            <label for="en">Anglais</label>
+                        </fieldset>
+                    </form>
+                    <form method="post" class="user-info-change" id="info-change">
+                        <fieldset>
+                            <legend>Changer vos informations</legend>
+                            <label for="username-input">Pseudonyme</label>
+                            <input name="username-input" type="text" value=<?php echo $user_info->getUsername(); ?> required minlength="4" maxlength="30" autocomplete="off">
+                            <label for="email-input">Adresse E-mail</label>
+                            <input name="email-input" type="email" value=<?php echo $user_info->getUsername(); ?> required maxlength="50">
+                            <label for="profile-picture-input" class="custom-file-upload">Changer de photo de profil</label>
+                            <input name="profile-picture-input" type="file" accept="image/png, image/jpeg" id="change-pfp">
+                            <label for="change-birthday">Changer la date de naissance</label>
+                            <input type="date" name="change-birthday" id="change-birthday" value="2003-09-12">
+                        </fieldset>
+                        <button id="saveButton" type="submit">Changer le profil</button>
+                    </form>
+                </div>
+                <?php
+                if (!$success) {
+                    echo "<p class='error-msg'>";
+                    if ($cuicui_manager->getError() == ErrorTypes::UndefinedTheme) {
+                        echo "Le thème indiqué n'existe pas";
+                    }
+                    echo "</p>";
+                }
+                ?>
             </div>
             <?php
             if (!$success) {
@@ -106,16 +117,7 @@ if ($user_info == NULL && $cuicui_manager->getError() == ErrorTypes::NoConnectio
             }
             ?>
         </div>
-        <?php
-        if (!$success) {
-            echo "<p class='error-msg'>";
-            if ($cuicui_manager->getError() == ErrorTypes::UndefinedTheme) {
-                echo "Le thème indiqué n'existe pas";
-            }
-            echo "</p>";
-        }
-        ?>
-    </div>
+    </main>
 </body>
 
 <nav class="navbar" id="sliding-menu">

@@ -1,79 +1,181 @@
 <?php
-
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-include('../../../../.paths.php');
-include('../../../../lib/include/php/Database/DatabaseManager.php');
-
-// Instancier un objet de la classe DatabaseManager avec les informations de connexion
-$databaseManager = new DatabaseManager($db_host, $db_user, $db_password);
+// Inclusion des fichiers nécessaires
+include '../../../app/defs.functions.php';
+includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
 
 try {
-    // Affecter le premier sous-tableau de $database_configs à $db_flipapp
-    $db_flipapp = $database_configs[0];
+    // Vérification de l'existence de la session et récupération de l'UID de l'utilisateur
+    session_start();
+    if (isset($_SESSION['UID'])) {
 
-    // Initialiser la connexion à la base de données flipapp
-    $databaseManager->initializeConnection($db_flipapp['host'], $db_flipapp['user'], $db_flipapp['password'], $db_flipapp['name']);
+        $userId = $_SESSION['UID'];
 
-    // Récupérer la connexion
-    $conn = $databaseManager->getConnection();
+        // Création d'une nouvelle instance de CuicuiManager et CuicuiSession
+        $cuicui_manager = new CuicuiManager($database_configs, DATASET);
+        $cuicui_sess = new CuicuiSession($cuicui_manager);
 
-    $userId = $_SESSION['user_id'];
-    $userEmail = $_SESSION['email'];
+        // Récupérer le terme de recherche depuis la barre de recherche
+        $searchTerm = isset($_GET['q']) ? strtolower($_GET['q']) : '';
 
-    // Récupérer le terme de recherche depuis la barre de recherche
-    $searchTerm = isset($_GET['q']) ? strtolower($_GET['q']) : '';
+        // Vérifier si des filtres sont sélectionnés
+        $filterList = isset($_GET['filters']) ? $_GET['filters'] : [];
 
-    // Initialiser un tableau pour les résultats de la recherche
-    $searchResults = [];
+        // Préparation de la clause WHERE dynamique en fonction des filtres sélectionnés
+        $whereClause = "";
+        $likeTerm = "%$searchTerm%"; // Ajouter le caractère joker '%' au début et à la fin du terme de recherche
 
-    if (!empty($searchTerm)) {
-        // Utiliser des alias pour simplifier l'accès aux colonnes dans le résultat
-        $stmt = $conn->prepare("SELECT texts.*, media.media_type, media.media_url, users.username
-                                FROM texts
-                                LEFT JOIN users ON texts.user_id = users.user_id
-                                LEFT JOIN media ON texts.text_id = media.text_id
-                                WHERE LOWER(texts.title) LIKE ? 
-                                    OR LOWER(texts.category) LIKE ? 
-                                    OR LOWER(texts.content) LIKE ? 
-                                    OR texts.keywords LIKE ?");
+        // Initialisation de la variable $conditions
+        $conditions = [];
 
-        // Ajouter le caractère joker '%' au début et à la fin du terme de recherche
-        $likeTerm = "%$searchTerm%";
-        $stmt->bind_param("ssss", $likeTerm, $likeTerm, $likeTerm, $likeTerm);
-        $stmt->execute();
+        // Vérifier si des filtres ont été sélectionnés
+        if (!empty($filterList)) {
+            $whereClause .= " WHERE ";
 
-        $result = $stmt->get_result();
+            // Ajouter les conditions pour chaque filtre sélectionné
+            if (in_array('user', $filterList)) {
+                $conditions[] = "LOWER(users.username) LIKE ?";
+            }
 
-        // Boucler à travers les résultats
-        while ($row = $result->fetch_assoc()) {
-            // Créer un tableau associatif pour chaque résultat
-            $texte = [
-                'title' => $row['title'],
-                'category' => $row['category'],
-                'content' => $row['content'],
-                'keywords' => explode(',', $row['keywords']),
-                'username' => $row['username'],
-                'text_id' => $row['text_id'],
-                'likes' => $row['likes'],
-                'dislikes' => $row['dislikes'],
-                'media_url' => $row['media_url'],
-                'media_type' => $row['media_type']
-            ];
+            if (in_array('post', $filterList)) {
+                $conditions[] = "LOWER(posts.title) LIKE ?";
+                $conditions[] = "LOWER(posts.category) LIKE ?";
+                $conditions[] = "LOWER(posts.text_content) LIKE ?";
+                $conditions[] = "posts.tags LIKE ?";
+            }
+
+            if (in_array('media', $filterList)) {
+                $conditions[] = "media.type = ?";
+            }
+
+            if (in_array('date', $filterList)) {
+                $conditions[] = "posts.date = ?";
+            }
+
+            if (in_array('titre', $filterList)) {
+                $conditions[] = "LOWER(posts.title) LIKE ?";
+            }
+
+            if (in_array('populaires', $filterList)) {
+                // Ajoutez votre condition pour le filtre populaires ici
+            }
+
+            if (in_array('categorie', $filterList)) {
+                $conditions[] = "LOWER(posts.category) LIKE ?";
+            }
+
+            if (in_array('contenu', $filterList)) {
+                $conditions[] = "LOWER(posts.text_content) LIKE ?";
+            }
+
+            // Concaténer les conditions avec l'opérateur OR
+            $whereClause .= implode(" OR ", $conditions);
+        } else {
+            $whereClause .= "LOWER(posts.text_content) LIKE ?";
+        }
+
+        // Préparation de la requête SQL avec la clause WHERE dynamique
+        $query = "SELECT posts.*, media.type AS media_type, media.url AS media_url, users.username, users.profile_pic_url
+                  FROM posts
+                  LEFT JOIN users ON posts.users_uid = users.UID
+                  LEFT JOIN media ON posts.media_id = media.media_id";
+        $query .= " " . $whereClause;
+
+        // Initialisation d'un tableau pour stocker les valeurs des conditions
+        $values = array_fill(0, count($conditions), $likeTerm);
+
+        // Exécution de la requête SQL avec les valeurs des conditions
+        $res = $cuicui_manager->createRequest($query, str_repeat('s', count($conditions)), ...$values);
+
+
+        // Vérification si la requête s'est exécutée avec succès
+        if ($res === false) {
+            throw new Exception("Erreur lors de l'exécution de la requête.");
+        }
+
+        // Initialisation d'un tableau pour stocker les résultats de recherche
+        $searchResults = [];
+
+        // Boucle à travers les résultats
+        while ($row = $res->fetch_assoc()) {
+            // Récupérer l'URL de l'image de profil
+            $profilePicUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $row['profile_pic_url'];
+            $imgUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $row['media_url'];
+
+            // Vérifier si le fichier à cette URL existe
+            if (file_exists($profilePicUrl)) {
+                // Le fichier existe, utilisez l'URL de l'image de profil
+                $profileImageUrl = $profilePicUrl;
+            } else {
+                // Le fichier n'existe pas, utilisez un placeholder
+                $placeholderImageUrl = $GLOBALS['normalized_paths']['PATH_IMG_DIR'] . '/placeholder.png';
+                $profileImageUrl = $placeholderImageUrl;
+            }
+
+            $row['media_url'] = $imgUrl;
+            $row['profile_pic_url'] = $profileImageUrl;
 
             // Ajouter le résultat au tableau des résultats de recherche
-            $searchResults[] = $texte;
+            $searchResults[] = $row;
         }
+
+        // Retourner les résultats au format JSON
+        header('Content-Type: application/json');
+        echo json_encode($searchResults);
+
+    } else {
+        // Si la session UID n'est pas définie, récupérer tous les posts
+
+        // Création d'une nouvelle instance de CuicuiManager
+        $cuicui_manager = new CuicuiManager($database_configs, DATASET);
+
+        // Requête SQL pour sélectionner tous les textes avec leurs informations associées
+        $query = "SELECT posts.*, media.type AS media_type, media.url AS media_url, users.username, users.profile_pic_url
+                  FROM posts
+                  LEFT JOIN users ON posts.users_uid = users.UID
+                  LEFT JOIN media ON posts.media_id = media.media_id";
+
+        // Exécution de la requête
+        $res = $cuicui_manager->query($query);
+
+        // Vérification si la requête s'est exécutée avec succès
+        if ($res === false) {
+            throw new Exception("Erreur lors de l'exécution de la requête.");
+        }
+
+        // Initialisation d'un tableau pour stocker les résultats de recherche
+        $searchResults = [];
+
+        // Boucle à travers les résultats
+        while ($row = $res->fetch_assoc()) {
+            // Récupérer l'URL de l'image de profil
+            $profilePicUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $row['profile_pic_url'];
+            $imgUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $row['media_url'];
+
+            // Vérifier si le fichier à cette URL existe
+            if (file_exists($profilePicUrl)) {
+                // Le fichier existe, utilisez l'URL de l'image de profil
+                $profileImageUrl = $profilePicUrl;
+            } else {
+                // Le fichier n'existe pas, utilisez un placeholder
+                $placeholderImageUrl = $GLOBALS['normalized_paths']['PATH_IMG_DIR'] . '/placeholder.png';
+                $profileImageUrl = $placeholderImageUrl;
+            }
+
+            $row['media_url'] = $imgUrl;
+            $row['profile_pic_url'] = $profileImageUrl;
+
+            // Ajouter le résultat au tableau des résultats de recherche
+            $searchResults[] = $row;
+        }
+
+        // Retourner les résultats au format JSON
+        header('Content-Type: application/json');
+        echo json_encode($searchResults);
     }
 
-    // Renvoyer les résultats au format JSON
-    header('Content-Type: application/json');
-    echo json_encode($searchResults);
-
-    $conn->close();
 } catch (PDOException $e) {
+    echo "Erreur: " . $e->getMessage();
+} catch (Exception $e) {
     echo "Erreur: " . $e->getMessage();
 }
 

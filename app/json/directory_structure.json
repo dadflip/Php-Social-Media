@@ -47,7 +47,8 @@
                     "files": [
                         "IndexElement.php",
                         "NavBar.php",
-                        "RightPanel.php"
+                        "RightPanel.php",
+                        "SearchBar.php"
                     ],
                     "subdirectories": []
                 },
@@ -134,7 +135,8 @@
                 "stats.php",
                 "template_menu_fr.php",
                 "txt.txt",
-                "user.php"
+                "user.php",
+                "view.php"
             ],
             "subdirectories": {
                 "auth": {

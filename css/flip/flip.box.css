@@ -2,11 +2,10 @@
 .tab-content {
     display: flex;
     position: inherit;
-    background-color: var(--background-color);
-    width: -webkit-fill-available;
-    height: -webkit-fill-available;
-    justify-content: space-around;
+    background-color: var(--background-color-c);
     width: 100%;
+    height: 100%;
+    justify-content: space-around;
     flex-wrap: wrap;
     align-items: center;
 }
@@ -14,13 +13,14 @@
 .resultats {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    width: 100%;
+    min-width: 60em;
+    min-height: 20em;
     background: transparent;
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
     align-content: center;
+    margin: 0 0 15em 0;
 }
 
 .flip-box-container {
@@ -30,20 +30,19 @@
 
 
 .flip-box {
+    background-color: transparent;
+    width: 98%;
+    max-width: 50%;
+    height: 350px;
+    perspective: 1000px;
+    margin: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    animation: horizJello 1s ease 0s 1 normal forwards;
     flex-wrap: wrap;
     align-content: center;
     justify-content: center;
-
-    margin: 0.5em;
-    background-color: transparent;
-
-    width: calc(100% - 0.5em);
-    /* max-width: 50%; */
-    height: 350px;
-    /* perspective: 1000px; */
 }
 
 .flip-box-inner {
@@ -83,6 +82,31 @@
     align-content: space-between;
 }
 
+/* Style du conteneur du bouton */
+.flipbox-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+/* Style du bouton */
+.flipbox-button-icon {
+    background-color: #4CAF50; /* Couleur de fond */
+    color: white; /* Couleur du texte */
+    border: none; /* Pas de bordure */
+    padding: 10px; /* Espacement interne */
+    font-size: 16px; /* Taille de la police */
+    cursor: pointer; /* Curseur pointeur */
+    border-radius: 5px; /* Bordure arrondie */
+    transition: background-color 0.3s; /* Transition de couleur de fond */
+}
+
+/* Style du bouton au survol */
+.flipbox-button-icon:hover {
+    background-color: #45a049; /* Couleur de fond au survol */
+}
+
+
 .flip-box-back {
     background-color: var(--flip-box-back-color);
     color: var(--flip-box-back-text-color);
@@ -114,6 +138,19 @@
     padding: 0px 20px;
 }
 
+.profile-image {
+    width: 4em;
+    height: 4em;
+    border-radius: 50%;
+    border: 1px solid #fff;
+    overflow: hidden;
+}
+
+.profile-image img {
+    width: 100%; /* Ajuster la largeur de l'image à la taille du conteneur */
+    height: auto; /* Garder le rapport hauteur-largeur de l'image */
+}
+
 .flip-box h6 {
     display: flex;
     align-items: center;
@@ -136,6 +173,7 @@
 .follow-section {
     display: inline-flex;
     align-items: center;
+    column-gap: 1em;
 }
 
 
@@ -151,9 +189,20 @@
     border-radius: 20px;
 }
 
+.report-button {
+    background: linear-gradient(0deg, red 0%, #c14b4b 100%);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 20px;
+}
+
 /* Style pour le survol du bouton Suivre */
+.report-button:hover,
 .follow-button:hover {
-    background-color: var(--follow-button-hover-bg); /* Couleur de fond au survol */
+    background: #000000;
 }
 
 .sup-cadre {
@@ -343,6 +392,7 @@ span.keyword-bubble {
     flex-direction: row;
     align-items: flex-start;
     justify-content: center;
+    box-shadow: -4px 4px 32px 0px #00000063;
 }
 
 .comments-zone {

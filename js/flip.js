@@ -109,17 +109,25 @@ function construireFlipbox(resultats) {
 
         flipbox += '<h5 class="user-info">';
 
+        // Ajouter une section pour l'image de profil
+        flipbox += '<div class="profile-image">';
+        flipbox += '<img src="' + resultat.profile_pic_url + '" alt="Profile Image">';
+        flipbox += '</div>';
+        
         // Ajouter une section pour le nom d'utilisateur
-
-        // Utiliser la variable JavaScript pour construire la ligne
         flipbox += '<a class="no-flip" href="' + window.__u_url__ + '?@userid=@' + resultat.username + '" class="user-name">';
         flipbox += '<i style="margin: 8px;" class="fas fa-user"></i>' + resultat.username;
         flipbox += '</a>';
-
+        
         // Ajouter une section pour le bouton Suivre
-        flipbox += '<span class="follow-section no-flip"><span class="user-icon"></span><div class="follow-button" onclick="followUser(' + resultat.users_uid + ')">Suivre</div></span>';
-        flipbox += '</h5>';
-
+        flipbox += '<span class="follow-section no-flip">';
+        flipbox += '<span class="user-icon"></span>';
+        flipbox += '<div class="follow-button" onclick="followUser(' + resultat.users_uid + ')">Suivre</div>';
+        // Ajouter un bouton pour signaler l'utilisateur
+        flipbox += '<div class="report-button" onclick="reportUser(' + resultat.users_uid + ')">Signaler</div>';
+        flipbox += '</span>';
+        
+        flipbox += '</h5>';               
 
         if (resultat.media_type === 'image') {
             flipbox += '<div class="sup-cadre">';
@@ -192,6 +200,14 @@ function construireFlipbox(resultats) {
             }
 
         flipbox += '</div>';
+
+        flipbox += '<div class="flipbox-button no-flip">';
+        flipbox += '<a href="view.php?post=' + resultat.textId + '">';
+        flipbox += '<button class="flipbox-button-icon"><i class="fas fa-external-link-alt"></i></button>';
+        flipbox += '</a>';
+        flipbox += '</div>';
+
+
         flipbox += '</div>';
 
         flipbox += '<div class="flip-box-back">';
@@ -280,7 +296,6 @@ function construireFlipbox(resultats) {
 
 
 }
-
 
 // Fonction pour détecter les mentions dans un champ de texte et les remplacer par des liens cliquables
 function detecterMentions(champTexte) {

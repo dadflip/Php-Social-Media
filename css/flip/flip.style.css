@@ -9,7 +9,45 @@ hr {
     opacity: 0.5;
 }
 
+.container {
+    align-self: center;
+    flex: 4;
+    position: fixed;
+    max-height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    height: 100%;
+    width: 98%;
+    animation: elementSwing 2s ease 0s 1 normal forwards;
+    display: grid;
+    margin-top: 20em;
+    box-shadow: -3px 3px 43px 0px #0000008a;
+    border-radius: 0px 30px 0px 0px;
+}
 
+.container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.container::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-track-color);
+}
+
+.container::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 6px;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover-color);
+}
+
+.app {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    overflow: auto;
+}
 
 .badge {
     background-color: red;
@@ -66,7 +104,16 @@ hr {
     flex-wrap: wrap;
 }
 
-
+.center-column {
+    position: relative;
+    overflow: auto;
+    flex: 4;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: center;
+}
 
 
 .center-panel::-webkit-scrollbar,
@@ -98,20 +145,24 @@ hr {
 }
 
 .center-main-panel {
+    position: relative;
+    flex: 10;
     display: flex;
-    overflow-y: hidden;
-    overflow-x: hidden;
-    flex-direction: column;
+    justify-items: center;
+    flex-direction: row;
+    border-radius: 0px;
     align-items: center;
     width: 100%;
-
-    /* justify-content: center; */
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: space-between;
 }
 
 .center-panel {
     position: sticky;
     top: 0px;
-    background-color: var(--light-background);
+    background-color: var(--background-color-c);
+    box-shadow: 1px 5px 20px 1px #000000;
     align-items: center;
     flex: 1;
     overflow: hidden;
@@ -119,7 +170,7 @@ hr {
     align-self: center;
     justify-content: space-evenly;
     min-width: 99%;
-    width: 100%;
+    width: -webkit-fill-available;
     max-height: 15%;
     flex-wrap: wrap;
     flex-direction: row;
@@ -139,6 +190,7 @@ hr {
 
 .tabs-container {
     position: sticky;
+    row-gap: 1em;
     top: 0;
     background-color: transparent;
     border-radius: 2px;
@@ -175,29 +227,42 @@ hr {
     color: #333;
 }
 
+
+.right-panel {
+    flex: 1;
+    justify-content: right;
+    align-items: center;
+    padding: 10px;
+    display: flex;
+    background-color: var(--background-color-b);
+    flex-direction: column;
+    flex-wrap: wrap;
+    overflow: auto;
+    height: -webkit-fill-available;
+}
+
 /* Styles pour les liens */
-.links {
-    list-style-type: none; /* Supprime les puces de la liste */
+#right-links ul {
+    list-style-type: none;
     padding: 0;
 }
 
-.links > li {
-    margin-bottom: 10px; /* Espacement entre chaque lien */
+#right-links ul li {
+    margin-bottom: 10px;
 }
 
-.links > li > a {
+#right-links ul li a {
     display: block;
-    padding: 1em;
-    
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
     text-decoration: none;
     color: var(--text-color);
     transition: background-color 0.3s;
 }
 
-.links > li > a:hover {
-    background-color: var(--secondary-text-color); /* Change la couleur de fond au survol */
+#right-links ul li a:hover {
+    background-color: var(--secondary-text-color);
 }
 
 .notifications {
@@ -285,19 +350,48 @@ hr {
 .search-bar {
     text-align: center;
     background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 20px;
-    padding: 10px;
     margin-bottom: 10px;
-    display: contents;
+    display: block;
 }
 
 #barre-recherche {
-    width: 300px;
-    padding: 10px;
-    border-radius: 20px;
-    border: 1px groove;
-    margin-right: 10px;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background-color: #ffffff;
+    border-radius: 25px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    transition: width 0.3s ease, box-shadow 0.3s ease;
+    z-index: 999;
 }
+
+#barre-recherche input[type="text"] {
+    border: none;
+    outline: none;
+    padding: 10px;
+    flex-grow: 1;
+    width: 25em;
+}
+
+#barre-recherche button {
+    border: none;
+    background-color: rgba(0, 0, 0, 0);
+    padding: 2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#barre-recherche button:hover {
+    background-color: #f1f1f1;
+}
+
+#bouton-recherche {
+    border-left: 1px solid #ccc;
+}
+
 
 .search-icon {
     cursor: pointer;
@@ -307,7 +401,7 @@ hr {
 /* Formulaire flipbox */
 .floating-form {
     position: fixed;
-    background-color: var(--flip-box-back-text-color);
+    background-color: var(--background-color-c);
     color: var(--flip-box-text-color);
     top: 50%;
     left: 50%;
@@ -317,10 +411,10 @@ hr {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     z-index: 1000;
     display: none;
-    width: 100%;
-    max-width: 400px;
-    max-height: 250px;
+    max-width: 600px;
+    max-height: 400px;
     overflow: auto;
+    border: 1px solid #fff;
 }
 
 
@@ -412,4 +506,35 @@ hr {
 .preview img {
     max-width: 100%;
     max-height: 100%;
+}
+
+.card-post {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    height: fit-content;
+    width: fit-content;
+    margin: 2em;
+}
+
+.card-post h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.card-post h2 {
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.card-post p {
+    font-size: 16px;
+    color: #777;
+    line-height: 1.6;
+    margin-bottom: 10px;
 }

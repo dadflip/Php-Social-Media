@@ -1,3 +1,41 @@
+.container {
+    align-self: center;
+    flex: 4;
+    position: fixed;
+    max-height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    height: 100%;
+    width: 98%;
+    animation: elementSwing 2s ease 0s 1 normal forwards;
+    display: grid;
+    margin-top: 20em;
+}
+
+.container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.container::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-track-color);
+}
+
+.container::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 6px;
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover-color);
+}
+
+.app {
+    display: flex;
+    position: relative;
+    flex-direction: row;
+    overflow: auto;
+}
+
 .floating-button {
     position: fixed;
     bottom: 20px;
@@ -13,25 +51,57 @@
     z-index: 1001;
 }
 
-.options-main {
-    margin: 2%;
-    display: grid;
-    grid-template-columns: 5fr 1fr;
-    gap: 1em;
+.options-panel {
+    position: fixed;
+    top: 8em;
+    right: -400px;
+    bottom: 8em;
+    width: 400px;
+    background-color: var(--background-color-c);
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    overflow-y: auto;
+    transition: right 0.3s ease;
+    height: 85%;
+    border-radius: 1em;
 }
 
 
 .options-container {
-    flex: 1;
-    margin-left: 10%;
     background-color: var(--background-color-c);
     padding: 1em;
     border-left: 2px solid var(--border-color);
     border-right: 2px solid var(--border-color);
-    border-top: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--border-color);
+    overflow: auto;
+    height: 75%;
+    border-radius: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
 }
 
-/* fieldset {
+.options-panel::-webkit-scrollbar,
+.options-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.options-panel::-webkit-scrollbar,
+.options-container::-webkit-scrollbar-track {
+    background-color: var(--scrollbar-track-color);
+}
+
+.options-panel::-webkit-scrollbar,
+.options-container::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 6px;
+}
+
+.options-panel::-webkit-scrollbar,
+.options-container::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover-color);
+}
+
+
+fieldset {
     border: 2px solid var(--border-color);
     border-radius: 0.5em;
     margin: 0;
@@ -42,13 +112,6 @@
     flex-direction: row;
     justify-items: stretch;
     justify-content: center;
-} */
-
-.forms-content{
-    border: 2px solid var(--border-color);
-    border-radius: 0.5em;
-    margin: 0;
-
 }
 
 .radio-button:hover + label{
@@ -102,23 +165,17 @@ label[for="biography"] {
 
 form {   
     width: 100%;
-    display: flex;
-    /* flex-flow: column; */
-    align-items: center;
+    /* display: flex;
+    flex-flow: column;
+    align-items: center; */
 }
 
 .forms {
     display: flex;
     padding: 1em;
-    flex-flow: column;
+    grid-template-columns: 1fr 1fr;
     column-gap: 1em;
     row-gap: 1em;
-}
-
-.interface-forms {
-    display: flex;
-    flex-flow: row;
-    align-items: center;
 }
 
 label {
@@ -139,8 +196,8 @@ label {
 }
 
 .user-info-change {
-    display: flex;
-    flex-flow: column;
+    grid-column: span 2;
+    
 }
 
 /*.user-info-change > fieldset {
@@ -156,13 +213,13 @@ label {
     margin: 0.5em 0;
 }
 
-/* select, input[type="text"], input[type="file"], input[type="submit"] {
+select, input[type="text"], input[type="file"], input[type="submit"] {
     padding: 2em;
     border: 1px solid #cccccc;
     box-sizing: border-box;
     outline: none;
     background-color: var(--flip-box-back-color);
-} */
+}
 
 .username {
     margin: 0;

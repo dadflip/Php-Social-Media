@@ -46,7 +46,7 @@ try {
             $userTitle = $userItem['title'];
 
             // Requête SQL pour récupérer les publications recommandées en tenant compte des données de navigation de l'utilisateur
-            $query = "SELECT posts.*, media.type AS media_type, media.url AS media_url, users.username
+            $query = "SELECT posts.*, media.type AS media_type, media.url AS media_url, users.username, users.profile_pic_url
                 FROM posts
                 LEFT JOIN users ON posts.users_uid = users.UID
                 LEFT JOIN media ON posts.media_id = media.media_id
@@ -84,7 +84,7 @@ try {
             $subquery = "SELECT textId FROM posts WHERE textId IN (" . rtrim(str_repeat('?,', count($recommendedPostIds)), ',') . ")";
         
             // Requête principale pour récupérer les autres publications
-            $query = "SELECT posts.*, media.type AS media_type, media.url AS media_url, users.username
+            $query = "SELECT posts.*, media.type AS media_type, media.url AS media_url, users.username, users.profile_pic_url
                     FROM posts
                     LEFT JOIN users ON posts.users_uid = users.UID
                     LEFT JOIN media ON posts.textId = media.posts_text_id
@@ -104,7 +104,7 @@ try {
             $res->close();
         } else {
             // Requête pour sélectionner tous les posts
-            $query = "SELECT posts.*, media.type AS media_type, media.url AS media_url, users.username
+            $query = "SELECT posts.*, media.type AS media_type, media.url AS media_url, users.username, users.profile_pic_url
                     FROM posts
                     LEFT JOIN users ON posts.users_uid = users.UID
                     LEFT JOIN media ON posts.textId = media.posts_text_id";
@@ -174,9 +174,23 @@ try {
         foreach ($allTexts as $text) {
             $textId = $text['textId'];
             $imgUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $text['media_url'];
+            
+            // Récupérer l'URL de l'image de profil
+            $profilePicUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $text['profile_pic_url'];
+
+            // Vérifier si le fichier à cette URL existe
+            if (file_exists($profilePicUrl)) {
+                // Le fichier existe, utilisez l'URL de l'image de profil
+                $profileImageUrl = $profilePicUrl;
+            } else {
+                // Le fichier n'existe pas, utilisez un placeholder
+                $placeholderImageUrl = $GLOBALS['normalized_paths']['PATH_IMG_DIR'] . '/placeholder.png';
+                $profileImageUrl = $placeholderImageUrl;
+            }
 
             // Ajouter l'URL construite au tableau
             $text['media_url'] = $imgUrl;
+            $text['profile_pic_url'] = $profileImageUrl;
             $allTextsWithURL[] = $text;
         }
 
@@ -189,7 +203,7 @@ try {
         $cuicui_manager = new CuicuiManager($database_configs, DATASET);
 
         // Requête SQL pour sélectionner tous les textes avec leurs informations associées
-        $query = "SELECT posts.*, media.type AS media_type, media.url AS media_url, users.username
+        $query = "SELECT posts.*, media.type AS media_type, media.url AS media_url, users.username, users.profile_pic_url
                   FROM posts
                   LEFT JOIN users ON posts.users_uid = users.UID
                   LEFT JOIN media ON posts.textId = media.posts_text_id";
@@ -207,8 +221,22 @@ try {
         while ($row = $res->fetch_assoc()) {
             $imgUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $row['media_url'];
 
+            // Récupérer l'URL de l'image de profil
+            $profilePicUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $row['profile_pic_url'];
+
+            // Vérifier si le fichier à cette URL existe
+            if (file_exists($profilePicUrl)) {
+                // Le fichier existe, utilisez l'URL de l'image de profil
+                $profileImageUrl = $profilePicUrl;
+            } else {
+                // Le fichier n'existe pas, utilisez un placeholder
+                $placeholderImageUrl = $GLOBALS['normalized_paths']['PATH_IMG_DIR'] . '/placeholder.png'; // Remplacez cela par le chemin vers votre placeholder
+                $profileImageUrl = $placeholderImageUrl;
+            }
+
             // Ajouter l'URL construite au tableau
             $row['media_url'] = $imgUrl;
+            $row['profile_pic_url'] = $profileImageUrl;
             $allTextsWithURL[] = $row;
         }
         $res->close(); // Fermer le résultat de la requête

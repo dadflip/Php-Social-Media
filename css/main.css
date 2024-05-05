@@ -92,7 +92,6 @@ a:hover{
     text-align: center;
     position: fixed;
     top: 0;
-    text-transform: uppercase;
     z-index: 10000;
 }
 
@@ -136,15 +135,14 @@ a:hover{
     background-image: url(../img/icon-rmbg.png);
     background-size: contain;
     background-repeat: no-repeat;
-    width: 10vh;
-    height: 10vh;
-    margin: 5px;
+    width: 15vh;
+    height: 15vh;
     border: none;
     border-radius: 50%;
     box-shadow: none;
     background-color: transparent;
     cursor: pointer;
-    transition: transform 0.3s ease; /* Transition smooth */
+    transition: transform 0.3s ease;
 }
 
 .logo:hover {
@@ -164,9 +162,12 @@ a:hover{
     margin-top: var(--magin-gap);
     margin-bottom: var(--magin-gap);
     height: calc(100% - var(--magin-gap));
-    justify-items: center;
+    justify-items: stretch;
     align-content: space-between;
     overflow: auto;
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    align-items: start;
 }
 
 /*button {

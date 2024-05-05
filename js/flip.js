@@ -329,13 +329,13 @@ function createLinksMentions(texte) {
 
     var contenuModifie = texte.replace(regexMentions1, function(match, texteMentionne) {
         // Retourner le lien avec le texte mentionné comme contenu
-        return '<i class="far fa-user"></i><a href="#" onclick="gererClicMention()" class="mention-link"> @' + texteMentionne + '</a>';
+        return '<i class="far fa-user"></i><a onclick="gererClicMention()" class="mention-link"> @' + texteMentionne + '</a>';
     });      
 
     // Remplacer les mentions par des liens cliquables
     contenuModifie = contenuModifie.replace(regexMentions2, function(match, texteMentionne) {
         // Retourner le lien avec le texte mentionné comme contenu
-        return '<i class="fas fa-hashtag"></i><a href="#" class="tag-link">' + texteMentionne + '</a>';
+        return '<i class="fas fa-hashtag"></i><a class="tag-link">' + texteMentionne + '</a>';
     });
 
     // Retourner le texte modifié avec les mentions transformées en liens

@@ -816,6 +816,95 @@ class CuicuiManager extends CuicuiDB {
             return false; // Retourner false si l'insertion a échoué
         }
     }
+
+    public function getUserPosts($userId) {
+        $query = "SELECT * FROM `posts` WHERE users_uid=?";
+        $res = $this->createRequest($query, "i", $userId);
+        $posts = array(); // Initialiser un tableau pour stocker les publications de l'utilisateur
+    
+        // Vérifier si des résultats ont été retournés
+        if ($res->num_rows > 0) {
+            // Parcourir chaque ligne de résultat pour récupérer les publications
+            while ($row = $res->fetch_assoc()) {
+                // Ajouter la publication à la liste des publications de l'utilisateur
+                $posts[] = $row;
+            }
+        }
+    
+        return $posts; // Retourner toutes les publications de l'utilisateur
+    }
+    
+
+    public function getUserStatistics($userId) {
+        // Initialisation des compteurs
+        $likeCount = 0;
+        $dislikeCount = 0;
+        $followerCount = 0;
+        $flipboxCount = 0;
+        $commentCount = 0;
+        $postCount = 0;
+
+        // Compter les likes des posts
+        $postQuery = "SELECT COUNT(*) AS post_count FROM posts WHERE users_uid = ?";
+        $postResult = $this->createRequest($postQuery, "i", $userId);
+        if ($postResult->num_rows > 0) {
+            $postCount = $postResult->fetch_assoc()['post_count'];
+        }
+    
+        // Compter les likes des posts
+        $likeQuery = "SELECT COUNT(*) AS like_count FROM likes WHERE users_uid = ? AND action = 'like'";
+        $likeResult = $this->createRequest($likeQuery, "i", $userId);
+        if ($likeResult->num_rows > 0) {
+            $likeCount = $likeResult->fetch_assoc()['like_count'];
+        }
+
+        // Compter les dislikes des posts
+        $dislikeQuery = "SELECT COUNT(*) AS dislike_count FROM likes WHERE users_uid = ? AND action = 'dislike'";
+        $dislikeResult = $this->createRequest($dislikeQuery, "i", $userId);
+        if ($dislikeResult->num_rows > 0) {
+            $dislikeCount = $dislikeResult->fetch_assoc()['dislike_count'];
+        }
+    
+        // Compter le nombre de followers
+        $followerQuery = "SELECT COUNT(*) AS follower_count FROM follow WHERE target_id = ?";
+        $followerResult = $this->createRequest($followerQuery, "i", $userId);
+        if ($followerResult->num_rows > 0) {
+            $followerCount = $followerResult->fetch_assoc()['follower_count'];
+        }
+    
+        // Compter le nombre de flipboxes découvertes
+        $flipboxQuery = "SELECT COUNT(*) AS flipbox_count FROM data WHERE users_uid = ?";
+        $flipboxResult = $this->createRequest($flipboxQuery, "i", $userId);
+        if ($flipboxResult->num_rows > 0) {
+            $flipboxCount = $flipboxResult->fetch_assoc()['flipbox_count'];
+        }
+    
+        // Compter le nombre de commentaires écrits
+        $commentQuery = "SELECT COUNT(*) AS comment_count FROM comments WHERE users_uid = ?";
+        $commentResult = $this->createRequest($commentQuery, "i", $userId);
+        if ($commentResult->num_rows > 0) {
+            $commentCount = $commentResult->fetch_assoc()['comment_count'];
+        }
+    
+        // Retourner les statistiques
+        return array(
+            'like_count' => $likeCount,
+            'dislike_count' => $dislikeCount,
+            'follower_count' => $followerCount,
+            'flipbox_count' => $flipboxCount,
+            'comment_count' => $commentCount,
+            'post_count' => $postCount
+        );
+    }  
+    
+    public function getIdByUsername($username) {
+        $query = "SELECT UID FROM `users` WHERE username=?"; // SQL query to check if user is following another user
+        $res = $this->createRequest($query, "s", $username); // Execute the query
+        $row = $res->fetch_assoc(); // Fetch the result row
+
+        return $row;
+    }
+    
 }
 
 // -------------------------------------------------------------------------------------------------------------------------------------
@@ -832,7 +921,7 @@ class UserInfo {
         $this->bio = $info["biography"];
         $this->username = $info["username"];
         $this->uid = $info["UID"];
-        $this->profile_picture = $GLOBALS['normalized_paths']['PATH_IMG_DIR'] .'/users/media/'. $info["profile_pic_url"];
+        $this->profile_picture = $info["profile_pic_url"];
     }
 
     public function getUsername() {
@@ -850,7 +939,16 @@ class UserInfo {
     public function getID() {
         return $this->uid;
     }
+
+    public function getBiography() {
+        return $this->bio;
+    }
+
+    public function getAvatar() {
+        return $this->profile_picture;
+    }
 }
+
 
 class RegisterInfo {
     

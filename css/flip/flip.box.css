@@ -23,6 +23,13 @@
     margin: 0 0 15em 0;
 }
 
+.titre-retour-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2em;
+}
+
+
 .flip-box-container {
     text-align: center;
     width: 100%;
@@ -611,30 +618,32 @@ i.far.fa-user {
     padding: 10px;
 }
 
+div#userList {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+}
+
 .user-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    justify-content: center;
     align-items: center;
     justify-items: center;
 }
 
 .user-card {
     width: 90%;
-    height: 20em;
+    height: 5em;
     background-color: #f0f0f00f;
-    border-radius: 8px;
+    padding: 0.1em;
     margin: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: padding 0.3s ease;
 }
 
 .user-card:hover {
-    background-color: #006fcf;
+    padding: 0.3em;
 }
 
 .user-card p {

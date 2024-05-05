@@ -50,6 +50,8 @@ if ($result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuicui</title>
+    <link rel="icon" type="image/png" href=<?php echo $appdir['PATH_IMG_DIR'] . "/icon.png" ?>>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
@@ -71,27 +73,29 @@ if ($result) {
     }
     ?>
 
-    <div id="barre-recherche" class="search-bar">
-        <input type="text" id="recherche-input" placeholder="Rechercher...">
-        <div id="filtres" class="filtres-dropdown">
-            <div id="filtres-select">
-                <div class="filtre active" data-value="user"><i class="fas fa-user"></i><span>Utilisateur</span></div>
-                <div class="filtre" data-value="post"><i class="fas fa-file-alt"></i><span>Post</span></div>
-                <div class="filtre" data-value="media"><i class="fas fa-image"></i><span>Média</span></div>
-                <div class="filtre" data-value="date"><i class="far fa-calendar-alt"></i><span>Date</span></div>
-                <div class="filtre" data-value="titre"><i class="fas fa-heading"></i><span>Titre</span></div>
-                <div class="filtre" data-value="populaires"><i class="fas fa-thumbs-up"></i><span>Populaires</span></div>
-                <div class="filtre" data-value="categorie"><i class="fas fa-tags"></i><span>Catégorie</span></div>
-                <div class="filtre active" data-value="contenu"><i class="fas fa-align-left"></i><span>Contenu</span></div>
-            </div>
-        </div>
-        <button id="bouton-recherche">
-            <i class="fas fa-search"></i>
-        </button>
-    </div>
-
 
     <main class="container">
+        <div id="barre-recherche" class="search-bar">
+            <button id="toggle-search-bar"><i class="fas fa-search"></i></button>
+
+            <div id="recherche-input-wrapper">
+                <input type="text" id="recherche-input" placeholder="Rechercher...">
+            </div>
+
+            <div id="filtres" class="filtres-dropdown">
+                <div id="filtres-select">
+                    <div class="filtre active" data-value="user"><i class="fas fa-user"></i><span>Utilisateur</span></div>
+                    <div class="filtre" data-value="post"><i class="fas fa-file-alt"></i><span>Post</span></div>
+                    <div class="filtre" data-value="media"><i class="fas fa-image"></i><span>Média</span></div>
+                    <div class="filtre" data-value="date"><i class="far fa-calendar-alt"></i><span>Date</span></div>
+                    <div class="filtre" data-value="titre"><i class="fas fa-heading"></i><span>Titre</span></div>
+                    <div class="filtre" data-value="populaires"><i class="fas fa-thumbs-up"></i><span>Populaires</span></div>
+                    <div class="filtre" data-value="categorie"><i class="fas fa-tags"></i><span>Catégorie</span></div>
+                    <div class="filtre active" data-value="contenu"><i class="fas fa-align-left"></i><span>Contenu</span></div>
+                </div>
+            </div>
+        </div>
+
         <div class="app">
             <div class="center-column">
                 <div class="center-main-panel">
@@ -359,6 +363,13 @@ if ($result) {
                 reader.readAsDataURL(input.files[0]);
             }
         });
+
+        $(document).ready(function(){
+            $("#toggle-search-bar").click(function(){
+                $("#barre-recherche").toggleClass("collapsed");
+            });
+        });
+
     </script>
 </body>
 
@@ -414,9 +425,9 @@ if ($result) {
         display: flex;
         align-items: center;
         cursor: pointer;
-        border: 1px solid #ccc;
+        border-radius: 10px;
         padding: 0.1em;
-        justify-content: space-between;
+        justify-content: space-around;
     }
 
     .filtre i {
@@ -428,7 +439,7 @@ if ($result) {
     }
 
     .filtre.active {
-        background-color: #ccc;
+        background-color: #43469b;
         /* Couleur pour indiquer l'activation */
     }
 </style>

@@ -33,6 +33,7 @@ if ($user_info == NULL && $cuicui_manager->getError() == ErrorTypes::NoConnectio
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuicui - Options</title>
+    <link rel="icon" type="image/png" href=<?php echo $appdir['PATH_IMG_DIR'] . "/icon.png" ?>>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
@@ -40,6 +41,7 @@ if ($user_info == NULL && $cuicui_manager->getError() == ErrorTypes::NoConnectio
     <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . '/' . $_SESSION["theme"] . ".css" ?>>
     <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/main.css" ?>>
     <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/options.css" ?>>
+    <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/flip/flip.style.css" ?>>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
@@ -58,44 +60,49 @@ if ($user_info == NULL && $cuicui_manager->getError() == ErrorTypes::NoConnectio
                             <h2 class="uid"><?php echo $user_info->getHandle(); ?></h2>
                         </div>
                     </div>
-                    <label for="biography">Biographie:</label>
-                    <textarea id="bio-field" class="biography" rows="5" name="biography"><?php echo $user_info->bio ?></textarea>
+                    <div class="bio-zone">
+                        <label for="biography">Biographie:</label>
+                        <textarea id="bio-field" class="biography" rows="5" name="biography"><?php echo $user_info->bio ?></textarea>
+                    </div>
                 </div>
                 <div class="forms">
-                    <form method="get" class="theme-select" id="theme-select">
-                        <fieldset>
-                            <legend>Changer de thème</legend>
-                            <input type="radio" value="dark" id="dark" name="theme" class="radio-button theme-button">
-                            <label for="dark">Sombre</label>
-                            <input type="radio" value="blue" id="blue" name="theme" class="radio-button theme-button">
-                            <label for="blue">Bleu</label>
-                            <input type="radio" value="light" id="light" name="theme" class="radio-button theme-button">
-                            <label for="light">Clair</label>
-                        </fieldset>
-                    </form>
-                    <form method="get" action="#" class="lang-select">
-                        <fieldset>
-                            <legend>Changer la langue de l'interface</legend>
-                            <input type="radio" value="fr" id="fr" name="lang" class="radio-button">
-                            <label for="fr">Français</label>
-                            <input type="radio" value="en" id="en" name="lang" class="radio-button">
-                            <label for="en">Anglais</label>
-                        </fieldset>
-                    </form>
-                    <form method="post" class="user-info-change" id="info-change">
-                        <fieldset>
-                            <legend>Changer vos informations</legend>
-                            <label for="username-input">Pseudonyme</label>
-                            <input name="username-input" type="text" value=<?php echo $user_info->getUsername(); ?> required minlength="4" maxlength="30" autocomplete="off">
-                            <label for="email-input">Adresse E-mail</label>
-                            <input name="email-input" type="email" value=<?php echo $user_info->getUsername(); ?> required maxlength="50">
-                            <label for="profile-picture-input" class="custom-file-upload">Changer de photo de profil</label>
-                            <input name="profile-picture-input" type="file" accept="image/png, image/jpeg" id="change-pfp">
-                            <label for="change-birthday">Changer la date de naissance</label>
-                            <input type="date" name="change-birthday" id="change-birthday" value="2003-09-12">
-                        </fieldset>
-                        <button id="saveButton" type="submit">Changer le profil</button>
-                    </form>
+                    <div class="form-row">
+                        <form method="get" class="theme-select" id="theme-select">
+                            <fieldset>
+                                <legend>Changer de thème</legend>
+                                <input type="radio" value="dark" id="dark" name="theme" class="radio-button theme-button">
+                                <label for="dark">Sombre</label>
+                                <input type="radio" value="blue" id="blue" name="theme" class="radio-button theme-button">
+                                <label for="blue">Bleu</label>
+                                <input type="radio" value="light" id="light" name="theme" class="radio-button theme-button">
+                                <label for="light">Clair</label>
+                            </fieldset>
+                        </form>
+                        <form method="get" action="#" class="lang-select">
+                            <fieldset>
+                                <legend>Changer la langue de l'interface</legend>
+                                <input type="radio" value="fr" id="fr" name="lang" class="radio-button">
+                                <label for="fr">Français</label>
+                                <input type="radio" value="en" id="en" name="lang" class="radio-button">
+                                <label for="en">Anglais</label>
+                            </fieldset>
+                        </form>
+                        <form method="post" class="user-info-change" id="info-change">
+                            <fieldset>
+                                <legend>Changer vos informations</legend>
+                                <label for="username-input">Pseudonyme</label>
+                                <input name="username-input" type="text" value=<?php echo $user_info->getUsername(); ?> required minlength="4" maxlength="30" autocomplete="off">
+                                <label for="email-input">Adresse E-mail</label>
+                                <input name="email-input" type="email" value=<?php echo $user_info->getUsername(); ?> required maxlength="50">
+                                <label for="profile-picture-input" class="custom-file-upload">Changer de photo de profil</label>
+                                <input name="profile-picture-input" type="file" accept="image/png, image/jpeg" id="change-pfp">
+                                <label for="change-birthday">Changer la date de naissance</label>
+                                <input type="date" name="change-birthday" id="change-birthday" value="2003-09-12">
+                            </fieldset>
+                        </form>
+                    </div>
+
+                    <button id="saveButton" type="submit">Changer le profil</button>
                 </div>
                 <?php
                 if (!$success) {
@@ -116,13 +123,28 @@ if ($user_info == NULL && $cuicui_manager->getError() == ErrorTypes::NoConnectio
                 echo "</p>";
             }
             ?>
+
+            <div class="right-panel wow animate__fadeInRight" data-wow-duration="1s" data-wow-delay="2s">
+                <section id="right-links">
+
+                    <ul>
+                        <?php echo getNavbarContents() ?>
+                        <li><a href="#">Découvrir</a></li>
+                        <li><a href="#">Langue</a></li>
+                        <li><a href="#">Politique de confidentialité</a></li>
+                        <li><a href="<?php echo $appdir['PATH_API_DIR'] ?>">API</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Assistance</a></li>
+                        <li><a href="#">Termes et conditions</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+
+                    <p> &copy; Cuicui App 2024</p>
+                </section>
+            </div>
         </div>
     </main>
 </body>
-
-<nav class="navbar" id="sliding-menu">
-    <?php echo getNavbarContents() ?>
-</nav>
 
 <?php echo generateProfileOptionsPanel($_SESSION['username']); ?>
 

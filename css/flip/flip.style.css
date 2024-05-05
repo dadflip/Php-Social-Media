@@ -23,6 +23,7 @@ hr {
     margin-top: 20em;
     box-shadow: -3px 3px 43px 0px #0000008a;
     border-radius: 0px 30px 0px 0px;
+    border: 1px solid #cccccc12;
 }
 
 .container::-webkit-scrollbar {
@@ -162,7 +163,8 @@ hr {
     position: sticky;
     top: 0px;
     background-color: var(--background-color-c);
-    box-shadow: 1px 5px 20px 1px #000000;
+    border: 1px solid #cccccc12;
+    box-shadow: 3px -4px 20px 0px #000000;
     align-items: center;
     flex: 1;
     overflow: hidden;
@@ -347,25 +349,35 @@ hr {
     font-size: 12px;
 }
 
-.search-bar {
-    text-align: center;
-    background-color: rgba(255, 255, 255, 0.8);
-    margin-bottom: 10px;
-    display: block;
+.search-bar.collapsed {
+    width: 4em;
+}
+
+#toggle-search-bar {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+#recherche-input-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+#recherche-input {
+    flex: 1;
 }
 
 #barre-recherche {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background-color: #ffffff;
-    border-radius: 25px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     overflow: hidden;
     transition: width 0.3s ease, box-shadow 0.3s ease;
-    z-index: 999;
+    position: relative;
+    border: 1px solid #cccccc12;
+    flex-direction: row;
+    justify-content: space-around;
 }
 
 #barre-recherche input[type="text"] {
@@ -374,6 +386,7 @@ hr {
     padding: 10px;
     flex-grow: 1;
     width: 25em;
+    border-radius: 50px;
 }
 
 #barre-recherche button {
@@ -382,6 +395,7 @@ hr {
     padding: 2em;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    border-radius: 50px;
 }
 
 #barre-recherche button:hover {

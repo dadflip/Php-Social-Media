@@ -2,6 +2,7 @@
 // Inclusion des fichiers nécessaires
 include '../../../app/defs.functions.php';
 includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
+$folder = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"];
 
 try {
     // Vérification de l'existence de la session et récupération de l'UID de l'utilisateur
@@ -171,12 +172,19 @@ try {
         $allTextsWithURL = [];
 
         // Boucle à travers tous les textes pour construire les URLs
-        foreach ($allTexts as $text) {
+        foreach ($allTexts as &$text) {
             $textId = $text['textId'];
-            $imgUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $text['media_url'];
+            $mediaUrl = $text['media_url'];
+            $imgUrl = $mediaUrl;
+
+            // Vérifier si le chemin $folder est déjà inclus dans l'URL
+            if (strpos($mediaUrl, $folder) !== 0) {
+                // Le chemin $folder n'est pas déjà inclus, le concaténer à l'URL
+                $imgUrl = $folder . $mediaUrl;
+            }
             
             // Récupérer l'URL de l'image de profil
-            $profilePicUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $text['profile_pic_url'];
+            $profilePicUrl = $folder . $text['profile_pic_url'];
 
             // Vérifier si le fichier à cette URL existe
             if (file_exists($profilePicUrl)) {
@@ -184,15 +192,16 @@ try {
                 $profileImageUrl = $profilePicUrl;
             } else {
                 // Le fichier n'existe pas, utilisez un placeholder
-                $placeholderImageUrl = $GLOBALS['normalized_paths']['PATH_IMG_DIR'] . '/placeholder.png';
+                $placeholderImageUrl = $folder . '/placeholder.png';
                 $profileImageUrl = $placeholderImageUrl;
             }
 
-            // Ajouter l'URL construite au tableau
+            // Mettre à jour les valeurs des URL dans le tableau $allTexts
             $text['media_url'] = $imgUrl;
             $text['profile_pic_url'] = $profileImageUrl;
             $allTextsWithURL[] = $text;
         }
+
 
         // Retourner les données au format JSON avec les URLs construites
         header('Content-Type: application/json');
@@ -218,11 +227,20 @@ try {
 
         // Récupération des données à partir du résultat de la requête
         $allTextsWithURL = [];
+        
+        // Boucle à travers les résultats de la requête
         while ($row = $res->fetch_assoc()) {
-            $imgUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $row['media_url'];
+            $mediaUrl = $row['media_url'];
+            $imgUrl = $mediaUrl;
 
+            // Vérifier si le chemin $folder est déjà inclus dans l'URL
+            if (strpos($mediaUrl, $folder) !== 0) {
+                // Le chemin $folder n'est pas déjà inclus, le concaténer à l'URL
+                $imgUrl = $folder . $mediaUrl;
+            }
+            
             // Récupérer l'URL de l'image de profil
-            $profilePicUrl = $GLOBALS["normalized_paths"]["PATH_IMG_DIR"] . $row['profile_pic_url'];
+            $profilePicUrl = $folder . $row['profile_pic_url'];
 
             // Vérifier si le fichier à cette URL existe
             if (file_exists($profilePicUrl)) {
@@ -230,15 +248,16 @@ try {
                 $profileImageUrl = $profilePicUrl;
             } else {
                 // Le fichier n'existe pas, utilisez un placeholder
-                $placeholderImageUrl = $GLOBALS['normalized_paths']['PATH_IMG_DIR'] . '/placeholder.png'; // Remplacez cela par le chemin vers votre placeholder
+                $placeholderImageUrl = $folder . '/placeholder.png'; // Remplacez cela par le chemin vers votre placeholder
                 $profileImageUrl = $placeholderImageUrl;
             }
 
-            // Ajouter l'URL construite au tableau
+            // Mettre à jour les valeurs des URL dans le tableau $allTextsWithURL
             $row['media_url'] = $imgUrl;
             $row['profile_pic_url'] = $profileImageUrl;
             $allTextsWithURL[] = $row;
         }
+
         $res->close(); // Fermer le résultat de la requête
 
         // Retourner les données au format JSON avec les URLs construites

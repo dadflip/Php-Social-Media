@@ -15,18 +15,11 @@
     $cuicui_manager = new CuicuiManager($database_configs, DATASET);
     $cuicui_sess = new CuicuiSession($cuicui_manager);
 
-    if(isset($_SESSION["UID"])) {
-        header('Location:' . $appdir['PATH_CUICUI_APP'] . '/' . $_SESSION["lang"] . $phpfile['mainpage']);
-    }
-
     // Vérifier si le formulaire est soumis
     if(isset($_POST['submit'])) {
+        //echo 'il y a un souci ici';
         // Exécuter la fonction createAccount uniquement si le bouton du formulaire est cliqué
         $res = $cuicui_manager->createAccount();
-
-        if($res) {
-            $cuicui_manager->goToMainpage($_SESSION["lang"]);
-        }
     }
 ?>
 <html lang="fr">
@@ -34,6 +27,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuicui - Créer un compte</title>
+    <link rel="icon" type="image/png" href=<?php echo $appdir['PATH_IMG_DIR'] . "/icon.png" ?>>
     <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . '/' . $_SESSION["theme"].".css"?> >
     <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/main.css"?> >
     <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/login.css"?> >
@@ -41,14 +35,14 @@
 </head>
 <body>
     <?php
-        echo createTitleBar("Inscription");
+        echo createTitleBar("Sign In");
     ?>
 
     <div class="main-container">
-        <form id="login" action="#" method="post" class="register-form">
+        <form id="login" action="#" method="post" class="register-form" enctype="multipart/form-data">
             <?php echo getRegisterForm_1();?>
-            <?php
-            if(isset($_POST['submit']) && !$res && $cuicui_manager->getError() != NULL) {
+            <?php 
+            if(isset($res) && !$res && $cuicui_manager->getError() != NULL) {
                 echo "<p class='error-msg'>".$cuicui_manager->getError()->toString()."</p>";
             }
             ?>

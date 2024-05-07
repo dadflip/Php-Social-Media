@@ -1,13 +1,28 @@
-* {
-    --light-background: rgb(255, 255, 255);
-    --background: rgb(255, 255, 255);
-    --dark-background: white; 
-    --accent: white;
-    --border-color: black;
-    --text-color: black;
-    --secondary-text-color: gray;
-
-    --button-color: rgb(26, 103, 220);
-    --button-hover: rgb(26, 103, 220);
-    --input: rgb(0,15,18);
+:root {
+    --light-background: #ffffff;
+    --background: #bdbdbd;
+    --dark-background: #080808;
+    --accent: #008eff;
+    --border-color: #a9a9a9;
+    --text-color: #006ec1;
+    --text-color-2: #000;
+    --secondary-text-color: #000;
+    --button-color: #009f06;
+    --button-hover: #45a049;
+    --input: #cfcfcf;
+    --flip-box-front-color: #ffffff00;
+    --flip-box-back-color: #ffffff00;
+    --flip-box-border-color: #000;
+    --flip-box-text-color: #000;
+    --flip-box-back-text-color: #ffffff;
+    --follow-button-bg-start: #0008ff;
+    --follow-button-bg-end: #009dff;
+    --follow-button-hover-bg: #0056b3;
+    --background-color-a: #ffffff;
+    --background-color-b: #e2e2e2;
+    --background-color-c: #f7f7f7e7;
+    --scrollbar-track-color: #000000;
+    --scrollbar-thumb-color: #008ab3;
+    --scrollbar-thumb-hover-color: #fff;
+    --shadow-color: #00000010;
 }

@@ -232,21 +232,20 @@ if ($result) {
         </div>
     </main>
 
-
     <div class="floating-form wow animate__zoomIn" id="newTopicForm" data-wow-duration="1s" data-wow-delay="2.5s">
         <i class="fas fa-times close-icon" onclick="toggleForm()"></i>
         <form action="<?php echo $appdir['PATH_PHP_DIR'] . '/ajax/main/post.php'; ?>" method="post" enctype="multipart/form-data">
-            <fieldset>
+            <fieldset class="slides">
                 <legend><i class="fas fa-heading"></i> Titre :</legend>
                 <input type="text" name="title" required>
             </fieldset>
 
-            <fieldset>
+            <fieldset class="slides">
                 <legend><i class="fas fa-comment"></i> Contenu :</legend>
                 <textarea name="content" required></textarea>
             </fieldset>
 
-            <fieldset>
+            <fieldset class="slides">
                 <legend><i class="fas fa-tags"></i> Catégorie :</legend>
                 <select name="category" required>
                     <option value="Amis"> General</option>
@@ -302,40 +301,110 @@ if ($result) {
 
             </fieldset>
 
-            <fieldset>
+            <fieldset class="slides">
                 <legend><i class="fas fa-key"></i> Mots-clés (virgules) :</legend>
                 <input type="text" name="keywords">
                 <span id="keywordsSection"></span>
             </fieldset>
 
-            <fieldset class="image-preview">
-                <legend><i class="fas fa-image"></i> Uploader une image :</legend>
-                <input type="file" name="image" id="image" accept="image/*">
-                <div class="preview"></div>
+            <fieldset class="slides">
+                <fieldset class="media-type-selection">
+                    <legend>Sélectionner le type de média :</legend>
+                    <label><input type="radio" name="media-type" value="image"> Image</label>
+                    <label><input type="radio" name="media-type" value="video"> Vidéo</label>
+                    <label><input type="radio" name="media-type" value="audio"> Son</label>
+                    <label><input type="radio" name="media-type" value="other-media"> Autre</label>
+                </fieldset>
+
+                <fieldset class="media-upload">
+                    <fieldset class="image-upload image-preview">
+                        <legend><i class="fas fa-image"></i> Uploader une image :</legend>
+                        <input type="file" name="image" id="image" accept="image/*">
+                        <div class="preview"></div>
+                    </fieldset>
+
+                    <fieldset class="video-upload">
+                        <legend><i class="fas fa-video"></i> Uploader une vidéo :</legend>
+                        <input type="file" name="video" id="video" accept="video/*">
+                    </fieldset>
+
+                    <fieldset class="audio-upload">
+                        <legend><i class="fas fa-volume-up"></i> Uploader du son :</legend>
+                        <input type="file" name="audio" id="audio" accept="audio/*">
+                    </fieldset>
+
+                    <fieldset class="other-media-upload">
+                        <legend><i class="fas fa-file"></i> Uploader d'autres médias :</legend>
+                        <input type="file" name="other-media" id="other-media" accept=".mp3, .mp4, .avi, .pdf">
+                    </fieldset>
+                </fieldset>
             </fieldset>
 
-            <fieldset class="video-upload">
-                <legend><i class="fas fa-video"></i> Uploader une vidéo :</legend>
-                <input type="file" name="video" id="video" accept="video/*">
-            </fieldset>
 
-            <fieldset class="audio-upload">
-                <legend><i class="fas fa-volume-up"></i> Uploader du son :</legend>
-                <input type="file" name="audio" id="audio" accept="audio/*">
+            <fieldset class="slides">
+                <legend> Poster </legend>
+                <input type="submit" value="Poster">
             </fieldset>
-
-            <fieldset class="other-media-upload">
-                <legend><i class="fas fa-file"></i> Uploader d'autres médias :</legend>
-                <input type="file" name="other-media" id="other-media" accept=".mp3, .mp4, .avi, .pdf">
-            </fieldset>
-
-            <input type="submit" value="Poster">
         </form>
-    </div>
-    </div>
 
+        <div class="diaporama-container">
+            <div class="navigation-buttons">
+                <button onclick="prevSlide()">Précédent</button>
+                <button onclick="nextSlide()">Suivant</button>
+            </div>
+        </div>
+    </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Masquer les fieldsets des médias
+            document.querySelectorAll('.media-upload fieldset').forEach(function(fieldset) {
+                fieldset.style.display = 'none';
+            });
+
+            // Écouter les changements de sélection du type de média
+            document.querySelectorAll('input[name="media-type"]').forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    var selectedMediaType = this.value;
+
+                    // Masquer tous les fieldsets des médias
+                    document.querySelectorAll('.media-upload fieldset').forEach(function(fieldset) {
+                        fieldset.style.display = 'none';
+                    });
+
+                    // Afficher le fieldset correspondant au type de média sélectionné
+                    document.querySelector('.' + selectedMediaType + '-upload').style.display = 'block';
+                });
+            });
+        });
+
+        var currentSlide = 0;
+        var slides = document.querySelectorAll('.slides');
+
+        function showSlide(index) {
+            if (index >= 0 && index < slides.length) {
+                for (var i = 0; i < slides.length; i++) {
+                    if (i === index) {
+                        slides[i].style.display = 'block';
+                    } else {
+                        slides[i].style.display = 'none';
+                    }
+                }
+                currentSlide = index;
+            }
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        // Afficher la première diapositive au chargement de la page
+        showSlide(0);
+
         // Sélection de l'élément input pour l'image
         const input = document.querySelector('input[type="file"]');
         // Sélection de l'élément div pour la prévisualisation de l'image
@@ -364,13 +433,13 @@ if ($result) {
             }
         });
 
-        $(document).ready(function(){
-            $("#toggle-search-bar").click(function(){
+        $(document).ready(function() {
+            $("#toggle-search-bar").click(function() {
                 $("#barre-recherche").toggleClass("collapsed");
             });
         });
-
     </script>
+    
 </body>
 
 <script src=<?php echo $appdir['PATH_JS_DIR'] . "/routes.js" ?>></script>
@@ -379,16 +448,14 @@ if ($result) {
 
 
 <script>
-    window.__u_url__ = '<?php echo $GLOBALS["normalized_paths"]["PATH_CUICUI_APP"] . "/" . $GLOBALS["LANG"] . $GLOBALS["php_files"]["user"]; ?>';
+    window.__u_url__ = atob("<?php echo base64_encode($GLOBALS["normalized_paths"]["PATH_CUICUI_APP"] . "/" . $GLOBALS["LANG"] . $GLOBALS["php_files"]["user"]); ?>");
+    window.__ajx__ = atob("<?php echo base64_encode($appdir['PATH_PHP_DIR'] . '/ajax/main/'); ?>");
+    window.__u__ = atob("<?php if(isset($_SESSION['UID'])){echo base64_encode($_SESSION['UID']);} ?>");
+    window.__img_u__ = atob("<?php if(isset($_SESSION['pfp_url'])){ echo base64_encode($_SESSION['pfp_url']);} ?>");
 </script>
-<script>
-    window.__ajx__ = "<?php echo $appdir['PATH_PHP_DIR'] . '/ajax/main/'; ?>";
-</script>
-<script>
-    window.__u__ = '<?php echo $_SESSION['UID']; ?>';
-    window.__img_u__ = "<?php $_SESSION["pfp_url"]; ?>"
-</script>
+
 <?php includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['scripts']); ?>
+
 
 
 <script>
@@ -426,7 +493,8 @@ if ($result) {
         align-items: center;
         cursor: pointer;
         border-radius: 10px;
-        padding: 0.1em;
+        border: 1px solid #ffffff1f;
+        padding: 0.2em;
         justify-content: space-around;
     }
 
@@ -439,8 +507,7 @@ if ($result) {
     }
 
     .filtre.active {
-        background-color: #43469b;
-        /* Couleur pour indiquer l'activation */
+        background-color: #e5e5e524;
     }
 </style>
 

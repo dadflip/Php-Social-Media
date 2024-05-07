@@ -83,13 +83,14 @@ function construireFlipbox(resultats) {
         // Autres styles de l'overlay
     });
 
-    var recommandMaxSize = 15;
+    var recommandMaxSize = 25;
     var i = 0;
 
     // Afficher les nouveaux résultats dans des flipboxes
     while (i < resultats.length && i < recommandMaxSize) {
         var resultat = resultats[i];
         console.log(resultat.textId);
+        console.log(resultat.media_url);
 
         // Récupérer les valeurs de keywords et category
         var keywords = resultat && resultat.tags ? resultat.tags : 'all';
@@ -125,6 +126,8 @@ function construireFlipbox(resultats) {
         flipbox += '<div class="follow-button" onclick="followUser(' + resultat.users_uid + ')">Suivre</div>';
         // Ajouter un bouton pour signaler l'utilisateur
         flipbox += '<div class="report-button" onclick="reportUser(' + resultat.users_uid + ')">Signaler</div>';
+
+
         flipbox += '</span>';
         
         flipbox += '</h5>';               
@@ -160,18 +163,45 @@ function construireFlipbox(resultats) {
             flipbox += '</div>'; // Fermer la div action-zone
             flipbox += '</div>';
 
-        } else {
+        } else if (resultat.media_type === 'audio') {
             flipbox += '<div class="sup-cadre">';
-            flipbox += '<br>';
-
+            flipbox += '<audio class="media-center no-flip" controls>';
+            flipbox += '<source src="' + resultat.media_url + '" type="audio/mpeg">';
+            flipbox += 'Votre navigateur ne supporte pas la lecture de l\'audio.';
+            flipbox += '</audio>';
+            flipbox += '</div>';
+            
             // Ajouter une zone avec des sous-zones
             flipbox += '<div class="action-zone no-flip">';
             // Ajouter des icônes cliquables et d'autres contenus
             flipbox += '<div class="download-icon" onclick="downloadContent()"><i class="fas fa-download"></i></div>';
             flipbox += '<div class="other-content">Autre contenu ici</div>';
-            flipbox += '</div>'; // Fermer la div action-zone
             flipbox += '</div>';
-        }
+        } else {
+
+            flipbox += '<div class="sup-cadre">';
+            // Détecter le type de fichier à partir de l'URL
+            var fileType = getFileTypeFromUrl(resultat.media_url);
+            
+            // Afficher le composant en fonction du type de fichier
+            if (fileType === 'pdf') {
+                // Afficher un PDF téléchargeable
+                flipbox += '<div class="pdf-container">';
+                flipbox += '<embed src="' + resultat.media_url + '" type="application/pdf" width="100%" height="600px" />';
+                flipbox += '</div>';
+            } else if (fileType === 'excel') {
+                // Afficher un classeur Excel
+                flipbox += '<div class="excel-container">';
+                flipbox += '<iframe src="' + resultat.media_url + '" style="width:100%; height:600px;" frameborder="0"></iframe>';
+                flipbox += '</div>';
+            } else {
+                // Afficher un composant par défaut pour les autres types de fichiers
+                flipbox += '<div class="other-file-container">';
+                flipbox += '<a href="' + resultat.media_url + '" target="_blank">Télécharger le fichier</a>';
+                flipbox += '</div>';
+            }
+            flipbox += '</div>';
+        }        
 
         flipbox += '<h6>' + resultat.title + '</h6>';
         flipbox += '<div class="keywords">';
@@ -230,15 +260,14 @@ function construireFlipbox(resultats) {
         if(window.__u__){
             flipbox += '<div class="comments-zone">';
             flipbox += '<div class="commentaires no-flip">';
+            flipbox += '<div class="comments-display">';
         
         
             // Construction des commentaires associés au post
             if (resultat.comments && resultat.comments.length > 0) {
-                flipbox += '<div class="comments-display">';
                 flipbox += buildCommentsHTML(resultat.comments);
-                flipbox += '</div>'; // Fin de la div comments-zone
             }
-
+            flipbox += '</div>'; // Fin de la div comments-display
             flipbox += '<textarea class="response-zone-textarea no-flip" id="zoneCommentaire' + resultat.textId + '" placeholder="Ajouter un commentaire"></textarea>';
             flipbox += '<button class="envoyer-commentaire no-flip" onclick="envoyerCommentaire(\'' + resultat.textId + '\')">Envoyer</button>';
             flipbox += '</div>';
@@ -296,6 +325,24 @@ function construireFlipbox(resultats) {
 
 
 }
+
+function getFileTypeFromUrl(url) {
+    // Extraire l'extension du fichier de l'URL
+    var extension = url.split('.').pop().toLowerCase();
+
+    // Déterminer le type de fichier en fonction de l'extension
+    switch (extension) {
+        case 'pdf':
+            return 'pdf'; // PDF
+        case 'xls':
+        case 'xlsx':
+            return 'excel'; // Classeur Excel
+        // Ajoutez d'autres cas pour les autres types de fichiers si nécessaire
+        default:
+            return 'default'; // Autres types de fichiers par défaut
+    }
+}
+
 
 // Fonction pour détecter les mentions dans un champ de texte et les remplacer par des liens cliquables
 function detecterMentions(champTexte) {
@@ -576,22 +623,79 @@ function followUser(targetUserId) {
 }
 
 
+// Fonction pour envoyer un commentaire via AJAX et construire le composant de commentaire
 function envoyerCommentaire(parentId) {
+    // Récupérer le contenu du commentaire à partir du textarea
     var commentaireContent = document.getElementById('zoneCommentaire' + parentId).value;
-    console.log(commentaireContent);
+
+    // Vider le contenu du textarea
+    document.getElementById('zoneCommentaire' + parentId).value = "";
 
     // Envoyer le commentaire via AJAX
     effectuerAction("envoyer_commentaire", {
         textId: parentId,
         commentaire: commentaireContent,
-    });
+    }, function(resultat) {
+        // Une fois que la requête AJAX est réussie, ajouter le nouveau commentaire à la liste des commentaires
+        if (resultat.success) {
 
-    // Vider le contenu du textarea
-    document.getElementById('zoneCommentaire' + parentId).value = "";
-    // Recharger la page pour afficher les modifications
-    // window.location.reload();
+            // Construire le composant de commentaire
+            var nouveauCommentaire = document.createElement('div');
+            nouveauCommentaire.classList.add('comment');
+            nouveauCommentaire.innerHTML = '<p>' + createLinksMentions(commentaireContent) + '</p>';
+
+            var responseZone = document.createElement('div');
+            responseZone.classList.add('response-zone', 'no-flip');
+            responseZone.innerHTML = '<textarea class="response-zone-textarea no-flip" id="zoneCommentaire' + resultat.textId + '" placeholder="Répondre"></textarea>' +
+                                    '<button class="envoyer-commentaire no-flip" onclick="envoyerCommentaire(\'' + resultat.textId + '\')">Répondre</button>';
+            // Ajouter la zone de réponse à nouveauCommentaire
+            nouveauCommentaire.appendChild(responseZone);
+
+            // Trouver le conteneur parent des commentaires
+            var parentContainer;
+
+            if (parentId) {
+                // Il s'agit d'une réponse à un commentaire existant
+                parentContainer = document.getElementById('zoneCommentaire' + parentId).parentNode.parentNode;
+            } else {
+                // Il s'agit d'un commentaire principal
+                parentContainer = document.querySelector('.comments-display');
+            }
+
+            // Ajouter le nouveau commentaire à la bonne zone
+            parentContainer.appendChild(nouveauCommentaire);
+
+
+        } else {
+            // Gérer les erreurs si nécessaire
+            console.error("Erreur lors de l'envoi du commentaire :", resultat.error);
+        }
+    });
 }
 
+
+
+// Fonction pour envoyer une action via AJAX
+function effectuerAction(action, data, callback) {
+    console.log("action =", action);
+    console.log("data =", data);
+    $.ajax({
+        url: window.__ajx__ + "actions.php",
+        type: "POST",
+        data: { action: action, data: data },
+        success: function (response) {
+            console.log("action effectuée !");
+            console.log(response); // Afficher la réponse dans la console
+            // Appeler la fonction de rappel avec la réponse
+            if (callback) {
+                callback(JSON.parse(response));
+            }
+        },
+        error: function () {
+            console.error("Erreur lors de l'action " + action);
+        },
+    });
+}
 
 
 
@@ -620,22 +724,6 @@ function faireUnDon(textId) {
     effectuerAction("faire_un_don", { textId: textId });
 }
 
-function effectuerAction(action, data) {
-    console.log("action =", action);
-    console.log("data =", data);
-    $.ajax({
-        url: window.__ajx__ + "actions.php",
-        type: "POST",
-        data: { action: action, data: data },
-        success: function (response) {
-            console.log("action effectue !");
-            console.log(response); // Afficher la réponse dans la console
-        },
-        error: function () {
-            console.error("Erreur lors de l'action " + action);
-        },
-    });
-}
 
 // Fonction pour ouvrir une discussion avec un utilisateur dans un nouvel onglet
 function openChat(username) {

@@ -1,23 +1,20 @@
 @import url('index.css');
+@import url('flip/animations.css');
 
+/* Inclusion de la police Quicksand depuis un fichier local */
 @font-face {
-    font-family: 'Montserrat';
-    src: url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+    font-family: 'Quicksand';
+    src: url('fonts/Quicksand/static/Quicksand-Light.ttf') format('truetype'); /* Format TTF */
+    font-weight: normal; /* Poids de la police */
+    font-style: normal; /* Style de la police */
 }
 
-@font-face {
-    font-family: 'Roboto';
-    src: url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-}
 
 @font-face {
-    font-family: 'Open Sans';
-    src: url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
-}
-
-@font-face {
-    font-family: 'Pacifico';
-    src: url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+    font-family: 'Abel';
+    src: url('fonts/Abel/Abel-Regular.ttf') format('truetype'); /* Format TTF */
+    font-weight: normal; /* Poids de la police */
+    font-style: normal; /* Style de la police */
 }
 
 
@@ -26,7 +23,7 @@ body {
     padding: 0px;
     max-width: 100vw;
     height: 100vh;
-    font-family: 'Pacifico', sans-serif;
+    font-family: 'Quicksand', sans-serif; /* Utilisation de Quicksand */
     background-color: var(--background-color-c);
     color: var(--text-color);
     display: flex;
@@ -73,6 +70,7 @@ a {
 a:hover{
     cursor: pointer;
     text-decoration: none;
+    animation: blinkAnimation 2s infinite;
 }
 
 .title {
@@ -239,8 +237,9 @@ input:hover {
 a {
     color: var(--text-color);
     text-decoration: none;
-    transition: color 0.3s; /* Ajouter une transition smooth */
+    transition: color 0.3s;
     position: relative;
+    font-size: medium;
 }
 
 a:hover {

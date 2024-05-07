@@ -35,11 +35,16 @@ $follow_res = $cuicui_manager->getFollow($_SESSION["UID"], $username);
 // Récupérer les informations sur l'utilisateur
 $user_info = $cuicui_manager->getUserInfoByName($username);
 
-// Récupérer les publications de l'utilisateur depuis la base de données
-$user_posts = $cuicui_manager->getUserPosts($user_info->getID());
+if(isset($user_info)) {
+    // Récupérer les publications de l'utilisateur depuis la base de données
+    $user_posts = $cuicui_manager->getUserPosts($user_info->getID());
 
-// Récupérer les statistiques de l'utilisateur depuis la base de données
-$user_statistics = $cuicui_manager->getUserStatistics($user_info->getID());
+    // Récupérer les statistiques de l'utilisateur depuis la base de données
+    $user_statistics = $cuicui_manager->getUserStatistics($user_info->getID());
+} else {
+    header('Location:' . $appdir['PATH_CUICUI_APP'] . '/' . $GLOBALS['LANG'] . $phpfile['options'] . '?userexists=false');
+    exit();
+}
 ?>
 <html lang="fr">
 

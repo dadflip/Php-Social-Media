@@ -102,15 +102,19 @@
         },
         "en": {
             "files": [
+                "chat.php",
+                "delete_notification.php",
                 "index.php",
                 "mainpage.php",
+                "notify.php",
                 "options.php",
                 "post.php",
                 "router.php",
                 "stats.php",
                 "template_menu_fr.php",
                 "txt.txt",
-                "userprofile.php"
+                "user.php",
+                "view.php"
             ],
             "subdirectories": {
                 "auth": {

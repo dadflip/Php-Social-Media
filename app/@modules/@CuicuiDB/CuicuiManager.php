@@ -48,6 +48,8 @@ enum ErrorTypes {
                 return "Session error";
             case ErrorTypes::DuplicateUser:
                 return "Duplicate username or email";
+            default:
+                return "";
         }
     }
 }
@@ -196,6 +198,10 @@ class MultiDatasetDatabaseManager {
             die("Connection to database failed: " . $this->admin_conn->connect_error);
         }
         $this->currentDatasetIndex = $index;
+    }
+
+    public function getConn() {
+        return $this->admin_conn;
     }
 
     // Method to select a specific dataset
@@ -365,8 +371,14 @@ class CuicuiManager extends CuicuiDB {
 
         // Set default language based on HTTP_ACCEPT_LANGUAGE if not already set in session
         if (!isset($_SESSION["lang"])) {
-            $_SESSION["lang"] = $GLOBALS['LANG']; // Set default language
+            // Check if user_lang is set in session
+            if(isset($_SESSION['MAIN_LANG'])){
+                $_SESSION["lang"] = $_SESSION['MAIN_LANG']; // Set user's preferred language
+            } else {
+                $_SESSION["lang"] = $GLOBALS['LANG']; // Set default language
+            }
         }
+
     }
 
     public function isConnected():bool {
@@ -499,12 +511,33 @@ class CuicuiManager extends CuicuiDB {
             $uid = $row['UID'];
             $acceptedCond = 1;
             $profileVisibility = $this->defaultProfileVisibility;
-            // Exemple de tableau de paramètres
+
+
             $settingsArray = array(
-                'param1' => 'valeur1',
-                'param2' => 'valeur2',
-                'param3' => 'valeur3'
-            );
+                'notifications' => array(
+                    'email' => true, // Notifications par e-mail activées ou désactivées
+                    'push' => true // Notifications push activées ou désactivées
+                ),
+                'privacy' => array(
+                    'post_visibility' => 'friends' // Visibilité des publications (public, privé, amis seulement, etc.)
+                ),
+                'other_preferences' => array(
+                    'autoplay_videos' => false, // Lecture automatique des vidéos activée ou désactivée
+                    'show_online_status' => true // Afficher le statut en ligne activé ou désactivé
+                ),
+                'additional_info' => array(
+                    'fullname' => 'John Doe', // Nom complet de l'utilisateur
+                    'bio_extended' => 'hello', // Bio étendue de l'utilisateur
+                    'location' => 'New York', // Localisation de l'utilisateur
+                    'social_links' => 'https://example.com/social', // Liens sociaux de l'utilisateur
+                    'occupation' => 'Web Developer', // Occupation de l'utilisateur
+                    'interests' => 'Travel, Music', // Centres d'intérêt de l'utilisateur
+                    'languages_spoken' => 'English, French', // Langues parlées par l'utilisateur
+                    'relationship_status' => 'single', // Statut relationnel de l'utilisateur
+                    'birthday' => '1990-01-01', // Anniversaire de l'utilisateur
+                    'privacy_settings' => false // Paramètres de confidentialité de l'utilisateur
+                )
+            );                   
 
             // Convertir le tableau en une chaîne JSON
             $settingsJson = json_encode($settingsArray);
@@ -727,6 +760,62 @@ class CuicuiManager extends CuicuiDB {
         return new UserInfo($row); // Return UserInfo object
     }
 
+    // Method to get user settings
+    public function getUserSettings(string $UID): ?UserInfo {
+        $query = "SELECT * FROM user_settings WHERE users_uid=$UID"; // SQL query to retrieve user settings
+        $result = $this->admin_conn->query($query); // Execute the query
+
+        // Check for query execution failure
+        if(!$result) {
+            die("Error executing query: " . $this->admin_conn->error); // Die with error message
+        }
+
+        // Check if no rows affected
+        if($result->num_rows == 0) {
+            $this->err = ErrorTypes::UndefinedUser; // Set error type
+            return NULL; // Return NULL indicating failure
+        }
+
+        $row = $result->fetch_assoc(); // Fetch the result row
+
+        if($row == false) {
+            $this->err = ErrorTypes::QueryError; // Set error type
+            return NULL; // Return NULL indicating failure
+        }
+
+        return new UserInfo($row); // Return UserInfo object
+    }
+
+    // Method to get user info and settings
+    public function getUserInfoAndSettings(string $UID): ?UserInfo {
+        $query = "SELECT u.*, us.*
+                FROM users u
+                LEFT JOIN user_settings us ON u.UID = us.users_uid
+                WHERE u.UID=$UID"; // SQL query to retrieve user info and settings
+        $result = $this->admin_conn->query($query); // Execute the query
+
+        // Check for query execution failure
+        if(!$result) {
+            die("Error executing query: " . $this->admin_conn->error); // Die with error message
+        }
+
+        // Check if no rows affected
+        if($result->num_rows == 0) {
+            $this->err = ErrorTypes::UndefinedUser; // Set error type
+            return NULL; // Return NULL indicating failure
+        }
+
+        $row = $result->fetch_assoc(); // Fetch the result row
+
+        if($row == false) {
+            $this->err = ErrorTypes::QueryError; // Set error type
+            return NULL; // Return NULL indicating failure
+        }
+
+        return new UserInfo($row); // Return UserInfo object
+    }
+
+
     public function getUserInfoByName(string $username): ?UserInfo {
         $query = "SELECT * FROM users WHERE username = ?";
         $stmt = $this->createRequest($query, "s", $username);
@@ -913,19 +1002,147 @@ class CuicuiManager extends CuicuiDB {
 class UserInfo {
     private int $uid = 0;
     private string $username = "";
-    private string $user_handle = "";
+    private string $password = "";
+    private string $email = "";
     public string $bio = "";
     private string $profile_picture = ""; 
+    private string $user_theme = "";
+    private string $user_lang = "";
+
+    // Ajouter les nouveaux champs
+    private array $settingsArray = []; // Modifier le type pour être un tableau
 
     public function __construct(array $info) {
-        $this->bio = $info["biography"];
-        $this->username = $info["username"];
-        $this->uid = $info["UID"];
-        $this->profile_picture = $info["profile_pic_url"];
+        $this->bio = isset($info["biography"]) ? $info["biography"] : "";
+        $this->username = isset($info["username"]) ? $info["username"] : "";
+        $this->email = isset($info["email"]) ? $info["email"] : "";
+        $this->uid = isset($info["UID"]) ? $info["UID"] : 0;
+        $this->profile_picture = isset($info["profile_pic_url"]) ? $info["profile_pic_url"] : "";
+        $this->user_theme = isset($info["theme"]) ? $info["theme"] : "";
+        $this->user_lang = isset($info["lang"]) ? $info["lang"] : "";
+        $this->password= isset($info["password"]) ? $info["password"] : "";
+        
+        // Décoder le tableau des paramètres s'il existe
+        $this->settingsArray = isset($info["settings_array"]) ? json_decode($info["settings_array"], true) : [];
+
     }
+
+    // Setters
+    public function setUsername(string $username): void {
+        $this->username = $username;
+        $_SESSION['username'] = $username;
+    }
+
+    public function setEmail(string $email): void {
+        $this->email = $email;
+    }
+
+    public function setTheme(string $theme): void {
+        $this->user_theme = $theme;
+        $_SESSION['theme'] = $theme;
+    }
+
+    public function setLang(string $lang): void {
+        $this->user_lang = $lang;
+        $GLOBALS['MAIN_LANG'] = $lang;
+        $GLOBALS['LANG'] = $GLOBALS['MAIN_LANG'];
+    }
+
+    public function setPassword(string $password): void {
+        if($password!=$this->password || $password!=''){
+            $this->password = $password;
+        }
+    }
+
+    public function setBio(string $bio): void {
+        $this->bio = $bio;
+    }
+
+    public function setProfilePicture(string $profile_picture): void {
+        $this->profile_picture = $profile_picture;
+    }
+
+    public function setSettingsArray(array $settingsArray): void {
+        $this->settingsArray = $settingsArray;
+    }
+
+
+    // Méthode pour insérer les informations de l'utilisateur dans la base de données
+    public function insertUserInfo(mysqli $conn): bool {
+        $query = "INSERT INTO users (UID, username, password, email, biography, profile_pic_url) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("isssss", $this->uid, $this->username, $this->password, $this->email, $this->bio, $this->profile_picture);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    // Méthode pour insérer les paramètres de l'utilisateur dans la base de données
+    public function insertUserSettings(mysqli $conn): bool {
+        $query = "INSERT INTO user_settings (users_uid, theme, lang, settings_array) VALUES (?, ?, ?, ?)";
+        $settings_json = json_encode($this->settingsArray);
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("isss", $this->uid, $this->user_lang, $this->user_theme, $settings_json);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    // Méthode pour insérer à la fois les informations et les paramètres de l'utilisateur dans la base de données
+    public function insertUserInfoAndSettings(mysqli $conn): bool {
+        $user_info_inserted = $this->insertUserInfo($conn);
+        $user_settings_inserted = $this->insertUserSettings($conn);
+        return $user_info_inserted && $user_settings_inserted;
+    }
+
+    // Méthode pour mettre à jour les informations de l'utilisateur dans la base de données
+    public function updateUserInfo(mysqli $conn): bool {
+        $query = "UPDATE users SET username=?, password=?, email=?, biography=?, profile_pic_url=? WHERE UID=?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("sssssi", $this->username, $this->password, $this->email, $this->bio, $this->profile_picture, $this->uid);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    // Méthode pour mettre à jour les paramètres de l'utilisateur dans la base de données
+    public function updateUserSettings(mysqli $conn): bool {
+        $query = "UPDATE user_settings SET settings_array=?, theme=?, lang=? WHERE users_uid=?";
+        $settings_json = json_encode($this->settingsArray);
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("sssi", $settings_json, $this->user_theme, $this->user_lang, $this->uid);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    // Méthode pour mettre à jour à la fois les informations et les paramètres de l'utilisateur dans la base de données
+    public function updateUserInfoAndSettings(mysqli $conn): bool {
+        $user_info_updated = $this->updateUserInfo($conn);
+        $user_settings_updated = $this->updateUserSettings($conn);
+        return $user_info_updated && $user_settings_updated;
+    }
+
+
 
     public function getUsername() {
         return $this->username;
+    }
+
+    public function getPassword() {
+        return $this->password;
+    }
+
+    public function getEmail() {
+        return $this->email;
+    }
+
+    public function getTheme() {
+        return $this->user_theme;
+    }
+
+    public function getLang() {
+        return $this->user_lang;
     }
 
     public function getProfilePicture() {
@@ -947,12 +1164,13 @@ class UserInfo {
     public function getAvatar() {
         return $this->profile_picture;
     }
+
+    public function getSettingsArray() {
+        return $this->settingsArray;
+    }
 }
 
 
-class RegisterInfo {
-    
-}
 
 // --
 
@@ -997,6 +1215,20 @@ class CuicuiSession extends CuicuiManager {
             die("No manager connection"); // Die with error message
         }
         return $this->cuicui_manager->getUserInfo($UID); // Get user info from CuicuiManager
+    }
+
+    public function getUserSettings(string $UID): ?UserInfo {
+        if($this->cuicui_manager == NULL) { // Check if CuicuiManager object is not set
+            die("No manager connection"); // Die with error message
+        }
+        return $this->cuicui_manager->getUserSettings($UID); // Get user info from CuicuiManager
+    }
+
+    public function getUserInfoAndSettings(string $UID): ?UserInfo {
+        if($this->cuicui_manager == NULL) { // Check if CuicuiManager object is not set
+            die("No manager connection"); // Die with error message
+        }
+        return $this->cuicui_manager->getUserInfoAndSettings($UID); // Get user info from CuicuiManager
     }
 
     // Method to update user bio

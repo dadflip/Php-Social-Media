@@ -23,7 +23,7 @@
 
     if($connection_success->getLoginStatus()) {
         $lang = $_SESSION["lang"];
-        header('Location:' . $appdir['PATH_CUICUI_APP'] . '/' .$GLOBALS['LANG']. $phpfile['mainpage']);
+        header('Location:' . $appdir['PATH_CUICUI_APP'] . '/' .$lang. $phpfile['mainpage']);
         exit();
     }
 ?>

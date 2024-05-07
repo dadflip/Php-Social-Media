@@ -12,6 +12,8 @@ $userName = $_SESSION['username'];
 $title = $content = $category = $keywords = '';
 $imageFilePath = null;
 $videoFilePath = null;
+$audioFilePath = null;
+$otherMediaFilePath = null;
 
 // Vérifier si le formulaire a été soumis
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -39,10 +41,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $videoFileName = '@' . $userName . '_vid_' . $currentDate . '.' . pathinfo($_FILES['video']['name'], PATHINFO_EXTENSION);
         $videoFilePath = $userFolder . '/' . $videoFileName;
         move_uploaded_file($_FILES['video']['tmp_name'], $parent . $videoFilePath);
+    } elseif ($_FILES['audio']['error'] === UPLOAD_ERR_OK) { // Gérer le téléchargement du fichier audio
+        $currentDate = date('YmdHis'); // Obtient la date actuelle au format YYYYMMDDHHmmss
+        $audioFileName = '@' . $userName . '_audio_' . $currentDate . '.' . pathinfo($_FILES['audio']['name'], PATHINFO_EXTENSION);
+        $audioFilePath = $userFolder . '/' . $audioFileName;
+        move_uploaded_file($_FILES['audio']['tmp_name'], $parent . $audioFilePath);
+    } elseif ($_FILES['other-media']['error'] === UPLOAD_ERR_OK) { // Gérer le téléchargement d'autres types de médias
+        $currentDate = date('YmdHis'); // Obtient la date actuelle au format YYYYMMDDHHmmss
+        $otherMediaFileName = '@' . $userName . '_media_' . $currentDate . '.' . pathinfo($_FILES['other-media']['name'], PATHINFO_EXTENSION);
+        $otherMediaFilePath = $userFolder . '/' . $otherMediaFileName;
+        move_uploaded_file($_FILES['other-media']['tmp_name'], $parent . $otherMediaFilePath);
     } else {
         // Récupérer les URLs des médias depuis les paramètres de l'URL
         $imageFilePath = isset($_GET['image_url']) ? $_GET['image_url'] : '';
         $videoFilePath = isset($_GET['video_url']) ? $_GET['video_url'] : '';
+        $audioFilePath = isset($_GET['audio_url']) ? $_GET['audio_url'] : '';
+        $otherMediaFilePath = isset($_GET['other_media_url']) ? $_GET['other_media_url'] : '';
     }
 
     $postDate = date('Y-m-d H:i:s');
@@ -62,6 +76,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!empty($contentVidUrl)) {
         $mediaType = 'video';
         $mediaUrl = $contentVidUrl;
+    } elseif (!empty($audioFilePath)) {
+        $mediaType = 'audio';
+        $mediaUrl = $audioFilePath;
+    } elseif (!empty($otherMediaFilePath)) {
+        $mediaType = 'other';
+        $mediaUrl = $otherMediaFilePath;
     }
     
     $createdAt = date('Y-m-d H:i:s');
@@ -72,9 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cuicui_manager->executeRequest($mediaQuery, "issss", $mediaId, $postTextId, $mediaType, $mediaUrl, $createdAt);
     
     // Requête pour insérer les données dans la table 'posts'
-    $postQuery = "INSERT INTO posts (users_uid, title, category, tags, post_date, content_img_url, content_vid_url, text_content, media_id, textId) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    $cuicui_manager->executeRequest($postQuery, "isssssssis", $userId, $title, $category, $tags, $postDate, $contentImgUrl, $contentVidUrl, $content, $mediaId, $postTextId);
+    $postQuery = "INSERT INTO posts (users_uid, title, category, tags, post_date, content_img_url, content_vid_url, content_other_url, text_content, media_id, textId) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $cuicui_manager->executeRequest($postQuery, "issssssssis", $userId, $title, $category, $tags, $postDate, $contentImgUrl, $contentVidUrl, $mediaUrl, $content, $mediaId, $postTextId);
 
     // Insérer une notification dans la table 'notifications'
     $notificationType = "post";

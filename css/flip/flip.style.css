@@ -386,20 +386,26 @@ hr {
     padding: 10px;
     flex-grow: 1;
     width: 25em;
+    height: 1.5em;
     border-radius: 50px;
+    background-color: transparent;
+    border: 1px solid #ffffff26;
+}
+
+#recherche-input-wrapper:hover {
+    animation: shake 2s 2s forwards;
 }
 
 #barre-recherche button {
     border: none;
     background-color: rgba(0, 0, 0, 0);
-    padding: 2em;
+    padding: 1em;
     cursor: pointer;
-    transition: background-color 0.3s ease;
     border-radius: 50px;
 }
 
 #barre-recherche button:hover {
-    background-color: #f1f1f1;
+    animation: colorGradient 2s infinite;
 }
 
 #bouton-recherche {
@@ -407,9 +413,19 @@ hr {
 }
 
 
-.search-icon {
+.navigation-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2em;
+    margin: 0.5em;
+}
+
+.navigation-buttons button {
+    border: none;
+    background-color: rgba(50, 53, 243, 0.945);
+    padding: 1em;
     cursor: pointer;
-    font-size: 24px;
+    border-radius: 50px;
 }
 
 /* Formulaire flipbox */
@@ -422,13 +438,14 @@ hr {
     transform: translate(-50%, -50%);
     padding: 20px;
     border-radius: 20px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 5px 15px 16px rgba(0, 0, 0, 0.3);
     z-index: 1000;
     display: none;
-    max-width: 600px;
-    max-height: 400px;
+    max-width: 20em;
+    max-height: 25em;
+    height: 100%;
+    width: 100%;
     overflow: auto;
-    border: 1px solid #fff;
 }
 
 
@@ -458,7 +475,7 @@ hr {
 
 .floating-form form {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 10px;
     justify-items: stretch;
     align-content: space-evenly;

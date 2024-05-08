@@ -12,6 +12,7 @@
     "NotificationManager": "\/@CuicuiDB\/NotificationManager.php",
     "ban_disconnect": "\/@CuicuiMethods\/ban_disconnect.php",
     "create_error": "\/@CuicuiMethods\/create_error.php",
+    "deleteAccount": "\/@CuicuiMethods\/deleteAccount.php",
     "disconnect": "\/@CuicuiMethods\/disconnect.php",
     "getRegisterForm": "\/@CuicuiMethods\/getRegisterForm.php",
     "Examples": "\/@LostAndFound\/Examples.php",

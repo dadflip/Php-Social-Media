@@ -17,11 +17,12 @@ includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexEl
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <title>Accueil</title>
     <style>
-        /* Styles personnalisés */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background: #000000f2;
+            color: #fff;
         }
 
         .container {
@@ -33,7 +34,7 @@ includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexEl
 
         .header {
             padding: 100px 0;
-            background-color: var(--swiper-theme-color);
+            background-color: #051c3517;
             color: #ffffff;
             border-radius: 10px;
             border: 1px solid;
@@ -105,7 +106,7 @@ includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexEl
         }
 
         .links-grid li {
-            background-color: #ffffff;
+            background-color: #ffffff00;
             border: 1px solid #e0e0e0;
             border-radius: 5px;
             padding: 20px;
@@ -183,10 +184,9 @@ includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexEl
             margin-top: 20px;
         }
 
-        /* Styles pour les cartes */
         .card-link {
             text-decoration: none;
-            color: inherit; /* Utilise la couleur par défaut du texte */
+            color: #000;
         }
 
         .card {
@@ -250,7 +250,7 @@ includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexEl
 
     <div class="right-panel wow animate__fadeInRight" data-wow-duration="1s" data-wow-delay="2s">
         <section id="bottom-links" class="links-grid">
-            <a href="#" class="card-link">
+            <a href="<?php echo $appdir['PATH_CUICUI_PROJECT'] . '/@/discover/starter.php'?>" class="card-link">
                 <div class="card">
                     <img src=<?php echo $appdir['PATH_IMG_DIR'] . "/index/image1.png" ?> alt="Image 1">
                     <div class="content">
@@ -260,7 +260,7 @@ includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexEl
                     </div>
                 </div>
             </a>
-            <a href="#" class="card-link">
+            <a href="<?php echo $appdir['PATH_CUICUI_PROJECT'] . '/@/lang/lang.php'?>" class="card-link">
                 <div class="card">
                     <img src=<?php echo $appdir['PATH_IMG_DIR'] . "/index/image2.png" ?> alt="Image 2">
                     <div class="content">
@@ -280,7 +280,7 @@ includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexEl
                     </div>
                 </div>
             </a>
-            <a href="#" class="card-link">
+            <a href="<?php echo $appdir['PATH_API_DIR'] ?>" class="card-link">
                 <div class="card">
                     <img src=<?php echo $appdir['PATH_IMG_DIR'] . "/index/image4.png" ?> alt="Image 4">
                     <div class="content">

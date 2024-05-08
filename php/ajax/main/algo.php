@@ -187,14 +187,14 @@ try {
             $profilePicUrl = $folder . $text['profile_pic_url'];
 
             // Vérifier si le fichier à cette URL existe
-            if (file_exists($profilePicUrl)) {
+            //if (file_exists($profilePicUrl)) {
                 // Le fichier existe, utilisez l'URL de l'image de profil
                 $profileImageUrl = $profilePicUrl;
-            } else {
+            //} else {
                 // Le fichier n'existe pas, utilisez un placeholder
-                $placeholderImageUrl = $folder . '/placeholder.png';
-                $profileImageUrl = $placeholderImageUrl;
-            }
+            //    $placeholderImageUrl = $folder . '/placeholder.png';
+            //    $profileImageUrl = $placeholderImageUrl;
+            //}
 
             // Mettre à jour les valeurs des URL dans le tableau $allTexts
             $text['media_url'] = $imgUrl;
@@ -243,14 +243,14 @@ try {
             $profilePicUrl = $folder . $row['profile_pic_url'];
 
             // Vérifier si le fichier à cette URL existe
-            if (file_exists($profilePicUrl)) {
+            //if (file_exists($profilePicUrl)) {
                 // Le fichier existe, utilisez l'URL de l'image de profil
                 $profileImageUrl = $profilePicUrl;
-            } else {
+            //} else {
                 // Le fichier n'existe pas, utilisez un placeholder
-                $placeholderImageUrl = $folder . '/placeholder.png'; // Remplacez cela par le chemin vers votre placeholder
-                $profileImageUrl = $placeholderImageUrl;
-            }
+            //    $placeholderImageUrl = $folder . '/placeholder.png'; // Remplacez cela par le chemin vers votre placeholder
+            //    $profileImageUrl = $placeholderImageUrl;
+            //}
 
             // Mettre à jour les valeurs des URL dans le tableau $allTextsWithURL
             $row['media_url'] = $imgUrl;

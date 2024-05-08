@@ -1,50 +1,50 @@
 <div class='input-field' id="email-field"> 
-    <label for='email'><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Adresse email' : 'Email Address'; ?></label>  
-    <input type='email' name='email' id="email" placeholder='<?php echo ($GLOBALS['LANG'] === 'fr') ? 'Entrez votre Email' : 'Enter your Email'; ?>' required autocomplete='off'>
+    <label for='email'>Adresse email</label>  
+    <input type='email' name='email' id="email" placeholder='Entrez votre Email' required autocomplete='off'>
 </div>
 <div class='input-field' id="password-field">
-    <label for='password'><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Mot de passe' : 'Password'; ?></label>  
-    <input type='password' name='password' id="password" placeholder='<?php echo ($GLOBALS['LANG'] === 'fr') ? 'Saisissez votre mot de passe' : 'Enter your password'; ?>' required autocomplete='off'>
+    <label for='password'>Mot de passe</label>  
+    <input type='password' name='password' id="password" placeholder='Saisissez votre mot de passe' required autocomplete='off'>
 </div>
 <div class='input-field' id="confirm-password-field">
-    <label for='confirmpass'><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Confirmer le mot de passe' : 'Confirm Password'; ?></label>  
-    <input type='password' name='confirmpass' id="confirmpass" placeholder='<?php echo ($GLOBALS['LANG'] === 'fr') ? 'Confirmez votre mot de passe' : 'Confirm your password'; ?>' required autocomplete='off'>
+    <label for='confirmpass'>Confirmer le mot de passe</label>  
+    <input type='password' name='confirmpass' id="confirmpass" placeholder='Confirmez votre mot de passe' required autocomplete='off'>
 </div>
 <div class='input-field' id="username-field">
-    <label for='username'><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Nom d\'utilisateur' : 'Username'; ?></label>
-    <input type='text' name='username' id="username" placeholder="<?php echo ($GLOBALS['LANG'] === 'fr') ? 'Nom d\'utilisateur' : 'Username'; ?>" required minlength='4' maxlength='30' autocomplete='off'>
+    <label for='username'>Nom d'utilisateur</label>
+    <input type='text' name='username' id="username" placeholder="Nom d'utilisateur" required minlength='4' maxlength='30' autocomplete='off'>
 </div>
 <div class="input-field" id="uid-field">
-    <label for='uid'><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Identifiant' : 'ID'; ?></label>
-    <input type='text' name='uid' id="uid" placeholder="<?php echo ($GLOBALS['LANG'] === 'fr') ? 'Identifiant' : 'ID'; ?>" required minlength='4' maxlength='30' autocomplete='off'>
+    <label for='uid'>Identifiant</label>
+    <input type='text' name='uid' id="uid" placeholder="Identifiant" required minlength='4' maxlength='30' autocomplete='off'>
 </div>
 <div class='input-field' id="birthday-field">
-    <label for='birthday'><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Entrez votre date de naissance' : 'Enter your date of birth'; ?></label>
+    <label for='birthday'>Entrez votre date de naissance</label>
     <input type='date' name="birthday" id="birthday">
 </div>
 <div class='input-field' id="profile-image-field">
-    <label for='profile-image'><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Image de profil' : 'Profile Image'; ?></label>
-    <input type='file' name='profile-image' id="profile-image" accept="image/*" required>
+    <label for='profile-image'>Image de profil</label>
+    <input type='file' name='profile-image' id="profile-image" accept="image/*">
 </div>
 <div class='input-field' id="language-field">
-    <label for='language'><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Langue' : 'Language'; ?></label>
+    <label for='language'>Langue</label>
     <select name="language" id="language" required>
-        <option value="" disabled selected><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Sélectionnez votre langue' : 'Select your language'; ?></option>
+        <option value="" disabled selected>Sélectionnez votre langue</option>
         <option value="fr">Français</option>
         <option value="en">English</option>
-        <!-- Add more language options as needed -->
+        <!-- Ajouter d'autres options de langue selon vos besoins -->
     </select>
 </div>
 <div class='input-field' id="bio-field">
-    <label for='bio'><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Bio' : 'Bio'; ?></label>
-    <textarea name="bio" id="bio" placeholder="<?php echo ($GLOBALS['LANG'] === 'fr') ? 'Saisissez votre bio' : 'Enter your bio'; ?>" required></textarea>
+    <label for='bio'>Bio</label>
+    <textarea name="bio" id="bio" placeholder="Saisissez votre bio" required></textarea>
 </div>
-<input type="submit" name="submit" value="<?php echo ($GLOBALS['LANG'] === 'fr') ? 'Continuer' : 'Continue'; ?>" id="submit-button"> <!-- Add a submit button -->
-<!-- <button id="next-step-button"><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Continuer' : 'Continue'; ?></button> -->
-<a href="./login.php"><?php echo ($GLOBALS['LANG'] === 'fr') ? 'Je possède déjà un compte' : 'I already have an account'; ?></a>
+<input type="submit" name="submit" value="Continuer" id="submit-button"> <!-- Ajouter un bouton de soumission -->
+<!-- <button id="next-step-button">Continuer</button> -->
+<a href="./login.php">Je possède déjà un compte</a>
 
 <script>
-    // Retrieve all fields and buttons
+    // Récupérer tous les champs et les boutons
     const emailField = document.getElementById("email-field");
     const passwordField = document.getElementById("password-field");
     const confirmPasswordField = document.getElementById("confirm-password-field");
@@ -56,7 +56,7 @@
     const bioField = document.getElementById("bio-field");
     const submitButton = document.getElementById("submit-button");
 
-    // Hide all fields except the first one
+    // Cacher tous les champs sauf le premier
     passwordField.style.display = "none";
     confirmPasswordField.style.display = "none";
     usernameField.style.display = "none";
@@ -66,7 +66,7 @@
     languageField.style.display = "none";
     bioField.style.display = "none";
 
-    // Add event listeners for each field
+    // Ajouter des écouteurs d'événements pour chaque champ
     email.addEventListener("input", function() {
         if (email.validity.valid) {
             passwordField.style.display = "flex";
@@ -100,11 +100,6 @@
     birthday.addEventListener("input", function() {
         if (birthday.validity.valid) {
             profileImage.style.display = "flex";
-        }
-    });
-
-    profileImage.addEventListener("change", function() {
-        if (profileImage.files.length > 0) {
             languageField.style.display = "flex";
         }
     });

@@ -157,7 +157,7 @@ if (isset($_SESSION['UID'])) {
                     </div>
 
                     <div id="tab3" class="tab-content" style="display: none;">
-                        Contenu des Amis
+                        <div id="friendList"></div>
                     </div>
                     <div id="tab4" class="tab-content" style="display: none;">
                     <div class="content">
@@ -192,20 +192,16 @@ if (isset($_SESSION['UID'])) {
             <button id="toggle-right-panel">Toggle Panel</button>
             <div class="right-panel wow animate__fadeInRight" data-wow-duration="1s" data-wow-delay="2s">
                 <section id="right-links">
-
                     <ul>
                         <?php echo getNavbarContents() ?>
-                        <li><a href="#">Découvrir</a></li>
-                        <li><a href="#">Langue</a></li>
-                        <li><a href="#">Politique de confidentialité</a></li>
-                        <li><a href="<?php echo $appdir['PATH_API_DIR'] ?>">API</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Assistance</a></li>
-                        <li><a href="#">Termes et conditions</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <hr class="links-separator">
+                        <li><a href="#"><i class="fas fa-search"></i> Découvrir</a></li>
+                        <li><a href="#"><i class="fas fa-lock"></i> Politique de confidentialité</a></li>
+                        <li><a href="<?php echo $appdir['PATH_API_DIR'] ?>"><i class="fas fa-cogs"></i> API</a></li>
+                        <li><a href="#"><i class="fas fa-question-circle"></i> Assistance</a></li>
+                        <li><a href="#"><i class="fas fa-file-alt"></i> Termes et conditions</a></li>
                     </ul>
-
-                    <p> &copy; Cuicui App 2024</p>
+                    <p>&copy; Cuicui App 2024</p>
                 </section>
             </div>
         </div>

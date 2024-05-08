@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = $_POST['message'];
         $username = $_POST['username'];
 
+        //echo json_encode('test');
         $cuicui_manager = new CuicuiManager($database_configs, DATASET);
 
         // Créer une instance de ChatManager avec la connexion à la base de données
@@ -20,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userId = $_SESSION['UID'];
 
         // Exemple : définir l'ID du destinataire (peut être récupéré via l'interface utilisateur)
-        $receiverId = $cuicui_manager->getIdByUsername($username); // ID du destinataire
-
+        //$receiverId = $cuicui_manager->getIdByUsername($username); // ID du destinataire
+        /*
         // Encrypter le message avec la clé publique du destinataire
         $encryptedMessage = $chatManager->encryptMessageRSA($message, $receiverId);
 
@@ -35,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // Retourner une réponse JSON indiquant l'échec
             echo json_encode(array('success' => false, 'message' => 'Erreur lors de l\'envoi du message'));
-        }
+        }*/
     } else {
         // Retourner une réponse JSON indiquant une erreur si le message ou le nom d'utilisateur n'est pas fourni dans la requête POST
         echo json_encode(array('success' => false, 'message' => 'Message ou nom d\'utilisateur non fourni dans la requête POST'));

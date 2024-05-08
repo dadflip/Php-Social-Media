@@ -505,34 +505,56 @@ class CuicuiManager extends CuicuiDB {
             // Save uploaded image on server
             if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile-image"]) && $_FILES["profile-image"]["error"] == UPLOAD_ERR_OK) {
 
-                // Destination folder for uploaded images
-                $destinationFolder = $GLOBALS['img_upload'] . '@' . $username . '-' . $userId . '.profile-image';
+                // Créer un dossier pour l'utilisateur s'il n'existe pas
+                $userFolder = $GLOBALS['img_upload'] . '@' . $username . '-' . $userId . '.profile-image';
+                $parent = realpath(__DIR__) . '../../../../img';
 
-                // Create folder if it doesn't exist
-                if (!file_exists($destinationFolder)) {
-                    mkdir($destinationFolder, 0777, true);
+                if (!file_exists($userFolder)) {
+                    mkdir($parent . $userFolder, 0777, true);
                 }
 
                 $imageFile = $_FILES['profile-image'];
 
-                // Generate a unique name for the image file
                 $imageFileName = uniqid('img_') . '.' . pathinfo($imageFile['name'], PATHINFO_EXTENSION);
+                $imageFilePath = $userFolder . '/' . $imageFileName;
 
-                // Full path of the file in the destination folder
-                $imageFilePath = $destinationFolder . '/' . $imageFileName;
+                move_uploaded_file($_FILES['profile-image']['tmp_name'], $parent . $imageFilePath);
 
-                // Move the file to the destination folder
-                move_uploaded_file($imageFile['tmp_name'], $imageFilePath);
-
-                // Save image path in the database
-                // To be adapted according to your database structure and insertion query
                 $imageInsertQuery = "UPDATE users SET profile_pic_url = ? WHERE UID = ?";
                 $this->executeRequest($imageInsertQuery, "si", $imageFilePath, $userId);
 
-                $_SESSION["pfp_url"] = $GLOBALS['normalized_paths']['PATH_IMG_DIR'].'/'.$imageFilePath;
+                $_SESSION["pfp_url"] = $imageFilePath;
             } else {
-                echo 'no image';
+                $parent = realpath(__DIR__) . '../../../../img';
+
+                // Chemin vers le placeholder
+                $placeholderPath = "../../../../img/placeholder.png";
+                
+                // Chemin complet du répertoire utilisateur
+                $userFolder = $parent . '/' . $GLOBALS['img_upload'] . '@' . $username . '-' . $userId . '.profile-image';
+            
+                // S'assurer que le répertoire utilisateur existe, sinon le créer
+                if (!file_exists($userFolder)) {
+                    mkdir($userFolder, 0777, true);
+                }
+                
+                // Chemin de destination pour l'image de profil
+                $imageFilePath = $userFolder . '/placeholder.png';
+                
+                // Copier le placeholder vers le dossier de l'utilisateur
+                if (copy($placeholderPath, $imageFilePath)) {
+                    // Mettre à jour la base de données avec le chemin de l'image de profil
+                    $imageInsertQuery = "UPDATE users SET profile_pic_url = ? WHERE UID = ?";
+                    $this->executeRequest($imageInsertQuery, "si", $imageFilePath, $userId);
+                    
+                    // Mettre à jour la variable de session avec le chemin de l'image de profil
+                    $_SESSION["pfp_url"] = $imageFilePath;
+                } else {
+                    // Gérer l'erreur si la copie échoue
+                    echo "La copie du placeholder a échoué.";
+                }
             }
+                     
 
             // Query to get user's UID
             $uid_query = "SELECT UID FROM `users` WHERE username=?";
@@ -598,6 +620,41 @@ class CuicuiManager extends CuicuiDB {
         }
     }
 
+    public function deleteAccount($userId): bool {
+        // Check database connection
+        if (!$this->connected) { 
+            $this->err = ErrorTypes::NoConnection; 
+            return false; 
+        }
+    
+        // DELETE query to remove user from the database
+        $deleteUserQuery = "DELETE FROM users WHERE UID = ?";
+        
+        // Execute the query with parameters
+        $this->executeRequest($deleteUserQuery, "i", $userId);
+    
+        // Check if any rows are affected
+        if($this->admin_conn->affected_rows == 0) {
+            $this->err = ErrorTypes::InvalidInput; // Set error type
+            return false; // Return false to indicate failure
+        }
+    
+        // DELETE query to remove user settings from the database
+        $deleteSettingsQuery = "DELETE FROM user_settings WHERE users_uid = ?";
+    
+        // Execute the query with parameters
+        $this->executeRequest($deleteSettingsQuery, "i", $userId);
+    
+        // Check if any rows are affected
+        if($this->admin_conn->affected_rows == 0) {
+            $this->err = ErrorTypes::InvalidInput; // Set error type
+            return false; // Return false to indicate failure
+        }
+    
+        return true; // Return true to indicate success
+    }
+    
+
     // Method to connect a user
     function connectUser(): LoginStatus {
         // Check if username and password are set in POST request
@@ -643,7 +700,7 @@ class CuicuiManager extends CuicuiDB {
         $_SESSION["theme"] = $row["theme"]; // Set session theme
         $_SESSION["lang"] = $row["lang"]; // Set session language
         $_SESSION["isAdmin"] = $row["isAdmin"];
-        $_SESSION["pfp_url"] = $GLOBALS['normalized_paths']['PATH_IMG_DIR'].'/'.$row["profile_pic_url"]; // Set session profile picture URL
+        $_SESSION["pfp_url"] = $row["profile_pic_url"]; // Set session profile picture URL
         
         return new LoginStatus(true, ""); // Return LoginStatus indicating success
     }
@@ -721,6 +778,30 @@ class CuicuiManager extends CuicuiDB {
         $this->resetError();
         return true;
     }
+
+    public function changeProfileImage($username, $userId, $file_img) {
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($file_img) && $file_img["error"] == UPLOAD_ERR_OK) {
+            // Créer un dossier pour l'utilisateur s'il n'existe pas
+            $userFolder = $GLOBALS['img_upload'] . '@' . $username . '-' . $userId . '.profile-image';
+            $parent = realpath(__DIR__) . '../../../../img';
+
+            /*if (!file_exists($userFolder)) {
+                mkdir($parent . $userFolder, 0777, true);
+            }*/
+
+            $imageFile = $file_img;
+
+            $imageFileName = uniqid('img_') . '.' . pathinfo($imageFile['name'], PATHINFO_EXTENSION);
+            $imageFilePath = $userFolder . '/' . $imageFileName;
+
+            move_uploaded_file($file_img['tmp_name'], $parent . $imageFilePath);
+
+            $imageInsertQuery = "UPDATE users SET profile_pic_url = ? WHERE UID = ?";
+            $this->executeRequest($imageInsertQuery, "si", $imageFilePath, $userId);
+
+            $_SESSION["pfp_url"] = $imageFilePath;
+        }
+    }    
     
     // Method to get user info
     public function getUserInfo(string $UID): ?UserInfo {
@@ -959,6 +1040,13 @@ class CuicuiManager extends CuicuiDB {
         $this->sendPostDeletionNotification($this->getPostUserId($postID), $postID, $adminID);
     }
 
+    public function deletePostByUser($postID): void {
+        $delete_query = "DELETE FROM `posts` WHERE textID=?";
+        $stmt = $this->prepare($delete_query);
+        $stmt->bind_param("s", $postID);
+        $stmt->execute();
+    }
+
     // Add a new method to send post deletion notification
     private function sendPostDeletionNotification($userId, $postId, $adminId) {
         // Prepare notification message
@@ -1137,6 +1225,14 @@ class CuicuiManager extends CuicuiDB {
     public function createFollow($follower, $target) {
         $query = "INSERT INTO `follow`(follower_id,target_id) VALUES (?,?)"; // SQL query to create follow relationship
         $this->executeRequest($query, "ii", $follower, $target); // Execute the query
+    }
+
+    // Method to delete follow relationship
+    public function unFollowUser($follower, $target): bool {
+        $query = "DELETE FROM `follow` WHERE follower_id=? AND target_id=?"; // SQL query to delete follow relationship
+        $success = $this->createRequest($query, "ss", $follower, $target); // Execute the query
+
+        return $success;
     }
 
     // Method to delete follow relationship

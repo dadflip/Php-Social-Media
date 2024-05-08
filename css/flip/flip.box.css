@@ -256,13 +256,12 @@
 }
 
 .cadre img {
-    max-width: 10em;
     max-height: 10em;
     align-items: center;
     justify-content: center;
     position: relative;
-    object-fit: cover;
     border-radius: 10px;
+    object-fit: cover;
 }
 
 .cadre img {

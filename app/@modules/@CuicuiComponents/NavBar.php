@@ -56,11 +56,12 @@ function createTitleBar(string $text): string {
     $_sta = $GLOBALS['normalized_paths']['PATH_CUICUI_APP'] . '/' . $GLOBALS['LANG'] . $GLOBALS['php_files']['stats'];
     $_dis = $GLOBALS['normalized_paths']['PATH_MODULES'] . $GLOBALS['php_files']['disconnect'];
     $_opt = $GLOBALS['normalized_paths']['PATH_CUICUI_APP'] . '/' . $GLOBALS['LANG'] . $GLOBALS['php_files']['options'];
+    $_adm = $GLOBALS['normalized_paths']['PATH_CUICUI_APP'] . '/admin';
 
     $action = (isset($_SESSION["UID"])) ? "$_opt" : "$_log";
     
     $out = '<div class="titlebar">
-            <button onclick="SlidingMenu.menu()" class="logo" id="logo" aria-label="Shows the navigation bar"></button>
+            <button onclick="toHome()" class="logo" id="logo" aria-label="Shows the navigation bar"></button>
             <h1 class="title">'. $text .'</h1>
             <div class="title-user">
             <a class="user" href="'.$action.'">
@@ -70,10 +71,12 @@ function createTitleBar(string $text): string {
         $default_image_path = $GLOBALS['normalized_paths']['PATH_IMG_DIR'] . '/placeholder.png';
 
         // Chemin de l'image utilisateur
-        $user_image_path = $GLOBALS['normalized_paths']['PATH_CUICUI_PROJECT'] . $_SESSION["pfp_url"];
+        $user_image_path = $GLOBALS['normalized_paths']['PATH_IMG_DIR'] . $_SESSION["pfp_url"];
+
+        $parent = realpath(__DIR__) . '../../../../img';
 
         // Vérifier si le fichier utilisateur existe
-        if (file_exists($user_image_path)) {
+        if (file_exists($parent.$_SESSION["pfp_url"])) {
             // Le fichier utilisateur existe, utilisez l'image utilisateur
             $img = $user_image_path;
         } else {
@@ -84,10 +87,13 @@ function createTitleBar(string $text): string {
         // Génération de la balise d'image
         $out .= '<img src="' . $img . '" class="profile-pfp">';
     }
+    if($_SESSION["isAdmin"]) {
+        $out .= '</a><a class="user" href="'.$_adm.'"> @admin <i class="fas fa-external-link-alt"></i>';
+    }
     $out .= '
             </a>
             </div>
-        </div><div id="toasts"></div>';
+        </div>';
     $out .= '
     <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">

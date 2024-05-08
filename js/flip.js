@@ -101,6 +101,7 @@ function construireFlipbox(resultats) {
         
         // Définir la classe CSS en fonction de la sensibilité du contenu
         var postClass = resultat.sensitive_content === 1 ? 'post sensitive' : 'post';
+        console.log('-----------------' + resultat.sensitive_content);
 
         // Ajouter le badge avec l'icône d'alerte pour les posts sensibles
         var badge = resultat.sensitive_content === 1 ? '<span class="badge"><i class="fas fa-exclamation-triangle"></i></span>' : '';
@@ -129,14 +130,18 @@ function construireFlipbox(resultats) {
         // Ajouter une section pour le bouton Suivre
         flipbox += '<span class="follow-section no-flip">';
         flipbox += '<span class="user-icon"></span>';
-        flipbox += '<div class="follow-button" onclick="followUser(' + resultat.users_uid + ')">Suivre</div>';
+
+        flipbox += '<span id="follow-button-zone' + removeAtSign(resultat.textId) + '">';
+        checkFollowAndGenerateButton(window.__u__, resultat.users_uid, removeAtSign(resultat.textId));
+        flipbox += '</span>';
+
         // Ajouter un bouton pour signaler l'utilisateur
         flipbox += '<div class="report-button" onclick="reportUser(' + resultat.users_uid + ')">Signaler</div>';
 
         console.log('--->' + window.__admin_but__);
         if(window.__admin_but__ === true) {
             flipbox += `<div class="admin-button admin clickable cuicui-button" title="Effacer le post" onclick='removePost("${resultat.textId}", "${window.__u__}")'><i class="fas fa-solid fa-trash"></i></div>`;
-            flipbox += `<div class="admin-button admin clickable cuicui-button" title="Marquer comme sensible" onclick='markSensitive("${resultat.textId}", "${window.__u__}")'>Marquer comme sensible</div>`
+            flipbox += `<div class="admin-button admin clickable cuicui-button" title="Marquer comme sensible" onclick='markSensitive("${resultat.textId}", "${window.__u__}")'><i class="fas fa-exclamation-triangle"></i></div>`
         }
 
         flipbox += '</span>';
@@ -336,6 +341,105 @@ function construireFlipbox(resultats) {
 
 
 }
+
+//-------------------- Follow - Unfollow --------------------------------------------
+// Fonction pour vérifier si l'utilisateur suit un autre utilisateur et générer le bouton en conséquence
+function checkFollowAndGenerateButton(follower_id, target_id, text_id) {
+    $.ajax({
+        url: window.__ajx__ + 'follow.php',
+        type: 'POST',
+        data: {
+            action: 'check',
+            followerId: follower_id,
+            targetUserId: target_id
+        },
+        success: function(response) {
+            // Convertir la réponse en booléen
+            var isFollowing = (response === 'true');
+            generateButton(target_id, isFollowing, text_id);
+        },
+        error: function(xhr, status, error) {
+            console.error(error); // Gérer les erreurs éventuelles
+            // En cas d'erreur, générer le bouton avec la valeur par défaut (Suivre)
+            generateButton(target_id, false, text_id);
+        }
+    });
+}
+
+// Fonction pour générer le bouton de suivi
+function generateButton(target_id, isFollowing, text_id) {
+    var flipbox = '';
+    console.log('-----' + isFollowing)
+    console.log(text_id);
+    if (isFollowing == true && target_id != window.__u__) {
+        flipbox += '<div id="follow-button-' + target_id + '" class="follow-button" onclick="unfollowUser(' + target_id + ')">Retirer</div>';
+    } else if(isFollowing == false && target_id != window.__u__) {
+        flipbox += '<div id="follow-button-' + target_id + '" class="follow-button" onclick="followUser(' + target_id + ')">Suivre</div>';
+    } else {
+        flipbox += '<div class="no-follow">@me</div>';
+    }
+    // Ajouter flipbox à l'élément de votre choix dans le DOM
+    $('#follow-button-zone' + text_id).html(flipbox);
+}
+
+// Fonction pour enlever le caractère '@' d'un ID
+function removeAtSign(textId) {
+    return textId.replace('@', ''); // Utilisez la méthode replace pour remplacer le caractère '@' par une chaîne vide
+}
+
+// Fonction pour remettre le caractère '@' dans un ID
+function addAtSign(textId) {
+    return '@' + textId; // Ajoutez le caractère '@' devant l'ID
+}
+
+
+// Fonction pour suivre un utilisateur
+function followUser(targetUserId) {
+    // Récupérer l'ID de l'utilisateur connecté
+    var followerId = window.__u__;
+
+    $.ajax({
+        url: window.__ajx__ + 'follow.php',
+        type: "POST",
+        data: {
+            action: 'follow',
+            followerId: followerId,
+            targetUserId: targetUserId
+        },
+        success: function(response) {
+            console.log("Utilisateur suivi avec succès !");
+            window.location.reload();
+        },
+        error: function(xhr, status, error) {
+            console.error("Erreur Ajax: " + error);
+        }
+    });    
+}
+
+// Fonction pour ne plus suivre un utilisateur
+function unfollowUser(targetUserId) {
+    // Récupérer l'ID de l'utilisateur connecté
+    var followerId = window.__u__;
+
+    $.ajax({
+        url: window.__ajx__ + 'follow.php',
+        type: "POST",
+        data: {
+            action: 'unfollow',
+            followerId: followerId,
+            targetUserId: targetUserId
+        },
+        success: function(response) {
+            console.log("Utilisateur non suivi avec succès !");
+            window.location.reload();
+        },
+        error: function(xhr, status, error) {
+            console.error("Erreur Ajax: " + error);
+        }
+    });    
+}
+
+
 
 function removePost(postID, adminID) {
     $.ajax({
@@ -662,36 +766,6 @@ function likeDislike(textId, action) {
     updateLikesDislikesUI(textId);
 }
 
-//-------------------- Follow - Unfollow --------------------------------------------
-
-function followUser(targetUserId) {
-    // Récupérer l'ID de l'utilisateur connecté
-    var followerId = window.__u__;
-
-    console.log(targetUserId);
-    console.log(followerId);
-    
-    var data = {
-        followerId: followerId, // Utilisez la valeur correcte
-        targetUserId: targetUserId // Utilisez la valeur correcte
-    };
-    
-    $.ajax({
-        url: window.__ajx__ + 'follow.php',
-        type: "POST",
-        data: data,
-        success: function(response) {
-
-            console.log("Utilisateur suivi avec succès !");
-
-        },
-        error: function(xhr, status, error) {
-            console.error("Erreur Ajax: " + error);
-        }
-    });    
-}
-
-
 // Fonction pour envoyer un commentaire via AJAX et construire le composant de commentaire
 function envoyerCommentaire(parentId) {
     // Récupérer le contenu du commentaire à partir du textarea
@@ -846,11 +920,38 @@ function loadUsersWithJQuery() {
 }
 
 
+function loadFriendsWithJQuery() {
+    $.ajax({
+        url:  window.__ajx__ + 'getUsersForChat.php',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            // Créer les composants HTML pour afficher les utilisateurs suivis
+            var userListHTML = '<div class="user-list"><h2>Amis</h2>';
+            $.each(data, function(index, user) {
+                userListHTML += '<div class="user-card" onclick="openChat(\'' + user.username + '\')">';
+                userListHTML += '<p>' + user.username + '</p>';
+                userListHTML += '</div>';
+                // Vous pouvez également stocker les clés publiques et privées des utilisateurs dans des attributs data pour une utilisation ultérieure
+            });
+            userListHTML += '</div>';
+
+            // Afficher la liste des utilisateurs suivis dans le conteneur approprié
+            $('#friendList').html(userListHTML);
+        },
+        error: function(xhr, status, error) {
+            console.error('Erreur lors de la récupération des utilisateurs suivis:', error);
+        }
+    });
+}
+
+
 // Charger la liste des utilisateurs au chargement de la page en utilisant Fetch
 // window.onload = loadUsersWithFetch;
 
 // Ou bien, charger la liste des utilisateurs au chargement de la page en utilisant jQuery
 $(document).ready(loadUsersWithJQuery);
+$(document).ready(loadFriendsWithJQuery);
 
 
 // Fonction pour créer des bulles de mots-clés

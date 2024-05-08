@@ -31,7 +31,6 @@ if(isset($_POST['submit'])){
     // Récupérer toutes les variables POST du formulaire
     $theme = $_POST['theme'];
     $lang = $_POST['lang'];
-    echo json_encode($_POST['lang']);
     $username = $_POST['username-input'];
     $email = $_POST['email-input'];
     $newPassword = $_POST['change-password'];
@@ -46,6 +45,11 @@ if(isset($_POST['submit'])){
     // Insérer les informations de l'utilisateur dans la base de données
     $success = $user_info->updateUserInfoAndSettings($cuicui_manager->getConn());
 
+    // Vérifier si l'image de profil a été téléchargée et la traiter si c'est le cas
+    if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile-picture-input"]) && $_FILES["profile-picture-input"]["error"] == UPLOAD_ERR_OK) {
+        $profilePic = $_FILES['profile-picture-input'];
+        $cuicui_manager->changeProfileImage($user_info->getUsername(), $user_info->getID(), $profilePic);
+    }
 }
 
 if(isset($_POST['submit-more'])){
@@ -195,13 +199,13 @@ if(isset($_POST['submit-more'])){
                             $avatarPath = $appdir['PATH_IMG_DIR'] . $user_info->getAvatar();
 
                             // Vérifier si le fichier existe
-                            if (file_exists($avatarPath)) {
+                            // if (file_exists($avatarPath)) {
                                 // Utiliser l'avatar de l'utilisateur
                                 $avatarUrl = $avatarPath;
-                            } else {
+                            // } else {
                                 // Utiliser l'image de placeholder par défaut
-                                $avatarUrl = $appdir['PATH_IMG_DIR'] . '/placeholder.png';
-                            }
+                                // $avatarUrl = $appdir['PATH_IMG_DIR'] . '/placeholder.png';
+                            // }
                         ?>
                         <img src="<?php echo $avatarUrl; ?>" class="user-pfp clickable" id="user-pfp">
                         <div class="usernames">
@@ -216,7 +220,7 @@ if(isset($_POST['submit-more'])){
                 </div>
                 <div class="forms">
                     <div class="form-row">
-                        <form method="post" action="#" class="user-info-change" id="info-change">
+                        <form method="post" action="#" class="user-info-change" id="info-change" enctype="multipart/form-data">
                             <fieldset>
                                 <legend>Changer de thème</legend>
                                 <input type="radio" value="dark" id="dark" name="theme" class="radio-button theme-button" <?php echo ($user_info && $user_info->getTheme() == "dark") ? "checked" : ""; ?>>
@@ -242,12 +246,14 @@ if(isset($_POST['submit-more'])){
                                 <label for="email-input">Adresse E-mail</label>
                                 <input name="email-input" type="email" value=<?php echo $user_info->getEmail(); ?> required maxlength="50">
                                 <label for="profile-picture-input" class="custom-file-upload">Changer de photo de profil</label>
-                                <input name="profile-picture-input" type="file" accept="image/png, image/jpeg" id="change-pfp">
+                                <input type='file' name='profile-picture-input' id="profile-picture-input" accept="image/*">
                                 <label for="change-password">Changer le mot de passe</label>
                                 <input type="password" name="change-password" id="change-password" value=<?php echo $user_info->getPassword(); ?> >
                             </fieldset>
                             <input type="submit" name="submit" value="Continuer" id="submit-button"> 
                         </form>
+
+                        <a href="<?php echo $GLOBALS['normalized_paths']['PATH_MODULES'] . $GLOBALS['php_files']['deleteAccount']; ?>">Supprimer mon compte</a>
                     </div>
 
                    

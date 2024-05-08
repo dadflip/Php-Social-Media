@@ -190,7 +190,9 @@ label {
     margin: 0;
     display: block;
     border: 1px solid var(--border-color);
+    object-fit: cover; /* Ajoutez cette ligne */
 }
+
 
 .clickable:hover {
     cursor: pointer;

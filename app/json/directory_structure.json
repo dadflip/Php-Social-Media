@@ -30,6 +30,7 @@
                     "files": [
                         "ban_disconnect.php",
                         "create_error.php",
+                        "deleteAccount.php",
                         "disconnect.php",
                         "getRegisterForm.php"
                     ],

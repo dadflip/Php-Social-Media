@@ -9,8 +9,29 @@ function showTab(tabId) {
     });
 
     // Afficher le conteneur de contenu de l'onglet sélectionné
-    document.getElementById(tabId).style.display = 'block';
+    var selectedTab = document.getElementById(tabId);
+    if (selectedTab) {
+        selectedTab.style.display = 'block';
+
+        // Mettre à jour l'URL avec l'ID de l'onglet
+        history.pushState(null, null, '#'+tabId);
+    }
 }
+
+
+window.onload = function() {
+    // Récupérer l'ID de l'onglet à partir de l'URL
+    var url = window.location.href;
+    var tabId = url.split('#')[1]; // Récupérer la partie après le #
+    
+    if (tabId) {
+        // Si un ID d'onglet est présent dans l'URL, afficher cet onglet
+        showTab(tabId);
+    } else {
+        // Sinon, afficher par défaut le premier onglet
+        showTab('tab1');
+    }
+};
 
 // Fonction pour échapper les caractères spéciaux dans une expression régulière
 function escapeRegex(str) {

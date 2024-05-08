@@ -7,7 +7,6 @@ include '../defs.functions.php';
 includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
 includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexElement']);
 includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['NavBar']);
-includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['SearchBar']);
 
 
 $cuicui_manager = new CuicuiManager($database_configs, DATASET);

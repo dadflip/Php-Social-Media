@@ -98,8 +98,14 @@ function construireFlipbox(resultats) {
 
         likesData[resultat.textId] = resultat.likes;
         dislikesData[resultat.textId] = resultat.dislikes;
+        
+        // Définir la classe CSS en fonction de la sensibilité du contenu
+        var postClass = resultat.sensitive_content === 1 ? 'post sensitive' : 'post';
 
-        var  flipbox = '<hr><div class="post">';
+        // Ajouter le badge avec l'icône d'alerte pour les posts sensibles
+        var badge = resultat.sensitive_content === 1 ? '<span class="badge"><i class="fas fa-exclamation-triangle"></i></span>' : '';
+
+        var flipbox = '<hr><div class="' + postClass + '">';
 
         // Construction de la flipbox
         flipbox += '<div class="flip-box clickable" data-keywords="' + keywords + '" data-category="' + category + '" data-title="' + resultat.title + '" data-text-id="' + resultat.textId + '">';
@@ -111,7 +117,7 @@ function construireFlipbox(resultats) {
         flipbox += '<h5 class="user-info">';
 
         // Ajouter une section pour l'image de profil
-        flipbox += '<div class="profile-image">';
+        flipbox += badge + '<div class="profile-image">';
         flipbox += '<img src="' + resultat.profile_pic_url + '" alt="Profile Image">';
         flipbox += '</div>';
         
@@ -127,6 +133,11 @@ function construireFlipbox(resultats) {
         // Ajouter un bouton pour signaler l'utilisateur
         flipbox += '<div class="report-button" onclick="reportUser(' + resultat.users_uid + ')">Signaler</div>';
 
+        console.log('--->' + window.__admin_but__);
+        if(window.__admin_but__ === true) {
+            flipbox += `<div class="admin-button admin clickable cuicui-button" title="Effacer le post" onclick='removePost("${resultat.textId}", "${window.__u__}")'><i class="fas fa-solid fa-trash"></i></div>`;
+            flipbox += `<div class="admin-button admin clickable cuicui-button" title="Marquer comme sensible" onclick='markSensitive("${resultat.textId}", "${window.__u__}")'>Marquer comme sensible</div>`
+        }
 
         flipbox += '</span>';
         
@@ -324,6 +335,64 @@ function construireFlipbox(resultats) {
     });
 
 
+}
+
+function removePost(postID, adminID) {
+    $.ajax({
+        url: window.__ajx__ + "deletePost.php",
+        type: "POST",
+        data: {
+            postID,
+            adminID
+        },
+        success: function (result) {
+            if(result === "ok") {
+                $(`[data-text-id="${postID}"]`).remove();
+            }else{
+                //Trouver un moyen de mettre l'utilisateur au courant
+                alert(result);
+            }
+        },
+        error: function (xhr, status, error) {
+            alert()
+            console.error(
+                "Erreur lors de la requête Ajax pour l'effacement du post:" + postID,
+                status,
+                error
+            );
+            console.log("Réponse Ajax échouée :", xhr.responseText);
+        },
+
+    })
+}
+
+function markSensitive(postID, adminID) {
+    $.ajax({
+        url: window.__ajx__ + "markAsSensitive.php",
+        type: "POST",
+        // dataType: "json",
+        data: {
+            postID,
+            adminID
+        },
+        success: function (result) {
+            console.log("Réponse Ajax réussie :", result);
+            if(result === "ok") {
+                console.log("marked as sensitive");
+            }else{
+                alert(result);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error(
+                "Erreur lors de la requête Ajax pour l'effacement du post:" + postID,
+                status,
+                error
+            );
+            console.log("Réponse Ajax échouée :", xhr.responseText);
+        },
+
+    })
 }
 
 function getFileTypeFromUrl(url) {
@@ -812,3 +881,24 @@ function createKeywordBubbles() {
 
 // Ajouter un écouteur d'événement pour déclencher la création des bulles de mots-clés à chaque modification du champ
 document.querySelector('input[name="keywords"]').addEventListener('input', createKeywordBubbles);
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    var toggleButton = document.getElementById("toggle-filtres");
+    var filtresDropdown = document.getElementById("filtres");
+
+    toggleButton.addEventListener("click", function() {
+        filtresDropdown.classList.toggle("active");
+    });
+});
+
+// JavaScript pour basculer l'affichage du panneau
+document.addEventListener("DOMContentLoaded", function() {
+    var toggleButton = document.getElementById("toggle-right-panel");
+    var rightPanel = document.querySelector(".right-panel");
+
+    toggleButton.addEventListener("click", function() {
+        rightPanel.classList.toggle("active");
+    });
+});

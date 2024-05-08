@@ -96,4 +96,3 @@ function createTitleBar(string $text): string {
     ';
     return $out;
 }
-?>

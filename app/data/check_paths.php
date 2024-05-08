@@ -1,31 +1,37 @@
 <?php
 
+// Define global variables for SQL and JSON paths
 $GLOBALS['__var_sql_path__'] = '/../../../sql';
 $GLOBALS['__json_path__'] = '/../json/';
 
+/**
+ * Recursively scans a directory for files and subdirectories.
+ * 
+ * @param string $dir The directory path to scan.
+ * @return array An array containing files and subdirectories.
+ */
 function scanDirectory($dir) {
     $files = [];
     $subdirectories = [];
 
-    // Vérifier si le répertoire est lisible
+    // Check if directory is readable
     if (!is_readable($dir)) {
-        // Afficher un message d'erreur si le répertoire n'est pas lisible
-        echo "Erreur : Permission refusée pour accéder au répertoire $dir";
+        echo "Error: Permission denied to access directory $dir";
         return ['files' => $files, 'subdirectories' => $subdirectories];
     }
 
-    // Ouvrir le répertoire
+    // Open the directory
     $handle = opendir($dir);
 
-    // Parcourir les éléments du répertoire
+    // Read directory contents
     while (($file = readdir($handle)) !== false) {
         if ($file != '.' && $file != '..') {
             $path = $dir . '/' . $file;
             if (is_dir($path)) {
-                // Si c'est un répertoire, ajouter à la liste des sous-répertoires et parcourir récursivement
+                // If it's a directory, add to subdirectories list and recursively scan
                 $subdirectories[$file] = scanDirectory($path);
             } else {
-                // Si c'est un fichier, l'ajouter à la liste des fichiers
+                // If it's a file, add to files list
                 $files[] = $file;
             }
         }
@@ -33,66 +39,54 @@ function scanDirectory($dir) {
 
     closedir($handle);
 
-    // Retourner les fichiers et les sous-répertoires
+    // Return files and subdirectories
     return ['files' => $files, 'subdirectories' => $subdirectories];
 }
 
-
-// Chemin racine du projet
+// Get the root directory path
 $rootDirectory = dirname(__DIR__);
 
-// Scanner le répertoire racine
+// Scan the root directory
 $directoryStructure = scanDirectory($rootDirectory);
 
-// Enregistrer la structure du répertoire dans un fichier JSON
+// Save the directory structure to a JSON file
 file_put_contents(__DIR__.$GLOBALS['__json_path__'].'directory_structure.json', json_encode($directoryStructure, JSON_PRETTY_PRINT));
 
-// echo 'Structure du répertoire enregistrée dans directory_structure.json <br>';
-
-
-// --------------------------------------------
+// Function to create PHP variables for files
 function createPhpVariables($directoryStructure, $currentPath = '') {
     $phpFiles = [];
 
-    // Parcourir les fichiers du répertoire actuel
+    // Iterate over files in the current directory
     foreach ($directoryStructure['files'] as $file) {
-        // Vérifier si le fichier est un fichier .php
+        // Check if file is a .php file
         if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
-            // Créer une variable pour le fichier .php
+            // Create a variable for the .php file
             $variableName = pathinfo($file, PATHINFO_FILENAME);
             $filePath = $currentPath . '/' . $file;
-            // Enlever le nom du premier dossier du chemin
+            // Remove the name of the first folder from the path
             $adjustedPath = preg_replace('/\/[^\/]+\//', '/', $filePath, 1);
             ${$variableName} = $adjustedPath;
             $phpFiles[$variableName] = $adjustedPath;
         }
     }
 
-    // Parcourir les sous-répertoires
+    // Iterate over subdirectories
     foreach ($directoryStructure['subdirectories'] as $subdirectoryName => $subdirectory) {
-        // Construire le chemin complet du sous-répertoire
+        // Build the full path of the subdirectory
         $subdirectoryPath = $currentPath . '/' . $subdirectoryName;
-        // Appeler récursivement la fonction pour chaque sous-répertoire
+        // Recursively call the function for each subdirectory
         $phpFiles = array_merge($phpFiles, createPhpVariables($subdirectory, $subdirectoryPath));
     }
 
     return $phpFiles;
 }
 
-// Charger le contenu de directory_structure.json
+// Load content of directory_structure.json
 $directoryStructureJson = file_get_contents(__DIR__.$GLOBALS['__json_path__'].'directory_structure.json');
 $directoryStructure = json_decode($directoryStructureJson, true);
 
-// Créer les variables pour les fichiers .php
+// Create variables for .php files
 $phpFiles = createPhpVariables($directoryStructure);
 
-// Enregistrer les variables dans un fichier JSON
+// Save variables to a JSON file
 file_put_contents(__DIR__.$GLOBALS['__json_path__'].'php_files.json', json_encode($phpFiles, JSON_PRETTY_PRINT));
-
-
-
-
-// echo 'Variables pour les fichiers PHP créées et enregistrées dans php_files.json <br>';
-
-
-

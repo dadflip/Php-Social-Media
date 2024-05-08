@@ -47,4 +47,3 @@ if(isset($_POST['notification_id'])) {
     http_response_code(400);
     echo "L'identifiant de la notification n'est pas spécifié.";
 }
-?>

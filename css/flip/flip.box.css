@@ -2,10 +2,9 @@
 /* -------------------------------------------------------- */
 .tab-content {
     display: flex;
-    position: inherit;
+    position: relative;
     background-color: var(--background-color-c);
     width: 100%;
-    height: 100%;
     justify-content: space-around;
     flex-wrap: wrap;
     align-items: center;
@@ -151,10 +150,13 @@
 
 .profile-image {
     width: 4em;
-    height: 4em;
-    border-radius: 50%;
+    height: auto;
+    border-radius: 50px;
+    display: flex;
     border: 1px solid #fff;
     overflow: hidden;
+    justify-content: center;
+    align-items: stretch;
 }
 
 .profile-image img {
@@ -203,6 +205,15 @@
 .report-button {
     background: linear-gradient(0deg, red 0%, #c14b4b 100%);
     color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius: 20px;
+}
+
+.admin-button {
+    background: linear-gradient(0deg, rgb(162, 0, 255) 0%, #340096 100%);
     border: none;
     padding: 5px 10px;
     cursor: pointer;
@@ -421,12 +432,17 @@ span.keyword-bubble {
 }
 
 .post {
+    position: relative;
     min-width: 60em;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
     justify-content: center;
     box-shadow: -4px 4px 32px 0px #00000063;
+}
+
+.post.sensitive {
+    background-color: #3b0a0a;
 }
 
 .comments-zone {

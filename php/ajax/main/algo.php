@@ -290,7 +290,3 @@ function buildCommentHierarchy(&$comments, $subcomments) {
         }
     }
 }
-
-
-
-?>

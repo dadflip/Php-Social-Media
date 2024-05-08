@@ -22,9 +22,14 @@
     $connection_success = $cuicui_manager->connectUser();
 
     if($connection_success->getLoginStatus()) {
-        $lang = $_SESSION["lang"];
-        header('Location:' . $appdir['PATH_CUICUI_APP'] . '/' .$lang. $phpfile['mainpage']);
-        exit();
+        if($cuicui_manager->checkAndLiftBan($_SESSION['UID'])){
+            $lang = $_SESSION["lang"];
+            header('Location:' . $appdir['PATH_CUICUI_APP'] . '/' .$lang. $phpfile['mainpage']);
+            exit();
+        } else {
+            header('Location:' . $appdir['PATH_MODULES'] . $phpfile['ban_disconnect']);
+            exit();
+        }
     }
 ?>
 <html lang="fr">

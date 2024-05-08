@@ -1,4 +1,5 @@
 @import url('index.css');
+@import url('@media-screen.css');
 @import url('flip/animations.css');
 
 /* Inclusion de la police Quicksand depuis un fichier local */

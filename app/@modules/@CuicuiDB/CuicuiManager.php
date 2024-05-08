@@ -1,4 +1,7 @@
 <?php 
+require_once('NotificationManager.php');
+require_once('ChatManager.php');
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -8,11 +11,7 @@ const DATASET = 0; // Definition of the DATASET constant for the default dataset
 const DEFAULT_PROFILE_VISIBILITY = 'private';
 const DEFAULT_THEME = "blue"; // Default theme constant
 
-// -------------------------------------------------------------------------------------------------------------------------------------
-
-/**
- * Enumeration of different possible error types
- */
+// ------------------------------------------------------------------------------------------------------------------------------------- ENUM - ERRORTYPES
 enum ErrorTypes {
     case None; // No error
     case NoConnection; // No connection to the database
@@ -53,16 +52,11 @@ enum ErrorTypes {
         }
     }
 }
-
-
-/**
- * Enumeration of possible errors during SQL query preparation
- */
+// ------------------------------------------------------------------------------------------------------------------------------------- CLASS - REQUEST_ERR
 enum RequestErr {
     case BindingFail; // Binding failure
 }
-
-// -------------------------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------------------------------------- CLASS - DATABASE_SETUP
 class DatabaseSetUp {
     private $database_configs; // Database configurations
     private $currentDatasetIndex; // Index of the currently selected dataset
@@ -81,97 +75,97 @@ class DatabaseSetUp {
         }
         $db_config = $this->database_configs['databases'][$index];
 
-        // Connexion à la base de données
+        // Connect to the database
         $conn = new mysqli($db_config['host'], $db_config['user'], $db_config['password']);
 
-        // Vérifier la connexion
+        // Check connection
         if ($conn->connect_error) {
-            die("Erreur de connexion à la base de données : " . $conn->connect_error);
+            die("Database connection error: " . $conn->connect_error);
         }
 
-        // Requête pour vérifier l'existence de la base de données
+        // Query to check database existence
         $check_query = "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?";
         
-        // Préparation de la requête
+        // Prepare the query
         $statement = $conn->prepare($check_query);
         
-        // Liaison des paramètres
+        // Bind parameters
         $statement->bind_param("s", $db_config['name']);
         
-        // Exécution de la requête préparée
+        // Execute the prepared query
         $statement->execute();
         
-        // Récupération du résultat
+        // Get the result
         $result = $statement->get_result();
 
-        // Si la base de données n'existe pas, on la crée
+        // If the database doesn't exist, create it
         if ($result->num_rows === 0) {
 
-            // Valider le nom de la base de données
+            // Validate database name
             if (!preg_match("/^[a-zA-Z0-9_]+$/", $db_config['name'])) {
-                die("Nom de base de données invalide.");
+                die("Invalid database name.");
             }
 
-            // Requête pour créer une base de données
+            // Query to create a database
             $create_query = "CREATE DATABASE " . $db_config['name'];
 
-            // Exécution de la requête
+            // Execute the query
             if ($conn->query($create_query) === TRUE) {
-                //echo "Base de données créée avec succès.<br>";
+                //echo "Database created successfully.<br>";
             } else {
-                echo "Erreur lors de la création de la base de données : " . $conn->error . "<br>";
+                echo "Error creating database: " . $conn->error . "<br>";
             }
         } else {
-            //echo "La base de données existe déjà.<br>";
+            //echo "Database already exists.<br>";
         }
 
-        // Fermer le statement
+        // Close the statement
         $statement->close();
 
-        // Fermer la connexion
+        // Close the connection
         $conn->close();
 
         $this->currentDatasetIndex = $index;
     }
 
-    // Méthode statique pour initialiser les bases de données et créer les tables correspondantes
+    // Static method to initialize databases and create corresponding tables
     public static function initializeDatabases($database_configs) {
-        // Parcourir le tableau $database_configs pour initialiser chaque base de données et créer les tables correspondantes
+        // Iterate through the $database_configs array to initialize each database and create corresponding tables
         foreach ($database_configs['databases'] as $index => $config) {
-            // Chemin vers le fichier SQL
+            // Path to the SQL file
             $sql_file_path = __DIR__.$GLOBALS['__var_sql_path__']."/{$config['name']}.sql";
 
-            // Vérifier si le fichier existe
+            // Check if the file exists
             if (file_exists($sql_file_path)) {
-                // Lire le contenu du fichier SQL
+                // Read the content of the SQL file
                 $sql_script = file_get_contents($sql_file_path);
 
-                // Connexion à la base de données
+                // Connect to the database
                 $conn = new mysqli($config['host'], $config['user'], $config['password'], $config['name']);
 
-                // Vérifier la connexion
+                // Check connection
                 if ($conn->connect_error) {
-                    die("Erreur de connexion à la base de données : " . $conn->connect_error);
+                    die("Database connection error: " . $conn->connect_error);
                 }
 
-                // Exécuter le script SQL
+                // Execute the SQL script
                 if ($conn->multi_query($sql_script)) {
-                    //echo "Script SQL pour {$config['name']} exécuté avec succès.";
+                    //echo "SQL script for {$config['name']} executed successfully.";
                 } else {
-                    echo "Erreur lors de l'exécution du script SQL pour {$config['name']} : " . $conn->error; 
+                    echo "Error executing SQL script for {$config['name']}: " . $conn->error; 
                 }
 
-                // Fermer la connexion à la base de données
+                // Close the database connection
                 $conn->close();
             } else {
                 echo $sql_file_path;
-                // Afficher un message d'erreur en forme de popup HTML
-                echo "<script>alert('Le fichier SQL pour {$config['name']} n\'existe pas. Veuillez vérifier le chemin du fichier.');</script>";
+                // Display an error message as an HTML popup
+                echo "<script>alert('The SQL file for {$config['name']} does not exist. Please check the file path.');</script>";
             }
         }
     }
 }
-
+// ------------------------------------------------------------------------------------------------------------------------------------- CLASS - MULTI_DATASET_DATABASE_MANAGER
 class MultiDatasetDatabaseManager {
     protected $admin_conn; // Database connection object
     protected ?ErrorTypes $err; // Error type variable
@@ -192,8 +186,8 @@ class MultiDatasetDatabaseManager {
             die("Invalid dataset index.");
         }
         $db_config = $this->database_configs['databases'][$index];
-        $this->admin_conn = new mysqli($db_config['host'], $db_config['user'], $db_config['password'], $db_config['name']); // Sélectionnez la base de données
-        // Vérifiez la connexion
+        $this->admin_conn = new mysqli($db_config['host'], $db_config['user'], $db_config['password'], $db_config['name']); // Select the database
+        // Check connection
         if ($this->admin_conn->connect_error) {
             die("Connection to database failed: " . $this->admin_conn->connect_error);
         }
@@ -281,11 +275,11 @@ class MultiDatasetDatabaseManager {
         return $string;
     }
 
-    // Fonction pour exécuter une requête SQL et retourner un résultat
+    // Function to execute an SQL query and return a result
     public function createRequest(string $query, string $format, &$var1, &...$_) {
-        // Assurez-vous que la base de données est sélectionnée
+        // Ensure the database is selected
         $this->connectToDataset($this->currentDatasetIndex);
-        // TODO: traitement des erreurs
+
         $stmt = $this->admin_conn->prepare($query);
         if ($stmt == false) {
             return NULL;
@@ -302,9 +296,9 @@ class MultiDatasetDatabaseManager {
         return $stmt->get_result();
     }
 
-    // Fonction pour exécuter une requête SQL sans retourner de résultat
+    // Function to execute an SQL query without returning a result
     public function executeRequest(string $query, string $format, &$var1, &...$_) {
-        // Assurez-vous que la base de données est sélectionnée
+        // Ensure the database is selected
         $this->connectToDataset($this->currentDatasetIndex);
         $stmt = $this->admin_conn->prepare($query);
         if ($stmt == false) {
@@ -314,15 +308,15 @@ class MultiDatasetDatabaseManager {
         $stmt->execute();
     }
 
-    // Fonction pour exécuter une requête SQL et retourne un résultat
+    // Function to execute an SQL query and return a result
     public function executeRequestOnly(string $query) {
-        // Assurez-vous que la base de données est sélectionnée
+        // Ensure the database is selected
         $this->connectToDataset($this->currentDatasetIndex);
         
-        // Préparation de la requête
+        // Prepare the query
         $stmt = $this->admin_conn->prepare($query);
         
-        // Vérification de la préparation de la requête
+        // Check if the query preparation is successful
         if ($stmt == false) {
             return NULL;
         }
@@ -333,24 +327,68 @@ class MultiDatasetDatabaseManager {
 
         return $stmt->get_result();
     }
-
 }
-
+// ------------------------------------------------------------------------------------------------------------------------------------- CLASS - CUICUI_DB
 class CuicuiDB extends MultiDatasetDatabaseManager {
     protected $available_themes = ["dark", "blue", "light"]; // Available themes array
 
     // Constructor
-    public function __construct($database_configs, $dataset_idx) { // TODO: dataset_idx must be =  to DATASET const
+    public function __construct($database_configs, $dataset_idx) {
         parent::__construct($database_configs, $dataset_idx); // Call the parent class constructor
         $this->err = ErrorTypes::None; // Initialize error type variable
     }
-}
 
+    // ------------------------------------------------------------------------------------------- Utils
+    // Function to generate an RSA key pair
+    function generateRSAKeys() {
+        $config = array(
+            "private_key_bits" => 2048,
+            "private_key_type" => OPENSSL_KEYTYPE_RSA,
+        );
+
+        // Generate RSA key pair
+        $rsaKey = openssl_pkey_new($config);
+
+        // Check OpenSSL errors
+        while ($msg = openssl_error_string()) {
+            error_log("OpenSSL error: $msg"); // Log OpenSSL errors
+        }
+
+        // Export private key
+        if ($rsaKey !== false && openssl_pkey_export($rsaKey, $privateKey)) {
+            // Get public key
+            $publicKey = openssl_pkey_get_details($rsaKey)['key'];
+            return array('publicKey' => $publicKey, 'privateKey' => $privateKey);
+        } else {
+            error_log("Error generating RSA keys"); // Log errors
+            return false; // Return false in case of error
+        }
+    }
+
+    // Function to generate a 10-digit user ID
+    function generateUserId() {
+        return mt_rand(10000000, 99999999);
+    }
+
+    public function generateRandomNumericId($length = 10) {
+        $characters = '0123456789';
+        $randomString = '';
+    
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, strlen($characters) - 1)];
+        }
+    
+        return intval($randomString);
+    }
+
+}
+// ------------------------------------------------------------------------------------------------------------------------------------- CLASS - CUICUI_MANAGER
 class CuicuiManager extends CuicuiDB {
     protected ?ErrorTypes $err; // Error type variable
-    protected ?bool $connected = false; // Variable to track the connection status
-    protected ?string $defaultProfileVisibility;
+    protected bool $connected = false; // Variable to track the connection status
+    protected string $defaultProfileVisibility;
 
+    // ------------------------------------------------------------------------------------------- Class
     // Constructor
     public function __construct($database_configs, $dataset_idx) {
         parent::__construct($database_configs, $dataset_idx); // Call the parent class constructor
@@ -378,36 +416,38 @@ class CuicuiManager extends CuicuiDB {
                 $_SESSION["lang"] = $GLOBALS['LANG']; // Set default language
             }
         }
-
     }
 
-    public function isConnected():bool {
+    // Setters, Getters
+    public function isConnected(): bool {
         return $this->connected;
     }
 
-    public function setConnected($bool){
+    public function setConnected(bool $bool): void {
         $this->connected = $bool;
     }
 
-    public function setProfileVisibility($str){
-        $this->defaultProfileVisibility = $str;
+    public function arrayToString($array) {
+        // Utilisez implode pour convertir le tableau en chaîne avec une virgule comme séparateur
+        $string = implode(', ', $array);
+        return $string;
     }
 
-    // -- Login -- SignIn -- Management-----------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------- Login - SignIn
     // Method to create a user account
     public function createAccount(): bool {
-        // Vérifier la connexion à la base de données
+        // Check database connection
         if (!$this->connected) { 
             $this->err = ErrorTypes::NoConnection; 
             return false; 
         }
         
-        // Vérifier si les champs requis sont définis dans la requête POST
+        // Check if required fields are set in the POST request
         if (!(isset($_POST["username"]) && isset($_POST["password"]) && isset($_POST["confirmpass"]) && isset($_POST["email"]))) {
             $this->err = ErrorTypes::InvalidInput; 
             return false; 
         } else {
-            // Vérifier la longueur du nom d'utilisateur
+            // Check username length
             if (strlen($_POST["username"]) < 4){
                 $this->err = ErrorTypes::InvalidUsername; 
                 return false; 
@@ -416,141 +456,139 @@ class CuicuiManager extends CuicuiDB {
                 return false; 
             }
         
-            // Récupérer les données du formulaire
+            // Retrieve form data
             $username = $_POST["username"]; 
             $email = $_POST["email"]; 
             $password = md5($_POST["password"]); 
-            $biography = isset($_POST["bio"]) ? $_POST["bio"] : ''; // Récupérer la bio s'il est défini
+            $biography = isset($_POST["bio"]) ? $_POST["bio"] : ''; // Retrieve bio if set
 
-            
-            // Générer un nouvel ID utilisateur
+            // Generate a new user ID
             $userId = $this->generateUserId();
             $dataId = $userId;
             $chatId = $dataId;
 
-            // Générer une paire de clés RSA pour l'utilisateur
+            // Generate an RSA key pair for the user
             $rsaKeys = $this->generateRSAKeys();
 
-            // Vérifier si la génération des clés RSA a réussi
+            // Check if RSA key generation succeeded
             if($rsaKeys === false) {
-                return false; // Retourner faux pour indiquer un échec
+                return false; // Return false to indicate failure
             }
 
-            // Requête SELECT pour vérifier l'unicité de l'email et du nom d'utilisateur
+            // SELECT query to check uniqueness of email and username
             $selectQuery = "SELECT * FROM users WHERE username = ? OR email = ?";
             $res = $this->createRequest($selectQuery, "ss", $username, $email);
 
-            // Vérifier s'il existe déjà un utilisateur avec le même nom d'utilisateur ou email
+            // Check if there is already a user with the same username or email
             if($res->num_rows > 0) {
                 $this->err = ErrorTypes::DuplicateUser; 
                 return false; 
             }
 
-            // Requête pour l'insertion de l'utilisateur
+            // INSERT query for user insertion
             $userInsertQuery = "INSERT INTO users (UID, username, email, biography, password, rsa_public_key, rsa_private_key, user_data_id, user_chat_id) 
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                                 ON DUPLICATE KEY UPDATE UID = VALUES(UID), username = VALUES(username), email = VALUES(email), 
                                 biography = VALUES(biography), password = VALUES(password), rsa_public_key = VALUES(rsa_public_key), 
                                 rsa_private_key = VALUES(rsa_private_key), user_data_id = VALUES(user_data_id), user_chat_id = VALUES(user_chat_id)";
             
-            // Exécuter la requête avec les paramètres
+            // Execute the query with parameters
             $this->executeRequest($userInsertQuery, "issssssii", $userId, $username, $email, $biography, $password, $rsaKeys['publicKey'], 
                                   $rsaKeys['privateKey'], $dataId, $chatId);
 
-            // Vérifier si des lignes sont affectées
+            // Check if any rows are affected
             if($this->admin_conn->affected_rows == 0) {
-                $this->err = ErrorTypes::InvalidInput; // Définir le type d'erreur
-                return false; // Retourner faux pour indiquer un échec
+                $this->err = ErrorTypes::InvalidInput; // Set error type
+                return false; // Return false to indicate failure
             }
 
-            // Enregistrer l'image téléchargée sur le serveur
+            // Save uploaded image on server
             if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_FILES["profile-image"]) && $_FILES["profile-image"]["error"] == UPLOAD_ERR_OK) {
 
-                // Dossier de destination pour les images téléchargées
+                // Destination folder for uploaded images
                 $destinationFolder = $GLOBALS['img_upload'] . '@' . $username . '-' . $userId . '.profile-image';
 
-                // Créer le dossier s'il n'existe pas
+                // Create folder if it doesn't exist
                 if (!file_exists($destinationFolder)) {
                     mkdir($destinationFolder, 0777, true);
                 }
 
                 $imageFile = $_FILES['profile-image'];
 
-                // Générer un nom unique pour le fichier image
+                // Generate a unique name for the image file
                 $imageFileName = uniqid('img_') . '.' . pathinfo($imageFile['name'], PATHINFO_EXTENSION);
 
-                // Chemin complet du fichier dans le dossier de destination
+                // Full path of the file in the destination folder
                 $imageFilePath = $destinationFolder . '/' . $imageFileName;
 
-                // Déplacer le fichier vers le dossier de destination
+                // Move the file to the destination folder
                 move_uploaded_file($imageFile['tmp_name'], $imageFilePath);
 
-                // Enregistrer le chemin de l'image dans la base de données
-                // À adapter selon votre structure de base de données et votre requête d'insertion
+                // Save image path in the database
+                // To be adapted according to your database structure and insertion query
                 $imageInsertQuery = "UPDATE users SET profile_pic_url = ? WHERE UID = ?";
                 $this->executeRequest($imageInsertQuery, "si", $imageFilePath, $userId);
 
                 $_SESSION["pfp_url"] = $GLOBALS['normalized_paths']['PATH_IMG_DIR'].'/'.$imageFilePath;
-            }else{
+            } else {
                 echo 'no image';
             }
 
-
-            // Requête pour obtenir l'UID de l'utilisateur
+            // Query to get user's UID
             $uid_query = "SELECT UID FROM `users` WHERE username=?";
-            // Exécuter la requête
+            // Execute the query
             $res = $this->createRequest($uid_query, "s", $username);
-            // Récupérer la ligne de résultat
+            // Fetch the result row
             $row = $res->fetch_assoc();
-            // Vérifier si la ligne est vide
+            // Check if row is empty
             if ($row == NULL) {
-                die("Error executing query: " . $this->admin_conn->error); // Arrêter avec un message d'erreur
+                die("Error executing query: " . $this->admin_conn->error); // Stop with an error message
             }
 
-            // Récupérer l'UID à partir de la ligne de résultat
+            // Get UID from the result row
             $uid = $row['UID'];
             $acceptedCond = 1;
             $profileVisibility = $this->defaultProfileVisibility;
 
-
+            // Settings array
             $settingsArray = array(
                 'notifications' => array(
-                    'email' => true, // Notifications par e-mail activées ou désactivées
-                    'push' => true // Notifications push activées ou désactivées
+                    'email' => true, // Email notifications enabled or disabled
+                    'push' => true // Push notifications enabled or disabled
                 ),
                 'privacy' => array(
-                    'post_visibility' => 'friends' // Visibilité des publications (public, privé, amis seulement, etc.)
+                    'post_visibility' => 'friends' // Post visibility (public, private, friends only, etc.)
                 ),
                 'other_preferences' => array(
-                    'autoplay_videos' => false, // Lecture automatique des vidéos activée ou désactivée
-                    'show_online_status' => true // Afficher le statut en ligne activé ou désactivé
+                    'autoplay_videos' => false, // Autoplay videos enabled or disabled
+                    'show_online_status' => true // Show online status enabled or disabled
                 ),
                 'additional_info' => array(
-                    'fullname' => 'John Doe', // Nom complet de l'utilisateur
-                    'bio_extended' => 'hello', // Bio étendue de l'utilisateur
-                    'location' => 'New York', // Localisation de l'utilisateur
-                    'social_links' => 'https://example.com/social', // Liens sociaux de l'utilisateur
-                    'occupation' => 'Web Developer', // Occupation de l'utilisateur
-                    'interests' => 'Travel, Music', // Centres d'intérêt de l'utilisateur
-                    'languages_spoken' => 'English, French', // Langues parlées par l'utilisateur
-                    'relationship_status' => 'single', // Statut relationnel de l'utilisateur
-                    'birthday' => '1990-01-01', // Anniversaire de l'utilisateur
-                    'privacy_settings' => false // Paramètres de confidentialité de l'utilisateur
+                    'fullname' => 'John Doe', // User's full name
+                    'bio_extended' => 'hello', // User's extended bio
+                    'location' => 'New York', // User's location
+                    'social_links' => 'https://example.com/social', // User's social links
+                    'occupation' => 'Web Developer', // User's occupation
+                    'interests' => 'Travel, Music', // User's interests
+                    'languages_spoken' => 'English, French', // Languages spoken by the user
+                    'relationship_status' => 'single', // User's relationship status
+                    'birthday' => '1990-01-01', // User's birthday
+                    'privacy_settings' => false // User's privacy settings
                 )
             );                   
 
-            // Convertir le tableau en une chaîne JSON
+            // Convert the array to a JSON string
             $settingsJson = json_encode($settingsArray);
 
-            // Insérer les paramètres utilisateur dans la base de données
+            // Insert user settings into the database
             $settingsInsertQuery = "INSERT INTO user_settings (users_uid, theme, lang, hasAcceptedConditions, profileVisibility, settings_array) 
                                     VALUES (?, ?, ?, ?, ?, ?)";
 
-            // Exécuter la requête avec les paramètres
+            // Execute the query with parameters
             $this->executeRequest($settingsInsertQuery, "ississ", $uid, $_SESSION["theme"], $_SESSION["lang"], $acceptedCond, $profileVisibility, 
                                   $settingsJson);
 
-            // Définir le nom d'utilisateur et l'UID de la session
+            // Set username and UID in session
             $_SESSION["username"] = $username;
             $_SESSION["UID"] = $uid; 
 
@@ -560,126 +598,71 @@ class CuicuiManager extends CuicuiDB {
         }
     }
 
-    // Fonction pour générer une paire de clés RSA
-    function generateRSAKeys() {
-        $config = array(
-            "private_key_bits" => 2048,
-            "private_key_type" => OPENSSL_KEYTYPE_RSA,
-        );
-
-        // Générer la paire de clés RSA
-        $rsaKey = openssl_pkey_new($config);
-
-        // Vérifier les erreurs OpenSSL
-        while ($msg = openssl_error_string()) {
-            error_log("OpenSSL error: $msg"); // Enregistrer les erreurs OpenSSL
-        }
-
-        // Exporter la clé privée
-        if ($rsaKey !== false && openssl_pkey_export($rsaKey, $privateKey)) {
-            // Récupérer la clé publique
-            $publicKey = openssl_pkey_get_details($rsaKey)['key'];
-            return array('publicKey' => $publicKey, 'privateKey' => $privateKey);
-        } else {
-            error_log("Error generating RSA keys"); // Enregistrer les erreurs
-            return false; // Retourner false en cas d'erreur
-        }
-    }
-
-    // Fonction pour générer un ID utilisateur à 10 chiffres
-    function generateUserId() {
-        return mt_rand(10000000, 99999999);
-    }
-
-    public function generateRandomNumericId($length = 10) {
-        $characters = '0123456789';
-        $randomString = '';
-    
-        for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, strlen($characters) - 1)];
-        }
-    
-        return intval($randomString);
-    }
-    
     // Method to connect a user
-    function connectUser() : LoginStatus {
+    function connectUser(): LoginStatus {
         // Check if username and password are set in POST request
-        if(!isset($_POST["username"]) && !isset($_POST["password"])) {
-            // echo "Username and password are not set in POST request";
+        if (!isset($_POST["username"]) && !isset($_POST["password"])) {
             return new LoginStatus(false, ""); // Return LoginStatus indicating failure
         }
         
         // Check if either username or password is not set in POST request
-        if(!isset($_POST["username"]) || !isset($_POST["password"])) {
-            // echo "One of the fields is empty";
+        if (!isset($_POST["username"]) || !isset($_POST["password"])) {
             return new LoginStatus(false, "One of the fields is empty"); // Return LoginStatus indicating failure
         }
         
         $username = $_POST["username"]; // Get username from POST request
-        // Hasher le mot de passe soumis avec md5()
+        // Hash the submitted password using md5()
         $password = md5($_POST["password"]);
 
-        // Debugging output
-        //echo "Username: $username, Password: $password<br>";
-
-        $query  =  "SELECT users.UID, users.username, usset.theme, usset.lang, users.profile_pic_url FROM `users` 
-                    JOIN `user_settings` AS usset ON users.UID=usset.users_uid
-                    WHERE users.username=? AND users.password=?"; // SQL query to retrieve user information
+        // SQL query to retrieve user information
+        $query = "SELECT users.UID, users.username, usset.theme, usset.lang, users.profile_pic_url, users.isAdmin FROM `users` 
+                JOIN `user_settings` AS usset ON users.UID=usset.users_uid
+                WHERE users.username=? AND users.password=?";
         $result = $this->createRequest($query, "ss", $username, $password); // Execute the query
-        
-        // Debugging output
-        // var_dump($result);
 
         // Check for query execution failure
-        if($result == false) {
-            // echo "Query execution failed: " . $this->admin_conn->error;
+        if ($result == false) {
             die($this->admin_conn->error); // Die with error message
         }
         
         // Check if query returned no results
-        if($result == NULL){
-            // echo "No results returned from the query";
+        if ($result == NULL) {
             return new LoginStatus(false, "Error executing query: " . $this->admin_conn->error); // Return LoginStatus indicating failure
         }
         
         // Check if username and password don't exist
-        if($result->num_rows == 0) {
-            // echo "Username and/or password don't exist";
+        if ($result->num_rows == 0) {
             return new LoginStatus(false, "The username and/or password don't exist"); // Return LoginStatus indicating failure
         }
 
         $row = $result->fetch_assoc(); // Fetch the result row
 
-        // Debugging output
-        // var_dump($row);
-
+        // Set session variables
         $_SESSION["username"] = $row["username"]; // Set session username
         $_SESSION["UID"] = $row["UID"]; // Set session UID
         $_SESSION["theme"] = $row["theme"]; // Set session theme
         $_SESSION["lang"] = $row["lang"]; // Set session language
+        $_SESSION["isAdmin"] = $row["isAdmin"];
         $_SESSION["pfp_url"] = $GLOBALS['normalized_paths']['PATH_IMG_DIR'].'/'.$row["profile_pic_url"]; // Set session profile picture URL
         
         return new LoginStatus(true, ""); // Return LoginStatus indicating success
     }
 
-    // Méthode pour rediriger vers la page principale
+    // Method to redirect to the main page
     public function goToMainpage($lang): void {
-        // Debugging output
-        //echo "Redirecting to main page";
-        header('Location:' . $GLOBALS['normalized_paths']['PATH_CUICUI_APP'] .'/'. $GLOBALS["LANG"] . $GLOBALS['php_files']['mainpage']); // Rediriger vers la page principale
-        exit(); // Terminer le script après la redirection
-    }
-    
-    // Method to disconnect
-    public function disconnect(): void {
-        // Set connected to false when connection is closed
-        $this->connected = false;
-        $this->admin_conn->close(); // Close database connection
-        session_destroy(); // Destroy session
+        header('Location:' . $GLOBALS['normalized_paths']['PATH_CUICUI_APP'] . '/' . $GLOBALS["LANG"] . $GLOBALS['php_files']['mainpage']); // Redirect to the main page
+        exit(); // Terminate the script after redirection
     }
 
-    // -- Error Management-----------------------------------------------------------------------------------
+    // Method to disconnect
+    public function disconnect(): void {
+        // Set connected to false when the connection is closed
+        $this->connected = false;
+        $this->admin_conn->close(); // Close the database connection
+        session_destroy(); // Destroy the session
+    }
+
+    // ------------------------------------------------------------------------------------------- Error
     // Method to retrieve error
     public function getError(): ErrorTypes {
         return $this->err; // Return error
@@ -691,49 +674,54 @@ class CuicuiManager extends CuicuiDB {
     }
 
 
-    // -- User Management -----------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------- Users - Settings
+    // Setters, Getters
+    public function setProfileVisibility(string $str): void {
+        $this->defaultProfileVisibility = $str;
+    }
+
     // Method to change user theme
-    public function changeUserTheme(): bool{
-        if(!isset($_SESSION["UID"])) { // Check if UID is set in session
-            $this->err = ErrorTypes::SessionError; // Set error type
-            return false; // Return false indicating failure
+    public function changeUserTheme(): bool {
+        if (!isset($_SESSION["UID"])) {
+            $this->err = ErrorTypes::SessionError;
+            return false;
         }
 
-        // Check if theme is not set in GET request
-        if(!isset($_GET["theme"])) {
-            $this->err = ErrorTypes::None; // Set error type
-            return true; // Return true indicating success
+        // Check if theme is set in GET request
+        if (!isset($_GET["theme"])) {
+            $this->err = ErrorTypes::None;
+            return true;
         }
 
         // Check if selected theme is the same as current theme
-        if($_GET["theme"] == $_SESSION["theme"]) {
-            $this->err = ErrorTypes::None; // Set error type
-            return false; // Return false indicating failure
+        if ($_GET["theme"] == $_SESSION["theme"]) {
+            $this->err = ErrorTypes::None;
+            return false;
         }
 
         // Check if selected theme is undefined
-        if(!in_array($_GET["theme"], $this->available_themes, true)) {
-            $this->err = ErrorTypes::UndefinedTheme; // Set error type
-            return false; // Return false indicating failure
+        if (!in_array($_GET["theme"], $this->available_themes, true)) {
+            $this->err = ErrorTypes::UndefinedTheme;
+            return false;
         }
-        
-        $_SESSION["theme"] = $_GET["theme"]; // Set session theme
-        $session_uid = $_SESSION["UID"]; // Get session UID
+
+        $_SESSION["theme"] = $_GET["theme"];
+        $session_uid = $_SESSION["UID"];
 
         $query = "UPDATE `user_settings`
-                  SET theme=?
-                  WHERE UID=?"; // SQL query to update user theme
-        $this->executeRequest($query, "si", $_GET["theme"], $session_uid); // Execute the query
+                SET theme=?
+                WHERE UID=?";
+        $this->executeRequest($query, "si", $_GET["theme"], $session_uid);
 
-        if($this->admin_conn->affected_rows == 0) { // Check if any rows affected
-            $this->err = ErrorTypes::QueryError; // Set error type
-            return false; // Return false indicating failure
+        if ($this->admin_conn->affected_rows == 0) {
+            $this->err = ErrorTypes::QueryError;
+            return false;
         }
 
-        $this->resetError(); // Reset error
-        return true; // Return true indicating success
+        $this->resetError();
+        return true;
     }
-
+    
     // Method to get user info
     public function getUserInfo(string $UID): ?UserInfo {
         $query = "SELECT * FROM users WHERE UID=$UID"; // SQL query to retrieve user info
@@ -758,6 +746,38 @@ class CuicuiManager extends CuicuiDB {
         }
 
         return new UserInfo($row); // Return UserInfo object
+    }
+
+    public function getUserInfoByName(string $username): ?UserInfo {
+        $query = "SELECT * FROM users WHERE username = ?";
+        $stmt = $this->createRequest($query, "s", $username);
+
+        if(!$stmt) {
+            die("Error executing query: " . $this->admin_conn->error);
+        }
+
+        $row = $stmt->fetch_assoc();
+
+        if(!$row) {
+            $this->err = ErrorTypes::QueryError;
+            return NULL;
+        }
+
+        return new UserInfo($row);
+    }
+
+    public function getIdByUsername($username) {
+        $query = "SELECT UID FROM `users` WHERE username=?";
+        $res = $this->createRequest($query, "s", $username);
+        $row = $res->fetch_assoc();
+        return $row;
+    }
+
+    public function getUsernameById($userId) {
+        $query = "SELECT username FROM `users` WHERE UID=?";
+        $res = $this->createRequest($query, "i", $userId);
+        $row = $res->fetch_assoc();
+        return $this->arrayToString($row);
     }
 
     // Method to get user settings
@@ -815,27 +835,287 @@ class CuicuiManager extends CuicuiDB {
         return new UserInfo($row); // Return UserInfo object
     }
 
+    // Method to get user posts
+    public function getUserPosts($userId) {
+        $query = "SELECT * FROM `posts` WHERE users_uid=?";
+        $res = $this->createRequest($query, "i", $userId);
+        $posts = array(); // Initialize an array to store user posts
 
-    public function getUserInfoByName(string $username): ?UserInfo {
-        $query = "SELECT * FROM users WHERE username = ?";
-        $stmt = $this->createRequest($query, "s", $username);
-    
-        if(!$stmt) {
-            die("Error executing query: " . $this->admin_conn->error);
+        // Check if results were returned
+        if ($res->num_rows > 0) {
+            // Iterate through each result row to retrieve user posts
+            while ($row = $res->fetch_assoc()) {
+                // Add the post to the user's posts list
+                $posts[] = $row;
+            }
         }
+
+        return $posts; // Return all user posts
+    }
+
+    // Get the user ID associated with a post
+    public function getPostUserId($postId) {
+        $userId = 0;
+        // Query to retrieve the user ID associated with the post
+        $getPostUserIdQuery = "SELECT users_uid FROM posts WHERE textId = ?";
+        
+        // Prepare the statement
+        $statement = $this->admin_conn->prepare($getPostUserIdQuery);
+        
+        // Bind the parameters
+        $statement->bind_param("s", $postId);
+        
+        // Execute the statement
+        $statement->execute();
+        
+        // Bind the result variables
+        $statement->bind_result($userId);
+        
+        // Fetch the result
+        $statement->fetch();
+        
+        // Close the statement
+        $statement->close();
+        
+        // Return the user ID
+        return $userId;
+    }
+
+    // Method to get user statistics
+    public function getUserStatistics($userId) {
+        // Initialize counters
+        $likeCount = 0;
+        $dislikeCount = 0;
+        $followerCount = 0;
+        $flipboxCount = 0;
+        $commentCount = 0;
+        $postCount = 0;
+
+        // Count post likes
+        $postQuery = "SELECT COUNT(*) AS post_count FROM posts WHERE users_uid = ?";
+        $postResult = $this->createRequest($postQuery, "i", $userId);
+        if ($postResult->num_rows > 0) {
+            $postCount = $postResult->fetch_assoc()['post_count'];
+        }
+
+        // Count post likes
+        $likeQuery = "SELECT COUNT(*) AS like_count FROM likes WHERE users_uid = ? AND action = 'like'";
+        $likeResult = $this->createRequest($likeQuery, "i", $userId);
+        if ($likeResult->num_rows > 0) {
+            $likeCount = $likeResult->fetch_assoc()['like_count'];
+        }
+
+        // Count post dislikes
+        $dislikeQuery = "SELECT COUNT(*) AS dislike_count FROM likes WHERE users_uid = ? AND action = 'dislike'";
+        $dislikeResult = $this->createRequest($dislikeQuery, "i", $userId);
+        if ($dislikeResult->num_rows > 0) {
+            $dislikeCount = $dislikeResult->fetch_assoc()['dislike_count'];
+        }
+
+        // Count follower count
+        $followerQuery = "SELECT COUNT(*) AS follower_count FROM follow WHERE target_id = ?";
+        $followerResult = $this->createRequest($followerQuery, "i", $userId);
+        if ($followerResult->num_rows > 0) {
+            $followerCount = $followerResult->fetch_assoc()['follower_count'];
+        }
+
+        // Count flipbox discovered count
+        $flipboxQuery = "SELECT COUNT(*) AS flipbox_count FROM data WHERE users_uid = ?";
+        $flipboxResult = $this->createRequest($flipboxQuery, "i", $userId);
+        if ($flipboxResult->num_rows > 0) {
+            $flipboxCount = $flipboxResult->fetch_assoc()['flipbox_count'];
+        }
+
+        // Count written comments count
+        $commentQuery = "SELECT COUNT(*) AS comment_count FROM comments WHERE users_uid = ?";
+        $commentResult = $this->createRequest($commentQuery, "i", $userId);
+        if ($commentResult->num_rows > 0) {
+            $commentCount = $commentResult->fetch_assoc()['comment_count'];
+        }
+
+        // Return statistics
+        return array(
+            'like_count' => $likeCount,
+            'dislike_count' => $dislikeCount,
+            'follower_count' => $followerCount,
+            'flipbox_count' => $flipboxCount,
+            'comment_count' => $commentCount,
+            'post_count' => $postCount
+        );
+    }
+
+
+    // ------------------------------------------------------------------------------------------- Admin
+    public function deletePost($postID, $adminID): void {
+        if (!$this->isUserAdmin($adminID)) {
+            throw new NotAnAdminException();
+        }
+        $delete_query = "DELETE FROM `posts` WHERE textID=?";
+        $stmt = $this->prepare($delete_query);
+        $stmt->bind_param("s", $postID);
+        $stmt->execute();
+
+        // Send notification to the user
+        $this->sendPostDeletionNotification($this->getPostUserId($postID), $postID, $adminID);
+    }
+
+    // Add a new method to send post deletion notification
+    private function sendPostDeletionNotification($userId, $postId, $adminId) {
+        // Prepare notification message
+        $notificationType = "post_deletion";
+        $notificationDate = date('Y-m-d H:i:s');
+        $notificationTitle = "Post Deleted";
+        $notificationText = "Your post (ID: $postId) has been deleted by admin (ID: $adminId).";
+
+        $notif = new NotificationManager($this->getConn());
+        // Insert the notification into the 'notifications' table
+        $notif->insertNotification($userId, $notificationDate, $notificationTitle, $notificationText, $notificationType);
+    }
     
+    public function markAsSensitive($postID, $adminID): void {
+        if (!$this->isUserAdmin($adminID)) {
+            throw new NotAnAdminException();
+        }
+        $update_query = "UPDATE `posts` SET sensitive_content=1 WHERE textID=?";
+        $stmt = $this->prepare($update_query);
+        $stmt->bind_param("s", $postID);
+        $stmt->execute();
+    }
+    
+    private function isUserAdmin($userID): bool {
+        $query = "SELECT isAdmin FROM users WHERE UID=?";
+        $stmt = $this->createRequest($query, "i", $userID);
         $row = $stmt->fetch_assoc();
+        return $row["isAdmin"] == "1";
+    }
     
-        if(!$row) {
-            $this->err = ErrorTypes::QueryError;
-            return NULL;
+    public function banUserAndSendNotification($userId, $adminId, $duration, $reason) {
+        // Ban the user
+        $this->banUser($userId, $adminId, $duration);
+        
+        // Send a notification to the banned user
+        $this->sendBanNotification($userId, $adminId, $duration, $reason);
+    }
+
+    // Send a notification to the banned user
+    public function sendBanNotification($userId, $adminId, $duration, $reason) {
+        // Get the username of the banned user
+        $bannedUserName = $this->getUserNameById($userId);
+
+        // Notification details
+        $notificationType = "ban";
+        $notificationDate = date('Y-m-d H:i:s');
+        $notificationTitle = "$bannedUserName - You have been banned - duration : $duration";
+        $notificationText = "You have been banned by admin $adminId. Reason : $reason";
+
+        $notif = new NotificationManager($this->getConn());
+        // Insert the notification into the 'notifications' table
+        $notif->insertNotification($userId, $notificationDate, $notificationTitle, $notificationText, $notificationType);
+    }
+
+    private function convertDurationToSeconds($durationString) {
+        $duration = strtolower($durationString);
+        $value = (int) preg_replace('/[^0-9]/', '', $duration);
+        if (strpos($duration, 'h') !== false) {
+            return $value * 3600;
+        } elseif (strpos($duration, 'j') !== false) {
+            return $value * 86400;
+        } elseif (strpos($duration, 'm') !== false) {
+            return $value * 60;
+        } elseif (strpos($duration, 's') !== false) {
+            return $value;
+        } else {
+            return $value * 3600;
+        }
+    }    
+    public function banUser($userID, $adminID, $duration = "0"): void {
+        $startTime = date('Y-m-d H:i:s');
+        
+        if (!$this->isUserAdmin($adminID)) {
+            throw new NotAnAdminException();
         }
     
-        return new UserInfo($row);
-    }    
+        $durationInSeconds = $this->convertDurationToSeconds($duration);
     
+        $query = "INSERT INTO bans(userID, adminID, duration, startTime) VALUES (?, ?, ?, ?)";
+        $stmt = $this->prepare($query);
+        $stmt->bind_param("iiis", $userID, $adminID, $durationInSeconds, $startTime);
+        $stmt->execute();
+    }
+    
+    
+    public function alreadyBanned($userID): BanStatus {
+        $query = "SELECT * FROM bans WHERE userID=?";
+        $result = $this->createRequest($query, "i", $userID);
+        if ($result->num_rows == 0) {
+            return new BanStatus(false);
+        }
+        $row = $result->fetch_assoc();
+    
+        $admin_name_query = $this->createRequest("SELECT username FROM `users` WHERE UID=?", "i", $row["adminID"]);
+        $admin_name_row = $admin_name_query->fetch_assoc();
+        $admin_name = $admin_name_row["username"];
+        return new BanStatus(true, $row["userID"], $admin_name, $row["duration"]);
+    }
 
-    // -- Follow Management -----------------------------------------------------------------------------------
+    public function checkAndLiftBan($userID): bool {
+        $query = "SELECT startTime, duration FROM bans WHERE userID=?";
+        $result = $this->createRequest($query, "i", $userID);
+        
+        if ($result->num_rows == 0) {
+            return true;
+        }
+    
+        $row = $result->fetch_assoc();
+        $startTime = $row["startTime"];
+        $duration = $row["duration"];
+    
+        // Convertir la durée du bannissement en secondes
+        $banDurationInSeconds = $duration;
+    
+        // Convertir la date et l'heure de début en timestamp Unix
+        $startTimeStamp = strtotime($startTime);
+    
+        // Obtenir le timestamp actuel
+        $currentTimeStamp = time();
+    
+        // Calculer la différence en secondes entre l'heure actuelle et l'heure de début du bannissement
+        $timeDifference = $currentTimeStamp - $startTimeStamp;
+    
+        echo $timeDifference;
+    
+        if ($timeDifference >= $banDurationInSeconds) {
+            $this->liftBan($userID);
+            return true;
+        }
+        return false;
+    }       
+    
+    private function liftBan($userID): void {
+        $query = "DELETE FROM bans WHERE userID=?";
+        $this->createRequest($query, "i", $userID);
+    }
+
+    public function warnUser($userId, $adminId, $message = ""): void {
+        if (!$this->isUserAdmin($adminId)) {
+            throw new NotAnAdminException();
+        }
+
+        // Get the username of the warned user
+        $warnedUserName = $this->getUserNameById($userId);
+
+        // Notification details
+        $notificationType = "warning";
+        $notificationDate = date('Y-m-d H:i:s');
+        $notificationTitle = "$warnedUserName - You have been warned !";
+        $notificationText = "You have been warned by admin $adminId. Message : $message";
+
+        $notif = new NotificationManager($this->getConn());
+        // Insert the notification into the 'notifications' table
+        $notif->insertNotification($userId, $notificationDate, $notificationTitle, $notificationText, $notificationType);
+    }   
+
+    // ------------------------------------------------------------------------------------------- Follow
     // Method to check if user is following another user
     public function getFollow(string $follower_id, string $target_id): bool {
         $query = "SELECT * FROM `follow` WHERE follower_id=? AND target_id=?"; // SQL query to check if user is following another user
@@ -853,7 +1133,7 @@ class CuicuiManager extends CuicuiDB {
         return $success; // Return true if insertion was successful, else false
     }
 
-        // Method to create follow relationship
+    // Method to create follow relationship
     public function createFollow($follower, $target) {
         $query = "INSERT INTO `follow`(follower_id,target_id) VALUES (?,?)"; // SQL query to create follow relationship
         $this->executeRequest($query, "ii", $follower, $target); // Execute the query
@@ -865,140 +1145,71 @@ class CuicuiManager extends CuicuiDB {
         $this->executeRequest($query, "ss", $follower, $target); // Execute the query
     }
 
-    // Méthode pour ajouter un like
+
+    // ------------------------------------------------------------------------------------------- Like
+    // Method to add a like
     public function addLike($userId, $textId, $action) {
-        // Insérer le like dans la base de données
+        // Insert the like into the database
         $stmt = $this->prepare('INSERT INTO likes (users_uid, text_id, action) VALUES (?, ?, ?)');
         $stmt->execute([$userId, $textId, $action]);
     }
 
-    // Méthode pour incrémenter le compteur de likes d'un texte
+    // Method to increment the like counter of a text
     public function likeText($textId) {
-        // Mettre à jour le compteur de likes dans la table des textes
+        // Update the like counter in the text table
         $stmt = $this->prepare('UPDATE posts SET likes = likes + 1 WHERE textId = ?');
         $stmt->execute([$textId]);
     }
 
-    // Méthode pour incrémenter le compteur de dislikes d'un texte
+    // Method to increment the dislike counter of a text
     public function dislikeText($textId) {
-        // Mettre à jour le compteur de dislikes dans la table des textes
+        // Update the dislike counter in the text table
         $stmt = $this->prepare('UPDATE posts SET dislikes = dislikes + 1 WHERE textId = ?');
         $stmt->execute([$textId]);
     }
 
-    // Méthode pour insérer un commentaire
+    // ------------------------------------------------------------------------------------------- Comment
+    // Method to insert a comment
     public function insertComment($commentId, $parentId, $content) {
         $userId = $_SESSION['UID'];
 
-        // Préparer la requête SQL pour insérer un commentaire
+        // Prepare the SQL query to insert a comment
         $query = "INSERT INTO comments (content, users_uid, parent_id, comment_id) VALUES (?, ?, ?, ?)";
 
-        // Exécuter la requête avec les valeurs fournies
+        // Execute the query with the provided values
         $stmt = $this->prepare($query);
         $stmt->bind_param("siss", $content, $userId, $parentId, $commentId);
         $stmt->execute();
 
-        // Vérifier si l'insertion a réussi
+        // Check if insertion was successful
         if ($stmt->affected_rows === 1) {
-            return true; // Retourner true si l'insertion a réussi
+            return true; // Return true if insertion was successful
         } else {
-            return false; // Retourner false si l'insertion a échoué
+            return false; // Return false if insertion failed
         }
     }
-
-    public function getUserPosts($userId) {
-        $query = "SELECT * FROM `posts` WHERE users_uid=?";
-        $res = $this->createRequest($query, "i", $userId);
-        $posts = array(); // Initialiser un tableau pour stocker les publications de l'utilisateur
-    
-        // Vérifier si des résultats ont été retournés
-        if ($res->num_rows > 0) {
-            // Parcourir chaque ligne de résultat pour récupérer les publications
-            while ($row = $res->fetch_assoc()) {
-                // Ajouter la publication à la liste des publications de l'utilisateur
-                $posts[] = $row;
-            }
-        }
-    
-        return $posts; // Retourner toutes les publications de l'utilisateur
-    }
-    
-
-    public function getUserStatistics($userId) {
-        // Initialisation des compteurs
-        $likeCount = 0;
-        $dislikeCount = 0;
-        $followerCount = 0;
-        $flipboxCount = 0;
-        $commentCount = 0;
-        $postCount = 0;
-
-        // Compter les likes des posts
-        $postQuery = "SELECT COUNT(*) AS post_count FROM posts WHERE users_uid = ?";
-        $postResult = $this->createRequest($postQuery, "i", $userId);
-        if ($postResult->num_rows > 0) {
-            $postCount = $postResult->fetch_assoc()['post_count'];
-        }
-    
-        // Compter les likes des posts
-        $likeQuery = "SELECT COUNT(*) AS like_count FROM likes WHERE users_uid = ? AND action = 'like'";
-        $likeResult = $this->createRequest($likeQuery, "i", $userId);
-        if ($likeResult->num_rows > 0) {
-            $likeCount = $likeResult->fetch_assoc()['like_count'];
-        }
-
-        // Compter les dislikes des posts
-        $dislikeQuery = "SELECT COUNT(*) AS dislike_count FROM likes WHERE users_uid = ? AND action = 'dislike'";
-        $dislikeResult = $this->createRequest($dislikeQuery, "i", $userId);
-        if ($dislikeResult->num_rows > 0) {
-            $dislikeCount = $dislikeResult->fetch_assoc()['dislike_count'];
-        }
-    
-        // Compter le nombre de followers
-        $followerQuery = "SELECT COUNT(*) AS follower_count FROM follow WHERE target_id = ?";
-        $followerResult = $this->createRequest($followerQuery, "i", $userId);
-        if ($followerResult->num_rows > 0) {
-            $followerCount = $followerResult->fetch_assoc()['follower_count'];
-        }
-    
-        // Compter le nombre de flipboxes découvertes
-        $flipboxQuery = "SELECT COUNT(*) AS flipbox_count FROM data WHERE users_uid = ?";
-        $flipboxResult = $this->createRequest($flipboxQuery, "i", $userId);
-        if ($flipboxResult->num_rows > 0) {
-            $flipboxCount = $flipboxResult->fetch_assoc()['flipbox_count'];
-        }
-    
-        // Compter le nombre de commentaires écrits
-        $commentQuery = "SELECT COUNT(*) AS comment_count FROM comments WHERE users_uid = ?";
-        $commentResult = $this->createRequest($commentQuery, "i", $userId);
-        if ($commentResult->num_rows > 0) {
-            $commentCount = $commentResult->fetch_assoc()['comment_count'];
-        }
-    
-        // Retourner les statistiques
-        return array(
-            'like_count' => $likeCount,
-            'dislike_count' => $dislikeCount,
-            'follower_count' => $followerCount,
-            'flipbox_count' => $flipboxCount,
-            'comment_count' => $commentCount,
-            'post_count' => $postCount
-        );
-    }  
-    
-    public function getIdByUsername($username) {
-        $query = "SELECT UID FROM `users` WHERE username=?"; // SQL query to check if user is following another user
-        $res = $this->createRequest($query, "s", $username); // Execute the query
-        $row = $res->fetch_assoc(); // Fetch the result row
-
-        return $row;
-    }
-    
 }
-
-// -------------------------------------------------------------------------------------------------------------------------------------
-
-
+// ------------------------------------------------------------------------------------------------------------------------------------- CLASS - NOT_AN_ADMIN_EXCEPTION
+class NotAnAdminException extends Exception {
+    public function __construct() {
+        parent::__construct("You are not an admin");
+    }
+}
+// ------------------------------------------------------------------------------------------------------------------------------------- CLASS - BAN_STATUS
+class BanStatus {
+    public string $userID;
+    public string $adminID;
+    public string $duration;
+    public bool $isBanned;
+    public function __construct($banned, $userID="", $adminID="", $duration="")
+    {
+        $this->isBanned = $banned;
+        $this->userID = $userID;
+        $this->adminID = $adminID;
+        $this->duration = $duration;
+    }
+}
+// ------------------------------------------------------------------------------------------------------------------------------------- CLASS - USER_INFO
 class UserInfo {
     private int $uid = 0;
     private string $username = "";
@@ -1008,23 +1219,18 @@ class UserInfo {
     private string $profile_picture = ""; 
     private string $user_theme = "";
     private string $user_lang = "";
-
-    // Ajouter les nouveaux champs
-    private array $settingsArray = []; // Modifier le type pour être un tableau
+    private array $settingsArray = []; 
 
     public function __construct(array $info) {
-        $this->bio = isset($info["biography"]) ? $info["biography"] : "";
-        $this->username = isset($info["username"]) ? $info["username"] : "";
-        $this->email = isset($info["email"]) ? $info["email"] : "";
-        $this->uid = isset($info["UID"]) ? $info["UID"] : 0;
-        $this->profile_picture = isset($info["profile_pic_url"]) ? $info["profile_pic_url"] : "";
-        $this->user_theme = isset($info["theme"]) ? $info["theme"] : "";
-        $this->user_lang = isset($info["lang"]) ? $info["lang"] : "";
-        $this->password= isset($info["password"]) ? $info["password"] : "";
-        
-        // Décoder le tableau des paramètres s'il existe
+        $this->bio = $info["biography"] ?? "";
+        $this->username = $info["username"] ?? "";
+        $this->email = $info["email"] ?? "";
+        $this->uid = $info["UID"] ?? 0;
+        $this->profile_picture = $info["profile_pic_url"] ?? "";
+        $this->user_theme = $info["theme"] ?? "";
+        $this->user_lang = $info["lang"] ?? "";
+        $this->password= $info["password"] ?? "";
         $this->settingsArray = isset($info["settings_array"]) ? json_decode($info["settings_array"], true) : [];
-
     }
 
     // Setters
@@ -1049,7 +1255,7 @@ class UserInfo {
     }
 
     public function setPassword(string $password): void {
-        if($password!=$this->password || $password!=''){
+        if ($password != $this->password || $password != '') {
             $this->password = $password;
         }
     }
@@ -1066,8 +1272,6 @@ class UserInfo {
         $this->settingsArray = $settingsArray;
     }
 
-
-    // Méthode pour insérer les informations de l'utilisateur dans la base de données
     public function insertUserInfo(mysqli $conn): bool {
         $query = "INSERT INTO users (UID, username, password, email, biography, profile_pic_url) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($query);
@@ -1077,7 +1281,6 @@ class UserInfo {
         return $result;
     }
 
-    // Méthode pour insérer les paramètres de l'utilisateur dans la base de données
     public function insertUserSettings(mysqli $conn): bool {
         $query = "INSERT INTO user_settings (users_uid, theme, lang, settings_array) VALUES (?, ?, ?, ?)";
         $settings_json = json_encode($this->settingsArray);
@@ -1088,14 +1291,12 @@ class UserInfo {
         return $result;
     }
 
-    // Méthode pour insérer à la fois les informations et les paramètres de l'utilisateur dans la base de données
     public function insertUserInfoAndSettings(mysqli $conn): bool {
         $user_info_inserted = $this->insertUserInfo($conn);
         $user_settings_inserted = $this->insertUserSettings($conn);
         return $user_info_inserted && $user_settings_inserted;
     }
 
-    // Méthode pour mettre à jour les informations de l'utilisateur dans la base de données
     public function updateUserInfo(mysqli $conn): bool {
         $query = "UPDATE users SET username=?, password=?, email=?, biography=?, profile_pic_url=? WHERE UID=?";
         $stmt = $conn->prepare($query);
@@ -1105,7 +1306,6 @@ class UserInfo {
         return $result;
     }
 
-    // Méthode pour mettre à jour les paramètres de l'utilisateur dans la base de données
     public function updateUserSettings(mysqli $conn): bool {
         $query = "UPDATE user_settings SET settings_array=?, theme=?, lang=? WHERE users_uid=?";
         $settings_json = json_encode($this->settingsArray);
@@ -1116,148 +1316,130 @@ class UserInfo {
         return $result;
     }
 
-    // Méthode pour mettre à jour à la fois les informations et les paramètres de l'utilisateur dans la base de données
     public function updateUserInfoAndSettings(mysqli $conn): bool {
         $user_info_updated = $this->updateUserInfo($conn);
         $user_settings_updated = $this->updateUserSettings($conn);
         return $user_info_updated && $user_settings_updated;
     }
 
-
-
-    public function getUsername() {
+    // Getters
+    public function getUsername(): string {
         return $this->username;
     }
 
-    public function getPassword() {
+    public function getPassword(): string {
         return $this->password;
     }
 
-    public function getEmail() {
+    public function getEmail(): string {
         return $this->email;
     }
 
-    public function getTheme() {
+    public function getTheme(): string {
         return $this->user_theme;
     }
 
-    public function getLang() {
+    public function getLang(): string {
         return $this->user_lang;
     }
 
-    public function getProfilePicture() {
+    public function getProfilePicture(): string {
         return $this->profile_picture;
     }
 
-    public function getHandle() {
+    public function getHandle(): string {
         return "@".$this->username;
     }
 
-    public function getID() {
+    public function getID(): int {
         return $this->uid;
     }
 
-    public function getBiography() {
+    public function getBiography(): string {
         return $this->bio;
     }
 
-    public function getAvatar() {
+    public function getAvatar(): string {
         return $this->profile_picture;
     }
 
-    public function getSettingsArray() {
+    public function getSettingsArray(): array {
         return $this->settingsArray;
     }
 }
-
-
-
-// --
-
+// ------------------------------------------------------------------------------------------------------------------------------------- CLASS - CUICUI_SESSION
 class CuicuiSession extends CuicuiManager {
-
-    // CuicuiManager object, initialised flag, and error type variable
     public ?CuicuiManager $cuicui_manager = NULL;
     public bool $initialised = false;
-    public ?ErrorTypes $err;
 
-    // Constructor
     public function __construct(CuicuiManager $cuicui_manager) {
-        $this->cuicui_manager = $cuicui_manager; // Set CuicuiManager object
-        $this->initialised = true; // Set initialised flag to true
+        $this->cuicui_manager = $cuicui_manager;
+        $this->initialised = true;
     }
 
-    // Static method to get username
     public static function getUsername(): string {
-        if(!isset($_SESSION["username"])) { // Check if username is not set in session
-            $result = "Log in"; // Default result
-
-            // Set result based on language
-            switch($_SESSION["lang"]) {
+        if (!isset($_SESSION["username"])) {
+            $result = "Log in";
+            switch ($_SESSION["lang"]) {
                 case "fr":
-                    $result = "Connectez vous";
+                    $result = "Connectez-vous";
                     break;
             }
-            return $result; // Return result
+            return $result;
         } else {
-            return $_SESSION["username"]; // Return username if set in session
+            return $_SESSION["username"];
         }
     }
 
-    // Method to get session attribute by name
     public function getAttribute(string $name): mixed {
-        return $_SESSION[$name]; // Return session attribute
+        return $_SESSION[$name];
     }
 
-    // Method to get user info by UID
     public function getUserInfo(string $UID): ?UserInfo {
-        if($this->cuicui_manager == NULL) { // Check if CuicuiManager object is not set
-            die("No manager connection"); // Die with error message
+        if ($this->cuicui_manager == NULL) {
+            die("No manager connection");
         }
-        return $this->cuicui_manager->getUserInfo($UID); // Get user info from CuicuiManager
+        return $this->cuicui_manager->getUserInfo($UID);
     }
 
     public function getUserSettings(string $UID): ?UserInfo {
-        if($this->cuicui_manager == NULL) { // Check if CuicuiManager object is not set
-            die("No manager connection"); // Die with error message
+        if ($this->cuicui_manager == NULL) {
+            die("No manager connection");
         }
-        return $this->cuicui_manager->getUserSettings($UID); // Get user info from CuicuiManager
+        return $this->cuicui_manager->getUserSettings($UID);
     }
 
     public function getUserInfoAndSettings(string $UID): ?UserInfo {
-        if($this->cuicui_manager == NULL) { // Check if CuicuiManager object is not set
-            die("No manager connection"); // Die with error message
+        if ($this->cuicui_manager == NULL) {
+            die("No manager connection");
         }
-        return $this->cuicui_manager->getUserInfoAndSettings($UID); // Get user info from CuicuiManager
+        return $this->cuicui_manager->getUserInfoAndSettings($UID);
     }
 
-    // Method to update user bio
     public function updateBio(string $newBio, $UID) {
-        if($this->cuicui_manager == NULL) { // Check if CuicuiManager object is not set
-            die("No manager connection"); // Die with error message
+        if ($this->cuicui_manager == NULL) {
+            die("No manager connection");
         }
-        $secureText = CuicuiDB::SecurizeString_ForSQL($newBio); // Secure the text for SQL
-        $query = "UPDATE `user` SET biography=? WHERE UID=?"; // SQL query to update user bio
-        $this->cuicui_manager->executeRequest($query, "si", $newBio, $UID); // Execute the query
+        $secureText = CuicuiDB::SecurizeString_ForSQL($newBio);
+        $query = "UPDATE `user` SET biography=? WHERE UID=?";
+        $this->cuicui_manager->executeRequest($query, "si", $newBio, $UID);
     }
 }
-
+// ------------------------------------------------------------------------------------------------------------------------------------- CLASS - LOGIN_STATUS
 class LoginStatus {
-    private bool $login_success = false;
-    private ?string $text = NULL;
+    private bool $loginSuccess = false;
+    private ?string $text = null;
 
-    public function __construct(bool $success, string $text) {
-        $this->login_success = $success;
+    public function __construct(bool $success, ?string $text = null) {
+        $this->loginSuccess = $success;
         $this->text = $text;
     }
      
     public function getLoginStatus(): bool {
-        return $this->login_success;
+        return $this->loginSuccess;
     }
 
-    public function getText() {
+    public function getText(): ?string {
         return $this->text;
     }
 }
-
-?>

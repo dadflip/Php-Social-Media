@@ -11,36 +11,23 @@ include '../defs.functions.php';
 includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
 includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexElement']);
 includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['NavBar']);
-includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['SearchBar']);
 
-
-$cuicui_manager = new CuicuiManager($database_configs, DATASET);
-$cuicui_sess = new CuicuiSession($cuicui_manager);
+try {
+    $cuicui_manager = new CuicuiManager($database_configs, DATASET);
+    $cuicui_sess = new CuicuiSession($cuicui_manager);
+} catch (mysqli_sql_exception $e) {
+    echo "Une erreur s'est produite : " . $e->getMessage();
+    // Afficher un bouton de redirection
+    echo '<button onclick="window.location.href=\'' . $appdir['PATH_CUICUI_APP'] . '/admin/database/db_config.php\'">Configurer</button>';
+}
 
 if (isset($_SESSION['UID'])) {
-    // Marquer les notifications comme lues lors de l'accès à la page de notifications
-    $updateQuery = "UPDATE notifications SET is_read = 1 WHERE users_uid = ? AND is_read = 0";
-    $updateStmt = $cuicui_manager->prepare($updateQuery);
-    $updateStmt->execute([$_SESSION['UID']]);
+    $notifs = new NotificationManager($cuicui_manager);
+    // $notifs->getUserNotifications($_SESSION['UID']);
+    $notifications = $notifs->getNotificationsByUserId($_SESSION['UID']);
+    $countAllNotifications = count($notifications);
 }
 
-// Récupérer les notifications de l'utilisateur depuis les deux dernières semaines
-$twoWeeksAgo = date('Y-m-d H:i:s', strtotime('-2 weeks'));
-$selectQuery = "SELECT * FROM notifications WHERE /*users_uid = ? AND*/ c_datetime > ? ORDER BY c_datetime DESC";
-$selectStmt = $cuicui_manager->prepare($selectQuery);
-//$selectStmt->bind_param("ss", $_SESSION['UID'], $twoWeeksAgo);
-$selectStmt->bind_param("s", $twoWeeksAgo);
-$selectStmt->execute();
-$result = $selectStmt->get_result();
-
-// Vérifier si la requête a réussi
-if ($result) {
-    // Récupérer les résultats sous forme de tableau associatif
-    $notifications = $result->fetch_all(MYSQLI_ASSOC);
-} else {
-    // Gérer l'erreur si la requête échoue
-    echo "Erreur lors de la récupération des notifications";
-}
 ?>
 
 
@@ -83,6 +70,7 @@ if ($result) {
             </div>
 
             <div id="filtres" class="filtres-dropdown">
+                <button id="toggle-filtres">Filtres</button>
                 <div id="filtres-select">
                     <div class="filtre active" data-value="user"><i class="fas fa-user"></i><span>Utilisateur</span></div>
                     <div class="filtre" data-value="post"><i class="fas fa-file-alt"></i><span>Post</span></div>
@@ -113,22 +101,11 @@ if ($result) {
                                 <div class="tab" data-tab="tab3" onclick="showTab('tab3')">
                                     <i class="fas fa-users"></i> Amis
                                 </div>
+                                <?php
+                                    $countUnread = $notifs->countUnreadNotifications($_SESSION['UID']);
+                                ?>
+
                                 <div class="tab notifications-badge" data-tab="tab4" onclick="showTab('tab4')">
-                                    <?php
-                                    //echo count($notifications) ;
-                                    $countUnread = 0;
-                                    ?>
-
-                                    <?php
-                                    if (count($notifications) > 0) {
-                                        foreach ($notifications as $notification) {
-                                            if (!$notification['is_read']) {
-                                                $countUnread++;
-                                            }
-                                        }
-                                    }
-                                    ?>
-
                                     <span class="badge badge-red"><?php echo '(' . $countUnread . ')'; ?></span>
                                     <i class="fas fa-bell"></i>
                                     Notifications
@@ -166,9 +143,6 @@ if ($result) {
                             <button onclick="stream()" type="button" class="social_button" title="stream">
                                 <i class="fas fa-video"></i>
                             </button>
-
-
-                            <!-- Ajoutez d'autres boutons avec d'autres fonctionnalités ici -->
                         <?php
                         }
                         ?>
@@ -185,32 +159,37 @@ if ($result) {
                     <div id="tab3" class="tab-content" style="display: none;">
                         Contenu des Amis
                     </div>
-
                     <div id="tab4" class="tab-content" style="display: none;">
-                        <div class="content">
-                            <h1>Notifications</h1>
-                            <?php if (count($notifications) > 0) : ?>
-                                <?php foreach ($notifications as $notification) : ?>
-                                    <div class="notification <?php echo $notification['is_read'] ? '' : 'unread'; ?>">
-                                        <p><?php echo $notification['text_content']; ?></p>
-                                        <?php if ($notification['notification_id']) : ?>
-                                            <p><?php echo $notification['title']; ?></p>
-                                            <p><?php echo $notification['c_datetime']; ?></p>
-                                            <p><?php echo $notification['notification_type']; ?></p>
+                    <div class="content">
+                        <h1>Notifications</h1>
+                        <?php if ($countAllNotifications > 0) : ?>
+                            <?php foreach ($notifications as $notification) : ?>
+                                <div class="notification <?php echo $notification['is_read'] ? '' : 'unread'; ?>">
+                                    <p><?php echo $notification['text_content']; ?></p>
+                                    <?php if ($notification['notification_id']) : ?>
+                                        <p><?php echo $notification['title']; ?></p>
+                                        <p><?php echo $notification['c_datetime']; ?></p>
+                                        <p><?php echo $notification['notification_type']; ?></p>
+                                    <?php endif; ?>
+                                    <span>
+                                        <?php if (!$notification['is_read']) : ?>
+                                            <button class="mark-as-read" data-id="<?php echo $notification['notification_id']; ?>">Marquer comme lu</button>
                                         <?php endif; ?>
-                                        <span><button class="delete-btn" data-id=<?php echo $notification['notification_id']; ?>>Supprimer</button></span>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php else : ?>
-                                <div class="no-notifs">
-                                    <p>Aucune notification</p>
+                                        <button class="delete-btn" data-id="<?php echo $notification['notification_id']; ?>">Supprimer</button>
+                                    </span>
                                 </div>
-                            <?php endif; ?>
-                        </div>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <div class="no-notifs">
+                                <p>Aucune notification</p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                     </div>
                 </div>
             </div>
 
+            <button id="toggle-right-panel">Toggle Panel</button>
             <div class="right-panel wow animate__fadeInRight" data-wow-duration="1s" data-wow-delay="2s">
                 <section id="right-links">
 
@@ -454,6 +433,16 @@ if ($result) {
     window.__img_u__ = atob("<?php if(isset($_SESSION['pfp_url'])){ echo base64_encode($_SESSION['pfp_url']);} ?>");
 </script>
 
+<?php if(isset($_SESSION["isAdmin"]) && $_SESSION["isAdmin"]) {?>
+<script>
+    window.__admin_but__ = true;
+</script>
+<?php } else { ?>
+<script>
+    window.__admin_but__ = false;
+</script>
+<?php } ?>
+
 <?php includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['scripts']); ?>
 
 
@@ -486,6 +475,7 @@ if ($result) {
         display: grid;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: 10px;
+        margin: 0.5em;
     }
 
     .filtre {
@@ -512,7 +502,44 @@ if ($result) {
 </style>
 
 <script>
-    //Envoyer des données au serveur
+$('.mark-as-read').click(function() {
+    var notificationId = $(this).data('id');
+
+    $.ajax({
+        url: window.__ajx__ + 'markAsRead.php',
+        method: 'POST',
+        data: { id: notificationId },
+        success: function(response) {
+            // Actualiser la page ou faire d'autres actions nécessaires
+            location.reload();
+        },
+        error: function(xhr, status, error) {
+            // Gérer les erreurs
+            console.error(error);
+        }
+    });
+});
+
+$('.delete-btn').click(function() {
+    var notificationId = $(this).data('id');
+
+    $.ajax({
+        url: window.__ajx__ + 'deleteNotification.php',
+        method: 'POST',
+        data: { id: notificationId },
+        success: function(response) {
+            // Actualiser la page ou faire d'autres actions nécessaires
+            location.reload();
+        },
+        error: function(xhr, status, error) {
+            // Gérer les erreurs
+            console.error(error);
+        }
+    });
+});
+
+
+
     $(document).ready(function() {
 
         // Appeler la méthode pour construire les flipbox au chargement de la page
@@ -629,41 +656,6 @@ if ($result) {
             $(this).find('.flip-box-inner').toggleClass('flipped');
         }
     });
-
-    // Script JavaScript pour gérer la suppression de notifications
-    document.addEventListener('DOMContentLoaded', function() {
-        var deleteButtons = document.querySelectorAll('.delete-btn');
-        deleteButtons.forEach(function(button) {
-            button.addEventListener('click', function() {
-                var notificationId = this.getAttribute('data-id');
-                if (confirm('Êtes-vous sûr de vouloir supprimer cette notification ?')) {
-                    // Envoyer une requête Ajax pour supprimer la notification
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('POST', 'delete_notification.php', true);
-                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                    xhr.onreadystatechange = function() {
-                        if (xhr.readyState === XMLHttpRequest.DONE) {
-                            if (xhr.status === 200) {
-                                // Actualiser la page après la suppression
-                                location.reload();
-                            } else {
-                                console.error('Erreur lors de la suppression de la notification');
-                            }
-                        }
-                    };
-                    xhr.send('notification_id=' + notificationId);
-                }
-            });
-        });
-    });
-
-
-
-
-
-
-
-
 
     //------------------------ Recherches et Resultats ---------------------------------
 

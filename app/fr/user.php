@@ -96,6 +96,32 @@ if(isset($user_info)) {
             margin-bottom: 20px;
             /* Ajouter une marge en bas */
         }
+
+        .admin-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            column-gap: 1em;
+            align-items: stretch;
+            justify-items: center;
+        }
+
+        button.clickable.cuicui-button.admin {
+            background-color: #5100c1;
+            border: none;
+            border-radius: 1em;
+        }
+
+        form#banUserForm {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: stretch;
+            align-content: center;
+        }
+
+        textarea#banReason {
+            resize: none;
+        }
     </style>
 </head>
 
@@ -129,7 +155,41 @@ if(isset($user_info)) {
                         <img src="<?php echo $avatarUrl; ?>" alt="Avatar de <?php echo $user_info->getUsername(); ?>" class="profile-picture">
 
                         <p>Biographie : <?php echo $user_info->getBiography(); ?></p>
-                        <!-- Ajoutez d'autres informations sur l'utilisateur si nécessaire -->
+
+                        <button id="followButton" class="followButton" onclick="<?php echo ($follow_res ? 'unfollowUser(' . $user_info->getID() . ')' : 'followUser(' . $user_info->getID() . ')'); ?>">
+                            <?php 
+                            if($follow_res) {
+                                echo "arrêter de suivre";
+                            } else {
+                                echo "suivre";
+                            }
+                            ?>
+                        </button>
+
+                        <div class="admin-section">
+                            <?php if($_SESSION["isAdmin"] == "1") { ?>
+                                <button class="clickable cuicui-button admin" onclick="warnUser()">
+                                    Avertir cet utilisateur
+                                </button>
+                                <button class="clickable cuicui-button admin" onclick="showBanForm()">
+                                    Bannir cet utilisateur
+                                </button>
+                            <?php } ?>
+
+                            <div id="banForm" style="display: none;">
+                                <form id="banUserForm">
+                                    <label for="banDuration">Durée du ban (en heures, jours, ou minutes):</label>
+                                    <input type="text" id="banDuration" name="banDuration" required>
+
+                                    <label for="banReason">Motif du ban:</label>
+                                    <textarea id="banReason" name="banReason" required></textarea>
+
+                                    <button type="submit" class="clickable cuicui-button admin">
+                                        Bannir
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 <?php } ?>
 
@@ -199,6 +259,51 @@ if(isset($user_info)) {
 </script>
 <script>
     window.__u__ = <?php echo $_SESSION['UID']; ?>
+</script>
+
+<script>
+    function showBanForm() {
+        document.getElementById("banForm").style.display = "block";
+    }
+
+    document.getElementById("banUserForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const userID = <?php echo $user_info->getID();?>;
+        const adminID = <?php echo $_SESSION["UID"];?>;
+        const duration = document.getElementById("banDuration").value;
+        const reason = document.getElementById("banReason").value;
+
+        $.ajax({
+            url: window.__ajx__ + "banuser.php",
+            method: "POST",
+            data: {
+                userID,
+                adminID,
+                duration,
+                reason
+            },
+            success: function(response) {
+                if(response === "ok") {
+                    alert(`User with id ${userID} banned successfully`);
+                } else if (response === "unset") {
+                    console.error("An error occurred while trying to ban this user");
+                } else {
+                    alert(response);
+                }
+                console.log(response);
+            },
+            error: function(error) {
+                console.error(`Error while banning ${userID}`, error);
+            }
+        });
+    });
+
+    function warnUser() {
+        <?php 
+            $cuicui_manager->warnUser($user_info->getID(), $_SESSION["UID"], "You received a warn from admins");
+        ?>
+    }
 </script>
 
 <script src=<?php echo $appdir['PATH_JS_DIR'] . "/routes.js" ?>></script>

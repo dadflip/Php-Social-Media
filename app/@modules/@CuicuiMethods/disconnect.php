@@ -13,4 +13,3 @@ session_destroy();
 // Rediriger vers la page d'accueil ou une autre page appropriée
 header('Location: ' . $appdir['PATH_CUICUI_APP']);
 exit(); // Assure que le script s'arrête après la redirection
-?>

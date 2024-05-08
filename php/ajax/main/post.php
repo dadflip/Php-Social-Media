@@ -4,6 +4,7 @@ includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiM
 
 $cuicui_manager = new CuicuiManager($database_configs, DATASET);
 $cuicui_sess = new CuicuiSession($cuicui_manager);
+$notification_manager = new NotificationManager($cuicui_manager);
 
 $userId = $_SESSION['UID'];
 $userName = $_SESSION['username'];
@@ -96,18 +97,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $cuicui_manager->executeRequest($postQuery, "issssssssis", $userId, $title, $category, $tags, $postDate, $contentImgUrl, $contentVidUrl, $mediaUrl, $content, $mediaId, $postTextId);
 
-    // Insérer une notification dans la table 'notifications'
+    // Define notification details
     $notificationType = "post";
     $notificationDate = date('Y-m-d H:i:s');
     $notificationTitle = "Nouveau post créé";
     $notificationText = "L'utilisateur " . $userName . " a créé un nouveau post.";
 
-    $insertNotificationQuery = "INSERT INTO notifications (users_uid, c_datetime, title, text_content, notification_type) VALUES (?, ?, ?, ?, ?)";
-
-    $cuicui_manager->executeRequest($insertNotificationQuery, "issss", $userId, $notificationDate, $notificationTitle, $notificationText, $notificationType);
+    // Insert the notification using NotificationsManager method
+    $notification_manager->insertNotification($userId, $notificationDate, $notificationTitle, $notificationText, $notificationType);
     
     // Rediriger vers l'interface principale après l'ajout
     header('Location:' . $appdir['PATH_CUICUI_APP'] . '/' . $GLOBALS['LANG'] . $phpfile['mainpage']);
     exit();
 }
-?>

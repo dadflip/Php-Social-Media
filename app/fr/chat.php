@@ -1,19 +1,6 @@
-<?php
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-
-    // Afficher le chemin actuel du fichier pour déboguer
-    //var_dump(__DIR__);
-
+<?php 
     include '../defs.functions.php';
     includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
-    includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexElement']);
-    includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['NavBar']);
-    
-
-    $cuicui_manager = new CuicuiManager($database_configs, DATASET);
-    $cuicui_sess = new CuicuiSession($cuicui_manager);
 ?>
 
 <!DOCTYPE html>
@@ -22,32 +9,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
-    <!-- CSS pour la mise en page -->
-    <style>
-        .chat-container {
-            /* max-width: 600px; */
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #ffffff;
-        }
-        .chat-messages {
-            height: 300px;
-            overflow-y: scroll;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-        #messageInput {
-            width: -webkit-fill-available;
-            padding: 5px;
-            margin-bottom: 10px;
-        }
-        #sendButton {
-            padding: 5px 10px;
-        }
-    </style>
 </head>
 <body>
     <div class="chat-container">
@@ -55,34 +16,62 @@
             <!-- Messages seront ajoutés ici dynamiquement -->
         </div>
         
-        <input type="text" id="messageInput" placeholder="Type your message...">
-        <button id="sendButton" onclick="sendMessage()">Send</button>
+        <input type="text" id="messageInput" placeholder="Tapez votre message...">
+        <button id="sendButton" onclick="sendMessage()">Envoyer</button>
     </div>
+
+    <script>
+        window.__u_url__ = atob("<?php echo base64_encode($GLOBALS["normalized_paths"]["PATH_CUICUI_APP"] . "/" . $GLOBALS["LANG"] . $GLOBALS["php_files"]["user"]); ?>");
+        window.__ajx__ = atob("<?php echo base64_encode($appdir['PATH_PHP_DIR'] . '/ajax/main/'); ?>");
+        window.__u__ = atob("<?php if(isset($_SESSION['UID'])){echo base64_encode($_SESSION['UID']);} ?>");
+        window.__img_u__ = atob("<?php if(isset($_SESSION['pfp_url'])){ echo base64_encode($_SESSION['pfp_url']);} ?>");
+    </script>
 
     <!-- JavaScript pour la fonctionnalité de chat -->
     <script>
-        // Fonction pour envoyer un message
         function sendMessage() {
             const messageInput = document.getElementById('messageInput');
-            const message = messageInput.value.trim(); // Trim pour enlever les espaces vides au début et à la fin
+            const message = messageInput.value.trim();
             if (message === '') {
-                return; // Ne rien faire si le champ est vide
+                return;
             }
-            // Ici, vous pouvez envoyer le message à l'API ou au serveur pour traitement et stockage
-            // Puis, vous pouvez également ajouter le message à la liste des messages sur cette page
-            addMessageToChat(message);
-            // Effacer le champ de saisie après l'envoi du message
-            messageInput.value = '';
+
+            const username = getUrlParameter('user'); // Récupérer le nom d'utilisateur de l'URL
+            if (!username) {
+                console.error('Nom d\'utilisateur non trouvé dans l\'URL');
+                return;
+            }
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', window.__ajx__ + 'chat.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.success) {
+                        addMessageToChat(message);
+                        messageInput.value = '';
+                    } else {
+                        console.error('Erreur lors de l\'envoi du message');
+                    }
+                }
+            };
+            xhr.send('username=' + encodeURIComponent(username) + '&message=' + encodeURIComponent(message));
         }
 
-        // Fonction pour ajouter un message à la liste des messages dans le chat
         function addMessageToChat(message) {
             const chatMessages = document.getElementById('chatMessages');
             const messageElement = document.createElement('div');
             messageElement.textContent = message;
             chatMessages.appendChild(messageElement);
-            // Faire défiler vers le bas pour afficher le dernier message ajouté
             chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
         }
     </script>
 </body>

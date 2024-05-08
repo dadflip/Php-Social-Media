@@ -1,0 +1,94 @@
+/* Pour les écrans plus petits, par exemple, les téléphones mobiles */
+@media only screen and (max-width: 600px) {
+    #barre-recherche {
+        flex-direction: column !important; /* Utilisation de !important pour prioriser ce style */
+    }
+}
+
+/* Pour les écrans plus petits, par exemple, les téléphones mobiles */
+@media only screen and (max-width: 600px) {
+    #filtres-select {
+        display: none !important; /* Masquer les filtres par défaut */
+    }
+
+    .filtres-dropdown.active #filtres-select {
+        display: block !important; /* Afficher les filtres lorsque le menu est ouvert */
+    }
+}
+
+/* Styles pour les petits écrans */
+@media only screen and (max-width: 600px) {
+    .right-panel {
+        justify-content: center !important;
+        position: fixed;
+        display: none !important; /* Masquer le panneau par défaut */
+        grid-template-columns: 1fr;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 60%;
+        max-height: 30em;
+        background-color: #0056b3 !important;
+        z-index: 9999;
+        overflow-y: auto;
+        border-radius: 1em;
+    }
+
+    .right-panel.wow.animate__fadeInRight.active {
+        display: grid !important;
+    }
+}
+
+/* Style du bouton de toggle */
+#toggle-right-panel {
+    display: none;
+}
+
+@media only screen and (max-width: 600px) {
+    #toggle-right-panel {
+        display: block !important;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 2em;
+        z-index: 10000;
+        border-radius: 20em;
+        background-color: #007bffa1;
+        border: none;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .tabs-container {
+        position: fixed !important;
+        top: 80% !important;
+        left: 0;
+        bottom: 0;
+        max-height: 5em !important;
+        display: contents !important;
+        overflow: hidden;
+        row-gap: 0em !important;
+        justify-items: center;
+        background-color: #007bff99 !important;
+        border-radius: 5px !important;
+        align-content: stretch;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .post {
+        flex-direction: column !important;
+        align-items: start !important;
+        box-shadow: none !important;
+    }
+}
+
+
+
+
+/* Pour les écrans plus grands, masquer le bouton */
+@media only screen and (min-width: 601px) {
+    #toggle-filtres {
+        display: none !important; /* Masquer le bouton sur les grands écrans */
+    }
+}

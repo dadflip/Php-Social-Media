@@ -44,6 +44,7 @@ hr {
 }
 
 .app {
+    padding: 1em;
     display: flex;
     position: relative;
     flex-direction: row;
@@ -181,13 +182,19 @@ hr {
 }
 
 .center-panel button {
+    font-size: larger;
+    margin-top: 1em;
+    margin-bottom: 1em;
     border: none;
     background: none;
     cursor: pointer;
+    color: var(--secondary-text-color);
 }
 
-.center-panel button i {
+.center-panel button i:hover {
     font-size: 20px;
+    color: var(--text-color);
+    animation: horizJello 1s infinite;
 }
 
 .tabs-container {
@@ -240,7 +247,6 @@ hr {
     flex-direction: column;
     flex-wrap: wrap;
     overflow: auto;
-    height: -webkit-fill-available;
 }
 
 /* Styles pour les liens */
@@ -380,6 +386,7 @@ hr {
     justify-content: space-around;
 }
 
+
 #barre-recherche input[type="text"] {
     border: none;
     outline: none;
@@ -412,6 +419,9 @@ hr {
     border-left: 1px solid #ccc;
 }
 
+button#toggle-filtres {
+    padding: 2em;
+}
 
 .navigation-buttons {
     display: grid;

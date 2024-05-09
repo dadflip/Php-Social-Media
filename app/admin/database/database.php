@@ -1,99 +1,23 @@
+<?php
+    include '../../defs.functions.php';
+    includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
+    session_start();
+
+    if(isset($_SESSION["isAdmin"]) && $_SESSION["isAdmin"]) {
+        $cuicui_manager = new CuicuiManager($database_configs, DATASET);
+        $cuicui_sess = new CuicuiSession($cuicui_manager);
+    }else{
+        header('Location:' . $appdir['PATH_CUICUI_APP']);
+    }
+?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Redirector</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f7f7f7;
-        }
+    <title>Database | Cuicui Admin</title>
+    <?php includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['Link']); ?>
 
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #007bff;
-        }
-
-        form {
-            text-align: center;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #555;
-        }
-
-        input[type="text"] {
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            font-size: 16px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        input[type="submit"] {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 3px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-
-        h3 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #007bff;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        li {
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        a {
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-            background-color: #f0f0f0;
-            padding: 10px 20px;
-            border-radius: 5px;
-            display: inline-block;
-            transition: background-color 0.3s;
-        }
-
-        a:hover {
-            background-color: #ddd;
-        }
-    </style>
+    <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/flip/flip.admin.db.css"?> >
 </head>
 <body>
     <div class="container">
@@ -132,9 +56,7 @@
                 echo "<script>window.location.href = '$db_url';</script>";
             }
         }
-        
         ?>
-
     </div>
 </body>
 </html>

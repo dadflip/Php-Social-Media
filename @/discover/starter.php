@@ -1,3 +1,14 @@
+<?php 
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
+
+    // Inclusion des fichiers nécessaires
+    include '../../app/defs.functions.php';
+    includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,9 +70,11 @@
 </style>
 <body>
     <div class="tutorial-container">
-        <div class="slide">Slide 1</div>
-        <div class="slide">Slide 2</div>
-        <div class="slide">Slide 3</div>
+        <div class="slide"><img src="<?php echo $appdir['PATH_IMG_DIR'] . "/starter/index_top.PNG" ?>" alt="Image 1"></div>
+        <div class="slide"><img src="<?php echo $appdir['PATH_IMG_DIR'] . "/starter/index_bottom.PNG" ?>" alt="Image 2"></div>
+        <div class="slide"><img src="<?php echo $appdir['PATH_IMG_DIR'] . "/starter/navigate.PNG" ?>" alt="Image 3"></div>
+        <div class="slide"><img src="<?php echo $appdir['PATH_IMG_DIR'] . "/starter/navigate2.PNG" ?>" alt="Image 4"></div>
+        <div class="slide"><img src="<?php echo $appdir['PATH_IMG_DIR'] . "/starter/options.PNG" ?>" alt="Image 5"></div>
         <button class="prev-btn">Previous</button>
         <button class="next-btn">Next</button>
     </div>

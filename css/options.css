@@ -39,7 +39,7 @@
 .floating-button {
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    left: 20px;
     background-color: #007bff;
     color: #fff;
     border: none;
@@ -109,7 +109,7 @@ fieldset {
     justify-items: stretch;
 }
 
-.radio-button:hover + label{
+.radio-button:hover+label {
     text-decoration: underline;
     cursor: pointer;
 }
@@ -119,7 +119,8 @@ fieldset {
     border: 1px solid var(--border-color);
     border-radius: 0.5em;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    justify-items: center;
 }
 
 .uid {
@@ -131,12 +132,12 @@ fieldset {
 .uid-name {
     display: flex;
     margin: 0 1em 1em;
-    justify-content:left;
+    justify-content: left;
     row-gap: 1em;
     align-items: flex-end;
     /* text-align: center; */
     flex-flow: row;
-    
+
 }
 
 #bio-field {
@@ -159,7 +160,7 @@ label[for="biography"] {
     margin-left: 1em;
 }
 
-form {   
+form {
     width: 100%;
     /* display: flex;
     flex-flow: column;
@@ -190,7 +191,8 @@ label {
     margin: 0;
     display: block;
     border: 1px solid var(--border-color);
-    object-fit: cover; /* Ajoutez cette ligne */
+    object-fit: cover;
+    /* Ajoutez cette ligne */
 }
 
 
@@ -200,7 +202,7 @@ label {
 
 .user-info-change {
     grid-column: span 2;
-    
+
 }
 
 /*.user-info-change > fieldset {
@@ -208,15 +210,18 @@ label {
     flex-flow: column;
 }*/
 
-.user-info-change > fieldset > label {
+.user-info-change>fieldset>label {
     font-weight: bold;
 }
 
-.user-info-change > fieldset > input{
+.user-info-change>fieldset>input {
     margin: 0.5em 0;
 }
 
-select, input[type="text"], input[type="file"], input[type="submit"] {
+select,
+input[type="text"],
+input[type="file"],
+input[type="submit"] {
     padding: 2em;
     border: 1px solid #cccccc;
     box-sizing: border-box;
@@ -234,7 +239,8 @@ select, input[type="text"], input[type="file"], input[type="submit"] {
     flex-flow: column;
 }
 
-button#followButton, button#saveButton {
+button#followButton,
+button#saveButton {
     background-color: #4CAF50;
     color: white;
     padding: 10px 20px;
@@ -246,6 +252,59 @@ button#followButton, button#saveButton {
     height: fit-content;
 }
 
-button#followButton:hover, button#saveButton:hover {
-    background-color: #45a049; /* Changement de couleur au survol */
+button#followButton:hover,
+button#saveButton:hover {
+    background-color: #45a049;
+    /* Changement de couleur au survol */
+}
+
+/* Style de la fenêtre flottante */
+.popup {
+    display: none;
+    /* Caché par défaut */
+    position: fixed;
+    z-index: 9999;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ff3030;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.popup p {
+    color: black;
+}
+
+/* Style du contenu de la fenêtre flottante */
+.popup-content {
+    max-width: 400px;
+}
+
+/* Style du bouton de fermeture */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    color: black;
+}
+
+.close:hover {
+    color: red;
+}
+
+/* Style pour les éléments checked dans le formulaire de sélection de thème */
+input[type="radio"]:checked+label {
+    font-weight: bold;
+    /* Par exemple, changer le style du texte en gras */
+    background-color: #ff3030;
+}
+
+/* Style pour les éléments checked dans le formulaire de sélection de langue */
+input[type="radio"]:checked+label {
+    font-weight: bold;
+    /* Par exemple, changer le style du texte en gras */
+    background-color: #ff3030;
 }

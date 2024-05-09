@@ -12,11 +12,10 @@
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flip App | Database Config</title>
+    <title>Database Config</title>
+    <?php includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['Link']); ?>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -104,24 +103,13 @@
     <div class="container">
         <h2>Ajouter une nouvelle configuration de base de données</h2>
         <form method="post" action="db_config.php">
-            <label for="new_host">Hôte :</label>
-            <input type="text" id="new_host" name="new_host" required>
-            <label for="new_name">Nom de la base de données :</label>
-            <input type="text" id="new_name" name="new_name" required>
-            <label for="new_user">Nom de l'utilisateur :</label>
-            <input type="text" id="new_user" name="new_user" required>
-            <label for="new_password">Mot de passe :</label>
-            <input type="password" id="new_password" name="new_password" required>
-            <input type="submit" value="Ajouter">
+            <input type="submit" value="Configurer">
         </form>
 
         <div class="container">
             <h2>Actions supplémentaires</h2>
             <ul>
                 <li><a href="database.php">Se connecter au serveur de base de données</a></li>
-                <li><a href="#">Enregistrer l'URL</a></li>
-                <li><a href="#">Effectuer une recherche avec des filtres</a></li>
-                <!-- Ajoutez d'autres liens au besoin -->
             </ul>
         </div>
     </div>

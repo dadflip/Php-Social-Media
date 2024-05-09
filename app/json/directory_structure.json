@@ -12,9 +12,12 @@
             "subdirectories": {
                 "@CuicuiComponents": {
                     "files": [
+                        "Categories.php",
                         "IndexElement.php",
+                        "Link.php",
                         "NavBar.php",
-                        "RightPanel.php"
+                        "RightPanel.php",
+                        "Script.php"
                     ],
                     "subdirectories": []
                 },
@@ -59,7 +62,9 @@
                     "subdirectories": []
                 },
                 "reports": {
-                    "files": [],
+                    "files": [
+                        "index.php"
+                    ],
                     "subdirectories": []
                 },
                 "users": {
@@ -77,8 +82,15 @@
             ],
             "subdirectories": []
         },
+        "en": {
+            "files": [
+                "index.php"
+            ],
+            "subdirectories": []
+        },
         "fr": {
             "files": [
+                "@.php",
                 "chat.php",
                 "delete_notification.php",
                 "edit.php",

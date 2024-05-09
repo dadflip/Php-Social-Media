@@ -626,7 +626,7 @@ class CuicuiManager extends CuicuiDB {
                     'languages_spoken' => 'English, French', // Languages spoken by the user
                     'relationship_status' => 'single', // User's relationship status
                     'birthday' => '1990-01-01', // User's birthday
-                    'privacy_settings' => false // User's privacy settings
+                    'privacy_settings' => true // User's privacy settings
                 )
             );                   
 
@@ -916,6 +916,13 @@ class CuicuiManager extends CuicuiDB {
         return $row;
     }
 
+    public function getIdByUsername_ToString($username) {
+        $query = "SELECT UID FROM `users` WHERE username=?";
+        $res = $this->createRequest($query, "s", $username);
+        $row = $res->fetch_assoc();
+        return $this->arrayToString($row);
+    }
+
     public function getUsernameById($userId) {
         $query = "SELECT username FROM `users` WHERE UID=?";
         $res = $this->createRequest($query, "i", $userId);
@@ -1169,11 +1176,26 @@ class CuicuiManager extends CuicuiDB {
         $stmt->execute();
     }
     
-    private function isUserAdmin($userID): bool {
+    public function isUserAdmin($userID): bool {
         $query = "SELECT isAdmin FROM users WHERE UID=?";
         $stmt = $this->createRequest($query, "i", $userID);
         $row = $stmt->fetch_assoc();
         return $row["isAdmin"] == "1";
+    }
+
+    public function sendNotificationToAdmins($notificationTitle, $notificationText, $notificationType) {
+        $adminQuery = "SELECT UID FROM users WHERE isAdmin=1";
+        $stmt = $this->query($adminQuery);
+        $notif = new NotificationManager($this->getConn());
+
+        if ($stmt->num_rows > 0) {
+            while ($row = $stmt->fetch_assoc()) {
+                $notif->insertNotification($row["UID"], date('Y-m-d H:i:s'), $notificationTitle, $notificationText, $notificationType);
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
     
     public function banUserAndSendNotification($userId, $adminId, $duration, $reason) {

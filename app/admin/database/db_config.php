@@ -1,5 +1,4 @@
 <?php
-// Inclusion des fichiers nécessaires
 include '../../defs.functions.php';
 includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
 
@@ -33,12 +32,9 @@ DatabaseSetUp::initializeDatabases($database_configs);
         <span>Aller à la page principale</span>
       </button>
         <script>
-            // Sélection du bouton
             const redirectButton = document.querySelector('#replay');
 
-            // Ajout d'un écouteur d'événement pour le clic sur le bouton
             redirectButton.addEventListener('click', () => {
-                // Redirection vers la page principale
                 window.location.href = '<?php echo $appdir['PATH_CUICUI_APP'] ; ?>';
             });
         </script>

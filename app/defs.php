@@ -7,7 +7,7 @@ $database_configs = [
     'databases' => [
         [
             'host' => 'localhost',
-            'name' => 'cuicui_db',
+            'name' => 'PY_CHINEDUM_CUICUI_APP',
             'user' => 'root',
             'password' => ''
         ],

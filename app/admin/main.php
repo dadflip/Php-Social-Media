@@ -10,27 +10,27 @@
         header('Location:' . $appdir['PATH_CUICUI_APP']);
     }
 ?>
-<!DOCTYPE html>
-<html lang="en">
 
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | Flip App</title>
+    <title>Admin Dashboard | Cuicui App</title>
+    <?php includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['Link']); ?>
+
     <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/flip/flip.admin.theme.css"?> >
 </head>
 <body>
     <div class="sidebar" id="sidebar">
         <h2>Configurations rapides</h2>
         <ul>
-            <li><a href="#">Utilisateurs</a></li>
-            <li><a href="#">Préférences</a></li>
+            <li><a href="users/">Utilisateurs</a></li>
+            <li><a href="<?php echo $GLOBALS['normalized_paths']['PATH_API_DIR'] ?>">API</a></li>
         </ul>
     </div>
 
-    <nav class="navbar">
+    <nav class="admin-navbar">
         <ul>
-            <button id="toggleSidebar">☰</button> <!-- Bouton pour dévoiler ou masquer le panneau latéral -->
+            <button id="toggleSidebar">☰</button>
             <li><a href="<?php echo $appdir['PATH_CUICUI_PROJECT']; ?>">Accueil</a></li>
             <li><a href="<?php echo $GLOBALS['normalized_paths']['PATH_CUICUI_APP'] . '/' . $GLOBALS['LANG'] . $GLOBALS['php_files']['stats']; ?>">Profil</a></li>
             <li><a href="<?php echo $GLOBALS['normalized_paths']['PATH_CUICUI_APP'] . '/' . $GLOBALS['LANG'] . $GLOBALS['php_files']['options']; ?>">Paramètres</a></li>
@@ -47,7 +47,7 @@
             <span class="icon">🔧</span>
             <span class="text">Gestion de la Configuration</span>
         </a>
-        <a href="reports" class="card-link">
+        <a href="reports/" class="card-link">
             <span class="icon">📊</span>
             <span class="text">Rapports</span>
         </a>
@@ -61,5 +61,7 @@
         });
     </script>
 </body>
+
+<?php includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['Script']); ?>
 </html>
 

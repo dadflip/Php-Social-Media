@@ -439,6 +439,7 @@ span.keyword-bubble {
 .post {
     position: relative;
     min-width: 60em;
+    max-width: 60em;
     display: flex;
     flex-direction: row;
     align-items: flex-start;
@@ -663,19 +664,25 @@ div#userList {
     display: grid;
     align-items: center;
     justify-items: center;
+    overflow: auto;
+    padding-bottom: 10em;
 }
 
 .user-card {
     width: 90%;
-    height: 5em;
+    height: auto;
     background-color: #f0f0f00f;
-    padding: 0.1em;
+    padding: 1em;
     margin: 10px;
-    display: flex;
+    display: grid;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     cursor: pointer;
     transition: padding 0.3s ease;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2em;
+    justify-items: stretch;
 }
 
 .user-card:hover {
@@ -686,4 +693,27 @@ div#userList {
     margin: 0;
     font-size: 16px;
     font-weight: bold;
+    justify-self: center;
+}
+
+.user-card button {
+    cursor: pointer;
+    background-color: #3f5ee7;
+    color: #fff;
+    border: none;
+    padding: 0.5em 1em;
+    border-radius: 5px;
+}
+
+div#userPosts {
+    display: flex;
+    padding: 1em;
+    border: 1px solid #fff;
+}
+
+.friends-post {
+    display: grid;
+    justify-items: center;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
 }

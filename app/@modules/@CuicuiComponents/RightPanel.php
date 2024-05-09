@@ -195,11 +195,11 @@ function generateProfileOptionsPanel($username, $settingsArray) {
 
     switch ($GLOBALS['LANG']) {
         case "fr":
-            $html .= 'Paramètres de confidentialité';
+            $html .= 'Paramètres de confidentialité - Public';
             break;
         case "en":
         default:
-            $html .= 'Privacy Settings';
+            $html .= 'Privacy Settings - Public';
             break;
     }
 
@@ -208,6 +208,22 @@ function generateProfileOptionsPanel($username, $settingsArray) {
     $privacy_settings_checked = $settingsArray['additional_info']['privacy_settings'] === "on" ? 'checked' : '';
 
     $html .= '<input type="checkbox" value="on" name="privacy-settings" id="privacy-settings" ' . $privacy_settings_checked . '>';
+
+    switch ($GLOBALS['LANG']) {
+        case "fr":
+            $html .= 'Notifications Push';
+            break;
+        case "en":
+        default:
+            $html .= 'Push Notifications';
+            break;
+    }
+
+    $html .= '</label>';
+
+    $notifications_checked = $settingsArray['notifications']['push'] === "on" ? 'checked' : '';
+
+    $html .= '<input type="checkbox" value="on" name="notifications" id="notifications" ' . $notifications_checked . '>';
 
     $html .= '</fieldset>';
     $html .= '<input id="saveButton" type="submit" name="submit-more">';

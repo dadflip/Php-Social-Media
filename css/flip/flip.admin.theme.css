@@ -93,7 +93,7 @@ body {
 }
 
 /* Styling for navbar */
-.navbar {
+.admin-navbar {
     background-color: #2a45e0;
     color: #fff;
     height: 40px;
@@ -107,25 +107,25 @@ body {
     z-index: 3; /* Mettre la barre de navigation au premier plan */
 }
 
-.navbar ul {
+.admin-navbar ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
 }
 
-.navbar ul li {
+.admin-navbar ul li {
     display: inline-block;
     padding: 0 20px;
     font-size: 18px;
 }
 
-.navbar ul li a {
+.admin-navbar ul li a {
     color: #fff;
     text-decoration: none;
 }
 
 /* Hover effect for navbar links */
-.navbar ul li a:hover {
+.admin-navbar ul li a:hover {
     background-color: #555;
     border-radius: 5px;
 }
@@ -150,4 +150,69 @@ body {
     top: 0;
     left: 10px;
     z-index: 4; /* Mettre le bouton au premier plan */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.this-container {
+    margin-bottom: 20px;
+}
+
+.this-container h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table th, table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+table th {
+    background-color: #f8f8f821;
+    font-weight: bold;
+}
+
+table tbody tr:hover {
+    background-color: #2a45e0;
+}
+
+button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+a:hover {
+    background-color: #007bff;
+    color: #fff;
 }

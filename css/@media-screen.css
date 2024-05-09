@@ -34,7 +34,7 @@
         border-radius: 1em;
     }
 
-    .right-panel.wow.animate__fadeInRight.active {
+    .right-panel.active {
         display: grid !important;
     }
 }

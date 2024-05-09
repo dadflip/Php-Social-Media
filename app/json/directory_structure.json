@@ -47,7 +47,6 @@
         },
         "admin": {
             "files": [
-                "index.php",
                 "main.php"
             ],
             "subdirectories": {
@@ -55,6 +54,16 @@
                     "files": [
                         "database.php",
                         "db_config.php",
+                        "index.php"
+                    ],
+                    "subdirectories": []
+                },
+                "reports": {
+                    "files": [],
+                    "subdirectories": []
+                },
+                "users": {
+                    "files": [
                         "index.php"
                     ],
                     "subdirectories": []
@@ -72,6 +81,7 @@
             "files": [
                 "chat.php",
                 "delete_notification.php",
+                "edit.php",
                 "index.php",
                 "mainpage.php",
                 "notify.php",

@@ -52,6 +52,7 @@ if(isset($user_info)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cuicui - Utilisateur</title>
+    <link rel="icon" type="image/png" href=<?php echo $appdir['PATH_IMG_DIR'] . "/icon.png" ?>>
     <link rel="stylesheet" href=<?php echo "../../css/" . $_SESSION["theme"] . ".css" ?>>
     <link rel="stylesheet" href="../../css/main.css">
     <link rel="stylesheet" href="../../css/options.css">

@@ -455,6 +455,7 @@ function removePost(postID, adminID) {
             }else{
                 //Trouver un moyen de mettre l'utilisateur au courant
                 alert(result);
+                location.reload();
             }
         },
         error: function (xhr, status, error) {
@@ -483,6 +484,7 @@ function markSensitive(postID, adminID) {
             console.log("Réponse Ajax réussie :", result);
             if(result === "ok") {
                 console.log("marked as sensitive");
+                location.reload();
             }else{
                 alert(result);
             }

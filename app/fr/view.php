@@ -20,6 +20,7 @@ $cuicui_sess = new CuicuiSession($cuicui_manager);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Post</title>
+    <link rel="icon" type="image/png" href=<?php echo $appdir['PATH_IMG_DIR'] . "/icon.png" ?>>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
@@ -71,7 +72,6 @@ $cuicui_sess = new CuicuiSession($cuicui_manager);
                     echo "<p>Author: {$post['username']}</p>";
                     // Afficher d'autres informations sur le post, par exemple : date, tags, etc.
                     echo "<p>Media URL: {$post['media_url']}</p>";
-                    echo "<img src='{$post['profile_pic_url']}' alt='Profile Picture'>";
 
                     // Fermer le résultat de la requête
                     $res->close();

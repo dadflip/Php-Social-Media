@@ -221,6 +221,12 @@
     border-radius: 20px;
 }
 
+.admin-button:hover {
+    background: linear-gradient(0deg, rgb(78, 30, 255) 0%, #430070 100%);
+    color: #fff;
+    border: none;
+}
+
 /* Style pour le survol du bouton Suivre */
 .report-button:hover,
 .follow-button:hover {
@@ -646,18 +652,6 @@ i.far.fa-user {
 
 .bouton-fermer:hover {
     background-color: #cc0000;
-}
-
-.chat-container {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.chat-messages {
-    height: 300px;
-    overflow-y: scroll;
-    border: 1px solid #ccc;
-    padding: 10px;
 }
 
 div#userList {

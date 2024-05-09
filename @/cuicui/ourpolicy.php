@@ -1,68 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Politique de confidentialité</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h1, h2 {
-            color: #333;
-        }
-
-        h2 {
-            margin-top: 20px;
-        }
-
-        p {
-            margin-bottom: 20px;
-        }
-    </style>
+    <title>Politique de confidentialité - Cuicui App</title>
 </head>
 <body>
-    <h1>NON OFFICIEL - Politique de confidentialité</h1>
+    <h1>Politique de confidentialité</h1>
     
-    <h2>1. Collecte des informations</h2>
-    <p>Nous collectons des informations lorsque vous vous inscrivez sur notre site, passez une commande, vous abonnez à notre newsletter, répondez à un sondage ou remplissez un formulaire.</p>
-    <p>Les informations collectées incluent votre nom, votre adresse e-mail, votre numéro de téléphone et votre adresse.</p>
+    <p>Merci d'utiliser Cuicui App. Cette page vous informe de nos politiques concernant la collecte, l'utilisation et la divulgation des informations personnelles que nous recevons des utilisateurs de l'application.</p>
     
-    <h2>2. Utilisation des informations</h2>
-    <p>Les informations que nous collectons auprès de vous peuvent être utilisées pour :</p>
+    <h2>Informations collectées et utilisées</h2>
+    
+    <p>Cuicui App collecte les informations que vous fournissez volontairement lors de l'utilisation de l'application, telles que votre nom d'utilisateur, votre adresse e-mail et votre photo de profil. Nous utilisons ces informations pour fournir, maintenir, protéger et améliorer nos services, ainsi que pour développer de nouveaux services.</p>
+    
+    <h2>Partage des informations</h2>
+    
+    <p>Nous ne partageons pas vos informations personnelles avec des tiers, sauf dans les cas suivants :</p>
     <ul>
-        <li>Personnaliser votre expérience et répondre à vos besoins individuels</li>
-        <li>Fournir un contenu publicitaire personnalisé</li>
-        <li>Améliorer notre site Web</li>
-        <li>Améliorer le service client et vos besoins de prise en charge</li>
-        <li>Vous contacter par e-mail</li>
-        <li>Administrer un concours, une promotion, ou une enquête</li>
+        <li>Si nous avons votre consentement pour le faire.</li>
+        <li>S'il est nécessaire de partager les informations pour fournir un service que vous avez demandé.</li>
+        <li>Si nous sommes légalement tenus de le faire.</li>
     </ul>
     
-    <h2>3. Divulgation à des tiers</h2>
-    <p>Nous ne vendons, n'échangeons ni ne transférons vos informations personnelles identifiables à des tiers. Cela n'inclut pas les tiers de confiance qui nous aident à exploiter notre site Web ou à mener nos affaires, tant que ces parties conviennent de garder ces informations confidentielles.</p>
+    <h2>Conservation des informations</h2>
     
-    <h2>4. Protection des informations</h2>
-    <p>Nous mettons en œuvre une variété de mesures de sécurité pour préserver la sécurité de vos informations personnelles. Nous utilisons un cryptage de pointe pour protéger les informations sensibles transmises en ligne.</p>
+    <p>Nous conservons vos informations personnelles aussi longtemps que nécessaire pour atteindre les objectifs pour lesquels elles ont été collectées, sauf si la loi l'exige autrement.</p>
     
-    <h2>5. Consentement</h2>
-    <p>En utilisant notre site, vous consentez à notre politique de confidentialité en ligne.</p>
+    <h2>Sécurité</h2>
     
-    <h2>6. Mises à jour de la politique de confidentialité</h2>
-    <p>Si nous décidons de changer notre politique de confidentialité, nous publierons ces changements sur cette page.</p>
+    <p>Nous prenons des mesures de sécurité appropriées pour protéger vos informations personnelles contre tout accès non autorisé, altération, divulgation ou destruction.</p>
     
-    <h2>7. Nous contacter</h2>
-    <p>Si vous avez des questions concernant cette politique de confidentialité, vous pouvez nous contacter en utilisant les informations ci-dessous :</p>
-    <address>
-        Votre société<br>
-        Adresse<br>
-        Ville, Pays<br>
-        Téléphone<br>
-        E-mail
-    </address>
+    <h2>Modifications de notre politique de confidentialité</h2>
+    
+    <p>Cette politique de confidentialité est susceptible d'être modifiée de temps à autre. Toute modification sera publiée sur cette page.</p>
+    
+    <h2>Nous contacter</h2>
+    
+    <p>Si vous avez des questions concernant cette politique de confidentialité, vous pouvez nous contacter !</p>
+    
 </body>
 </html>

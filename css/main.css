@@ -211,7 +211,7 @@ input[type="radio"] {
 }
 
 input[type="submit"] {
-    width: 200px;
+    width: auto;
     height: 50px;
     color: var(--secondary-text-color);
 }
@@ -293,6 +293,17 @@ nav > a {
 nav > a:hover, nav > a:focus {
     background-color: var(--light-background);
     font-size: 1.25em; /* Augmenter légèrement la taille du texte au survol */
+}
+
+nav#sliding-menu {
+    padding: 2em;
+    border-radius: 0.5em;
+}
+
+.log-navbar li {
+    text-decoration: none;
+    list-style: none;
+    padding: 1em;
 }
 
 div#toasts {

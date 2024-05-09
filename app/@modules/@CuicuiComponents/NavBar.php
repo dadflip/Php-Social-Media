@@ -56,7 +56,7 @@ function createTitleBar(string $text): string {
     $_sta = $GLOBALS['normalized_paths']['PATH_CUICUI_APP'] . '/' . $GLOBALS['LANG'] . $GLOBALS['php_files']['stats'];
     $_dis = $GLOBALS['normalized_paths']['PATH_MODULES'] . $GLOBALS['php_files']['disconnect'];
     $_opt = $GLOBALS['normalized_paths']['PATH_CUICUI_APP'] . '/' . $GLOBALS['LANG'] . $GLOBALS['php_files']['options'];
-    $_adm = $GLOBALS['normalized_paths']['PATH_CUICUI_APP'] . '/admin';
+    $_adm = $GLOBALS['normalized_paths']['PATH_CUICUI_APP'] . '/admin/main.php';
 
     $action = (isset($_SESSION["UID"])) ? "$_opt" : "$_log";
     
@@ -87,7 +87,7 @@ function createTitleBar(string $text): string {
         // Génération de la balise d'image
         $out .= '<img src="' . $img . '" class="profile-pfp">';
     }
-    if($_SESSION["isAdmin"]) {
+    if(isset($_SESSION["isAdmin"]) && $_SESSION["isAdmin"]) {
         $out .= '</a><a class="user" href="'.$_adm.'"> @admin <i class="fas fa-external-link-alt"></i>';
     }
     $out .= '

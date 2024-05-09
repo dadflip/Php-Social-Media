@@ -1,55 +1,48 @@
-<!DOCTYPE html>
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    ini_set('display_startup_errors', 1);
+    error_reporting(E_ALL);
 
-// Afficher le chemin actuel du fichier pour déboguer
-//var_dump(__DIR__);
+    include '../defs.functions.php';
+    includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
+    includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexElement']);
+    includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['NavBar']);
 
-include '../defs.functions.php';
-includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
-includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['IndexElement']);
-includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['NavBar']);
+    try {
+        $cuicui_manager = new CuicuiManager($database_configs, DATASET);
+        $cuicui_sess = new CuicuiSession($cuicui_manager);
+    } catch (mysqli_sql_exception $e) {
+        echo "Une erreur s'est produite : " . $e->getMessage();
+        echo '<button onclick="window.location.href=\'' . $appdir['PATH_CUICUI_APP'] . '/admin/database/db_config.php\'">Configurer</button>';
+    }
 
-try {
-    $cuicui_manager = new CuicuiManager($database_configs, DATASET);
-    $cuicui_sess = new CuicuiSession($cuicui_manager);
-} catch (mysqli_sql_exception $e) {
-    echo "Une erreur s'est produite : " . $e->getMessage();
-    // Afficher un bouton de redirection
-    echo '<button onclick="window.location.href=\'' . $appdir['PATH_CUICUI_APP'] . '/admin/database/db_config.php\'">Configurer</button>';
-}
-
-if (isset($_SESSION['UID'])) {
-    $notifs = new NotificationManager($cuicui_manager);
-    // $notifs->getUserNotifications($_SESSION['UID']);
-    $notifications = $notifs->getNotificationsByUserId($_SESSION['UID']);
-    $countAllNotifications = count($notifications);
-}
-
+    if (isset($_SESSION['UID'])) {
+        $notifs = new NotificationManager($cuicui_manager);
+        $notifications = $notifs->getNotificationsByUserId($_SESSION['UID']);
+        $countAllNotifications = count($notifications);
+    }
 ?>
 
-
+<!DOCTYPE html>
 <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Home | Cuicui App</title>
+        <link rel="icon" type="image/png" href=<?php echo $appdir['PATH_IMG_DIR'] . "/icon.png" ?>>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuicui</title>
-    <link rel="icon" type="image/png" href=<?php echo $appdir['PATH_IMG_DIR'] . "/icon.png" ?>>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
 
-    <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . '/' . $_SESSION["theme"] . ".css" ?>>
-    <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/main.css" ?>>
-    <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/flip/flip.style.css" ?>>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-</head>
+        <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . '/' . $_SESSION["theme"] . ".css" ?>>
+        <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/main.css" ?>>
+        <link rel="stylesheet" href=<?php echo $appdir['PATH_CSS_DIR'] . "/flip/flip.style.css" ?>>
+
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    </head>
 
 <body>
     <?php
@@ -59,7 +52,6 @@ if (isset($_SESSION['UID'])) {
         echo createTitleBar("Accueil");
     }
     ?>
-
 
     <main class="container">
         <div id="barre-recherche" class="search-bar">
@@ -119,27 +111,22 @@ if (isset($_SESSION['UID'])) {
                         <?php
                         if (isset($_SESSION["UID"])) {
                         ?>
-                            <!-- Bouton pour afficher le formulaire (Nouveau sujet)-->
                             <button onclick="toggleForm()" type="button" class="page_button1" title="FLIPBOX">
-                                <i class="fas fa-plus"></i> <!-- Nouvelle icône pour le bouton flip -->
+                                <i class="fas fa-plus"></i>
                             </button>
 
-                            <!-- Bouton pour ajouter des médias avec une icône d'appareil photo -->
                             <button onclick="postImage()" type="button" class="social_button" title="Ajouter des médias">
                                 <i class="fas fa-camera"></i>
                             </button>
 
-                            <!-- Bouton pour poster des images avec une icône d'appareil photo -->
                             <button onclick="addMedia()" type="button" class="social_button" title="Poster une image">
                                 <i class="fas fa-image"></i>
                             </button>
 
-                            <!-- Bouton pour enregistrer du son avec une icône de microphone -->
                             <button onclick="recordAudio()" type="button" class="social_button" title="Enregistrer du son">
                                 <i class="fas fa-microphone"></i>
                             </button>
 
-                            <!-- Bouton pour enregistrer le flux vidéo avec une icône de caméscope -->
                             <button onclick="stream()" type="button" class="social_button" title="stream">
                                 <i class="fas fa-video"></i>
                             </button>
@@ -148,7 +135,7 @@ if (isset($_SESSION['UID'])) {
                         ?>
                     </div>
 
-                    <div id="tab1" class="tab-content wow animate__fadeIn" data-wow-duration="1s" data-wow-delay="1.5s">
+                    <div id="tab1" class="tab-content">
                         <div id="resultats" class="resultats"><br></div>
                     </div>
 
@@ -159,47 +146,46 @@ if (isset($_SESSION['UID'])) {
                     <div id="tab3" class="tab-content" style="display: none;">
                         <div id="friendList"></div>
                     </div>
+
                     <div id="tab4" class="tab-content" style="display: none;">
-                    <div class="content">
-                        <h1>Notifications</h1>
-                        <?php if ($countAllNotifications > 0) : ?>
-                            <?php foreach ($notifications as $notification) : ?>
-                                <div class="notification <?php echo $notification['is_read'] ? '' : 'unread'; ?>">
-                                    <p><?php echo $notification['text_content']; ?></p>
-                                    <?php if ($notification['notification_id']) : ?>
-                                        <p><?php echo $notification['title']; ?></p>
-                                        <p><?php echo $notification['c_datetime']; ?></p>
-                                        <p><?php echo $notification['notification_type']; ?></p>
-                                    <?php endif; ?>
-                                    <span>
-                                        <?php if (!$notification['is_read']) : ?>
-                                            <button class="mark-as-read" data-id="<?php echo $notification['notification_id']; ?>">Marquer comme lu</button>
+                        <div class="content">
+                            <h1>Notifications</h1>
+                            <?php if ($countAllNotifications > 0) : ?>
+                                <?php foreach ($notifications as $notification) : ?>
+                                    <div class="notification <?php echo $notification['is_read'] ? '' : 'unread'; ?>">
+                                        <p><?php echo $notification['text_content']; ?></p>
+                                        <?php if ($notification['notification_id']) : ?>
+                                            <p><?php echo $notification['title']; ?></p>
+                                            <p><?php echo $notification['c_datetime']; ?></p>
+                                            <p><?php echo $notification['notification_type']; ?></p>
                                         <?php endif; ?>
-                                        <button class="delete-btn" data-id="<?php echo $notification['notification_id']; ?>">Supprimer</button>
-                                    </span>
+                                        <span>
+                                            <?php if (!$notification['is_read']) : ?>
+                                                <button class="mark-as-read" data-id="<?php echo $notification['notification_id']; ?>">Marquer comme lu</button>
+                                            <?php endif; ?>
+                                            <button class="delete-btn" data-id="<?php echo $notification['notification_id']; ?>">Supprimer</button>
+                                        </span>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <div class="no-notifs">
+                                    <p>Aucune notification</p>
                                 </div>
-                            <?php endforeach; ?>
-                        <?php else : ?>
-                            <div class="no-notifs">
-                                <p>Aucune notification</p>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <button id="toggle-right-panel">Toggle Panel</button>
-            <div class="right-panel wow animate__fadeInRight" data-wow-duration="1s" data-wow-delay="2s">
+            <button id="toggle-right-panel">☰</button>
+            <div class="right-panel">
                 <section id="right-links">
                     <ul>
                         <?php echo getNavbarContents() ?>
                         <hr class="links-separator">
-                        <li><a href="#"><i class="fas fa-search"></i> Découvrir</a></li>
-                        <li><a href="#"><i class="fas fa-lock"></i> Politique de confidentialité</a></li>
+                        <li><a href="<?php echo $appdir['PATH_CUICUI_PROJECT'] . '/@/discover/starter.php'?>"><i class="fas fa-search"></i> Découvrir</a></li>
+                        <li><a href="<?php echo $appdir['PATH_CUICUI_PROJECT'] . '/@/cuicui/ourpolicy.php'?>"><i class="fas fa-lock"></i> Politique de confidentialité</a></li>
                         <li><a href="<?php echo $appdir['PATH_API_DIR'] ?>"><i class="fas fa-cogs"></i> API</a></li>
-                        <li><a href="#"><i class="fas fa-question-circle"></i> Assistance</a></li>
-                        <li><a href="#"><i class="fas fa-file-alt"></i> Termes et conditions</a></li>
                     </ul>
                     <p>&copy; Cuicui App 2024</p>
                 </section>
@@ -207,7 +193,7 @@ if (isset($_SESSION['UID'])) {
         </div>
     </main>
 
-    <div class="floating-form wow animate__zoomIn" id="newTopicForm" data-wow-duration="1s" data-wow-delay="2.5s">
+    <div class="floating-form">
         <i class="fas fa-times close-icon" onclick="toggleForm()"></i>
         <form action="<?php echo $appdir['PATH_PHP_DIR'] . '/ajax/main/post.php'; ?>" method="post" enctype="multipart/form-data">
             <fieldset class="slides">
@@ -332,22 +318,18 @@ if (isset($_SESSION['UID'])) {
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Masquer les fieldsets des médias
             document.querySelectorAll('.media-upload fieldset').forEach(function(fieldset) {
                 fieldset.style.display = 'none';
             });
 
-            // Écouter les changements de sélection du type de média
             document.querySelectorAll('input[name="media-type"]').forEach(function(radio) {
                 radio.addEventListener('change', function() {
                     var selectedMediaType = this.value;
 
-                    // Masquer tous les fieldsets des médias
                     document.querySelectorAll('.media-upload fieldset').forEach(function(fieldset) {
                         fieldset.style.display = 'none';
                     });
 
-                    // Afficher le fieldset correspondant au type de média sélectionné
                     document.querySelector('.' + selectedMediaType + '-upload').style.display = 'block';
                 });
             });
@@ -377,33 +359,22 @@ if (isset($_SESSION['UID'])) {
             showSlide(currentSlide + 1);
         }
 
-        // Afficher la première diapositive au chargement de la page
         showSlide(0);
 
-        // Sélection de l'élément input pour l'image
         const input = document.querySelector('input[type="file"]');
-        // Sélection de l'élément div pour la prévisualisation de l'image
         const preview = document.querySelector('.preview');
 
-        // Écouteur d'événement pour détecter les changements dans l'input
         input.addEventListener('change', () => {
-            // Vérifier si des fichiers ont été sélectionnés
             if (input.files && input.files[0]) {
-                // Créer un objet FileReader
                 const reader = new FileReader();
 
-                // Lorsque le fichier est chargé
                 reader.onload = (e) => {
-                    // Créer un élément image
                     const img = document.createElement('img');
-                    // Définir la source de l'image sur les données du fichier chargé
                     img.src = e.target.result;
-                    // Ajouter l'image à la prévisualisation
                     preview.innerHTML = '';
                     preview.appendChild(img);
                 };
 
-                // Lire le fichier en tant que URL de données
                 reader.readAsDataURL(input.files[0]);
             }
         });
@@ -758,6 +729,7 @@ $('.delete-btn').click(function() {
         while (i < resultats.length && i < recommandMaxSize) {
             var resultat = resultats[i];
             console.log(resultat.textId);
+            console.log(resultat.media_url);
 
             // Récupérer les valeurs de keywords et category
             var keywords = resultat && resultat.tags ? resultat.tags : 'all';
@@ -765,8 +737,15 @@ $('.delete-btn').click(function() {
 
             likesData[resultat.textId] = resultat.likes;
             dislikesData[resultat.textId] = resultat.dislikes;
+            
+            // Définir la classe CSS en fonction de la sensibilité du contenu
+            var postClass = resultat.sensitive_content === 1 ? 'post sensitive' : 'post';
+            console.log('-----------------' + resultat.sensitive_content);
 
-            var flipbox = '<hr><div class="post">';
+            // Ajouter le badge avec l'icône d'alerte pour les posts sensibles
+            var badge = resultat.sensitive_content === 1 ? '<span class="badge"><i class="fas fa-exclamation-triangle"></i></span>' : '';
+
+            var flipbox = '<hr><div class="' + postClass + '">';
 
             // Construction de la flipbox
             flipbox += '<div class="flip-box clickable" data-keywords="' + keywords + '" data-category="' + category + '" data-title="' + resultat.title + '" data-text-id="' + resultat.textId + '">';
@@ -778,24 +757,35 @@ $('.delete-btn').click(function() {
             flipbox += '<h5 class="user-info">';
 
             // Ajouter une section pour l'image de profil
-            flipbox += '<div class="profile-image">';
+            flipbox += badge + '<div class="profile-image">';
             flipbox += '<img src="' + resultat.profile_pic_url + '" alt="Profile Image">';
             flipbox += '</div>';
-
+            
             // Ajouter une section pour le nom d'utilisateur
             flipbox += '<a class="no-flip" href="' + window.__u_url__ + '?@userid=@' + resultat.username + '" class="user-name">';
             flipbox += '<i style="margin: 8px;" class="fas fa-user"></i>' + resultat.username;
             flipbox += '</a>';
-
+            
             // Ajouter une section pour le bouton Suivre
             flipbox += '<span class="follow-section no-flip">';
             flipbox += '<span class="user-icon"></span>';
-            flipbox += '<div class="follow-button" onclick="followUser(' + resultat.users_uid + ')">Suivre</div>';
-            // Ajouter un bouton pour signaler l'utilisateur
-            flipbox += '<div class="report-button" onclick="reportUser(' + resultat.users_uid + ')">Signaler</div>';
+
+            flipbox += '<span id="follow-button-zone' + removeAtSign(resultat.textId) + '">';
+            checkFollowAndGenerateButton(window.__u__, resultat.users_uid, removeAtSign(resultat.textId));
             flipbox += '</span>';
 
-            flipbox += '</h5>';
+            // Ajouter un bouton pour signaler l'utilisateur
+            flipbox += '<div class="report-button" onclick="reportUser(' + resultat.users_uid + ')">Signaler</div>';
+
+            console.log('--->' + window.__admin_but__);
+            if(window.__admin_but__ === true) {
+                flipbox += `<div class="admin-button admin clickable cuicui-button" title="Effacer le post" onclick='removePost("${resultat.textId}", "${window.__u__}")'><i class="fas fa-solid fa-trash"></i></div>`;
+                flipbox += `<div class="admin-button admin clickable cuicui-button" title="Marquer comme sensible" onclick='markSensitive("${resultat.textId}", "${window.__u__}")'><i class="fas fa-exclamation-triangle"></i></div>`
+            }
+
+            flipbox += '</span>';
+            
+            flipbox += '</h5>';               
 
             if (resultat.media_type === 'image') {
                 flipbox += '<div class="sup-cadre">';
@@ -828,44 +818,71 @@ $('.delete-btn').click(function() {
                 flipbox += '</div>'; // Fermer la div action-zone
                 flipbox += '</div>';
 
-            } else {
+            } else if (resultat.media_type === 'audio') {
                 flipbox += '<div class="sup-cadre">';
-                flipbox += '<br>';
-
+                flipbox += '<audio class="media-center no-flip" controls>';
+                flipbox += '<source src="' + resultat.media_url + '" type="audio/mpeg">';
+                flipbox += 'Votre navigateur ne supporte pas la lecture de l\'audio.';
+                flipbox += '</audio>';
+                flipbox += '</div>';
+                
                 // Ajouter une zone avec des sous-zones
                 flipbox += '<div class="action-zone no-flip">';
                 // Ajouter des icônes cliquables et d'autres contenus
                 flipbox += '<div class="download-icon" onclick="downloadContent()"><i class="fas fa-download"></i></div>';
                 flipbox += '<div class="other-content">Autre contenu ici</div>';
-                flipbox += '</div>'; // Fermer la div action-zone
                 flipbox += '</div>';
-            }
+            } else {
+
+                flipbox += '<div class="sup-cadre">';
+                // Détecter le type de fichier à partir de l'URL
+                var fileType = getFileTypeFromUrl(resultat.media_url);
+                
+                // Afficher le composant en fonction du type de fichier
+                if (fileType === 'pdf') {
+                    // Afficher un PDF téléchargeable
+                    flipbox += '<div class="pdf-container">';
+                    flipbox += '<embed src="' + resultat.media_url + '" type="application/pdf" width="100%" height="600px" />';
+                    flipbox += '</div>';
+                } else if (fileType === 'excel') {
+                    // Afficher un classeur Excel
+                    flipbox += '<div class="excel-container">';
+                    flipbox += '<iframe src="' + resultat.media_url + '" style="width:100%; height:600px;" frameborder="0"></iframe>';
+                    flipbox += '</div>';
+                } else {
+                    // Afficher un composant par défaut pour les autres types de fichiers
+                    flipbox += '<div class="other-file-container">';
+                    flipbox += '<a href="' + resultat.media_url + '" target="_blank">Télécharger le fichier</a>';
+                    flipbox += '</div>';
+                }
+                flipbox += '</div>';
+            }        
 
             flipbox += '<h6>' + resultat.title + '</h6>';
             flipbox += '<div class="keywords">';
 
-            // Vérifier si resultat.keywords est défini et est une chaîne
-            if (typeof resultat.tags === 'string') {
-                // Séparer la chaîne en un tableau de mots-clés en utilisant la virgule comme délimiteur
-                var keywordsArray = resultat.tags.split(',');
-                // Boucle pour chaque mot-clé
-                keywordsArray.forEach(function(keyword) {
-                    // Supprimer les espaces inutiles autour du mot-clé
-                    keyword = keyword.trim();
-                    // Diviser le mot-clé en mots individuels
-                    var words = keyword.split(' ');
-                    // Boucle pour chaque mot individuel
-                    words.forEach(function(word) {
-                        // Ajouter un lien cliquable pour chaque mot individuel
-                        flipbox += '<a href="#" class="keyword-link">' + word + '</a>';
+                // Vérifier si resultat.keywords est défini et est une chaîne
+                if (typeof resultat.tags === 'string') {
+                    // Séparer la chaîne en un tableau de mots-clés en utilisant la virgule comme délimiteur
+                    var keywordsArray = resultat.tags.split(',');
+                    // Boucle pour chaque mot-clé
+                    keywordsArray.forEach(function(keyword) {
+                        // Supprimer les espaces inutiles autour du mot-clé
+                        keyword = keyword.trim();
+                        // Diviser le mot-clé en mots individuels
+                        var words = keyword.split(' ');
+                        // Boucle pour chaque mot individuel
+                        words.forEach(function(word) {
+                            // Ajouter un lien cliquable pour chaque mot individuel
+                            flipbox += '<a href="#" class="keyword-link">' + word + '</a>';
+                        });
+                        // Ajouter un espace entre les mots-clés
+                        flipbox += ' ';
                     });
-                    // Ajouter un espace entre les mots-clés
-                    flipbox += ' ';
-                });
-            } else {
-                // Si resultat.keywords n'est pas une chaîne, l'afficher directement
-                flipbox += '<span class="keyword"></span>';
-            }
+                } else {
+                    // Si resultat.keywords n'est pas une chaîne, l'afficher directement
+                    flipbox += '<span class="keyword"></span>';
+                }
 
             flipbox += '</div>';
 
@@ -875,13 +892,14 @@ $('.delete-btn').click(function() {
             flipbox += '</a>';
             flipbox += '</div>';
 
+
             flipbox += '</div>';
 
             flipbox += '<div class="flip-box-back">';
             flipbox += '<div class="scrollable-content">';
             flipbox += '<p>' + resultat.text_content + '</p>';
             flipbox += '</div>';
-            if (window.__u__) {
+            if(window.__u__){
                 flipbox += '<div class="actions no-flip">';
                 flipbox += '<label class="action-icon no-flip"><input type="radio" name="likeDislike_' + resultat.textId + '" value="like" onclick="likeDislike(\'' + resultat.textId + '\', this.value)"> <i style="color: green;" class="fas fa-thumbs-up"></i> <span class="likes-container" data-likes="' + (likesData[resultat.textId] || 0) + '">' + (likesData[resultat.textId] || 0) + '</span></label>';
                 flipbox += '<label class="action-icon no-flip"><input type="radio" name="likeDislike_' + resultat.textId + '" value="dislike" onclick="likeDislike(\'' + resultat.textId + '\', this.value)"> <i style="color: red;" class="fas fa-thumbs-down"></i> <span class="dislikes-container" data-dislikes="' + (dislikesData[resultat.textId] || 0) + '">' + (dislikesData[resultat.textId] || 0) + '</span></label>';
@@ -894,18 +912,17 @@ $('.delete-btn').click(function() {
 
             flipbox += '</div>';
 
-            if (window.__u__) {
+            if(window.__u__){
                 flipbox += '<div class="comments-zone">';
                 flipbox += '<div class="commentaires no-flip">';
-
-
+                flipbox += '<div class="comments-display">';
+            
+            
                 // Construction des commentaires associés au post
                 if (resultat.comments && resultat.comments.length > 0) {
-                    flipbox += '<div class="comments-display">';
                     flipbox += buildCommentsHTML(resultat.comments);
-                    flipbox += '</div>'; // Fin de la div comments-zone
                 }
-
+                flipbox += '</div>'; // Fin de la div comments-display
                 flipbox += '<textarea class="response-zone-textarea no-flip" id="zoneCommentaire' + resultat.textId + '" placeholder="Ajouter un commentaire"></textarea>';
                 flipbox += '<button class="envoyer-commentaire no-flip" onclick="envoyerCommentaire(\'' + resultat.textId + '\')">Envoyer</button>';
                 flipbox += '</div>';

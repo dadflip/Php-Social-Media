@@ -23,6 +23,7 @@
     "check_paths": "\/check_paths.php",
     "chat": "\/chat.php",
     "delete_notification": "\/delete_notification.php",
+    "edit": "\/edit.php",
     "mainpage": "\/mainpage.php",
     "notify": "\/notify.php",
     "options": "\/options.php",

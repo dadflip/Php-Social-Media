@@ -5,6 +5,7 @@ body {
     margin: 0;
     padding: 0;
     background-color: #000;
+    color: #fff;
 }
 
 .container {
@@ -52,17 +53,21 @@ body {
 
 /* Styling for sidebar */
 .sidebar {
-    width: 250px;
+    /* width: 250px; */
     height: 100%;
-    background-color: #333;
+    background-color: #2a45e0;
     color: #fff;
     position: fixed;
     top: 0;
-    left: -250px; /* Masquer le panneau latéral par défaut */
+    left: -260px; /* Masquer le panneau latéral par défaut */
     overflow-y: auto;
     padding-top: 60px; /* Pour laisser de la place pour la barre de navigation en haut */
     transition: left 0.3s ease; /* Transition fluide pour l'animation */
     z-index: 2; /* Mettre le panneau latéral au premier plan */
+}
+
+.sidebar.show-sidebar {
+    left: 0; /* Afficher le panneau latéral en le déplaçant vers la droite */
 }
 
 .sidebar h2 {
@@ -89,7 +94,7 @@ body {
 
 /* Styling for navbar */
 .navbar {
-    background-color: #333;
+    background-color: #2a45e0;
     color: #fff;
     height: 40px;
     position: fixed;

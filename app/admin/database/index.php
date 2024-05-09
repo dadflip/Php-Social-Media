@@ -1,10 +1,13 @@
 <?php
+    include '../../defs.functions.php';
+    includeIfDefined('back(0)', baseDir($appdir['PATH_MODULES']) . $phpfile['CuicuiManager']);
     session_start();
 
-    // Vérifier si l'utilisateur est déjà connecté, le rediriger vers la page d'accueil s'il l'est
-    if (!isset($_SESSION['admin_logged_in'])) {
-        header("Location: ../");
-        exit;
+    if(isset($_SESSION["isAdmin"]) && $_SESSION["isAdmin"]) {
+        $cuicui_manager = new CuicuiManager($database_configs, DATASET);
+        $cuicui_sess = new CuicuiSession($cuicui_manager);
+    }else{
+        header('Location:' . $appdir['PATH_CUICUI_APP']);
     }
 ?>
 

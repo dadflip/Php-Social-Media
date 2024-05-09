@@ -33,6 +33,7 @@ if(isset($user_info)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@CuicuiBox - Statistics</title>
+    <link rel="icon" type="image/png" href=<?php echo $appdir['PATH_IMG_DIR'] . "/icon.png" ?>>
     <link rel="stylesheet" href=<?php echo "../../css/" . $_SESSION["theme"] . ".css" ?>>
     <link rel="stylesheet" href="../../css/main.css">
     <link rel="stylesheet" href="../../css/options.css">
@@ -117,6 +118,40 @@ if(isset($user_info)) {
 
         .user-stats i:hover {
             color: #ff6600; /* Couleur d'icône sur hover */
+        }
+
+        .post-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            justify-items: stretch;
+            column-gap: 2em;
+        }
+
+        .post-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .post-actions button:hover {
+            background-color: #0056b3;
+        }
+
+        .post-actions button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #007bff;
+        }
+
+        .post-actions button:disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
         }
 
     </style>
@@ -220,6 +255,10 @@ if(isset($user_info)) {
                 console.error(error); // Gérer les erreurs éventuelles
             }
         });
+    }
+
+    function editPost(postId) {
+        window.location.href = 'edit.php?postId=' + postId;
     }
 </script>
 

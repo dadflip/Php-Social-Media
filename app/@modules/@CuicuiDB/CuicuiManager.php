@@ -266,6 +266,37 @@ class MultiDatasetDatabaseManager {
         }
     }
 
+    public function truncateAllTables(): bool {
+        // Disable foreign key checks
+        $this->executeRequestOnly('SET FOREIGN_KEY_CHECKS = 0');
+    
+        // Liste des tables à vider
+        $tables = array(
+            'bans',
+            'media',
+            'notifications',
+            'chat',
+            'comments',
+            'follow',
+            'likes',
+            'posts',
+            'data',
+            'user_settings',
+            'users'
+        );
+    
+        // Parcourir chaque table et exécuter la requête TRUNCATE
+        foreach ($tables as $table) {
+            $truncateQuery = "TRUNCATE TABLE $table";
+            $this->executeRequestOnly($truncateQuery);
+        }
+    
+        // Réactiver les contraintes de clé étrangère
+        $this->executeRequestOnly('SET FOREIGN_KEY_CHECKS = 1');
+    
+        return true; // Retourne true pour indiquer le succès
+    }    
+
     // Function to secure a string for use in an SQL query
     public static function SecurizeString_ForSQL($string) {
         $string = trim($string);
@@ -627,9 +658,49 @@ class CuicuiManager extends CuicuiDB {
             return false; 
         }
     
+        // Disable foreign key checks
+        $this->executeRequestOnly('SET FOREIGN_KEY_CHECKS = 0');
+    
+        // DELETE query to remove comments associated with the user
+        $deleteCommentsQuery = "DELETE FROM comments WHERE users_uid = ?";
+        
+        // Execute the query with parameters
+        $this->executeRequest($deleteCommentsQuery, "i", $userId);
+    
+        // DELETE query to remove follow associations with the user
+        $deleteFollowQuery = "DELETE FROM follow WHERE target_id = ? OR follower_id = ?";
+        
+        // Execute the query with parameters
+        $this->executeRequest($deleteFollowQuery, "ii", $userId, $userId);
+    
+        // DELETE query to remove likes associated with the user
+        $deleteLikesQuery = "DELETE FROM likes WHERE users_uid = ?";
+        
+        // Execute the query with parameters
+        $this->executeRequest($deleteLikesQuery, "i", $userId);
+    
+        // DELETE query to remove posts associated with the user
+        $deletePostsQuery = "DELETE FROM posts WHERE users_uid = ?";
+        
+        // Execute the query with parameters
+        $this->executeRequest($deletePostsQuery, "i", $userId);
+    
+        // DELETE query to remove chat associations with the user
+        $deleteChatQuery = "DELETE FROM chat WHERE chat_src_id = ? OR chat_dest_id = ?";
+        
+        // Execute the query with parameters
+        $this->executeRequest($deleteChatQuery, "ii", $userId, $userId);
+
+        // DELETE query to remove user settings from the database
+        $deleteSettingsQuery = "DELETE FROM user_settings WHERE users_uid = ?";
+
+        // Execute the query with parameters
+        $this->executeRequest($deleteSettingsQuery, "i", $userId);
+
+
         // DELETE query to remove user from the database
         $deleteUserQuery = "DELETE FROM users WHERE UID = ?";
-        
+
         // Execute the query with parameters
         $this->executeRequest($deleteUserQuery, "i", $userId);
     
@@ -639,20 +710,11 @@ class CuicuiManager extends CuicuiDB {
             return false; // Return false to indicate failure
         }
     
-        // DELETE query to remove user settings from the database
-        $deleteSettingsQuery = "DELETE FROM user_settings WHERE users_uid = ?";
-    
-        // Execute the query with parameters
-        $this->executeRequest($deleteSettingsQuery, "i", $userId);
-    
-        // Check if any rows are affected
-        if($this->admin_conn->affected_rows == 0) {
-            $this->err = ErrorTypes::InvalidInput; // Set error type
-            return false; // Return false to indicate failure
-        }
+        // Re-enable foreign key checks
+        $this->executeRequestOnly('SET FOREIGN_KEY_CHECKS = 1');
     
         return true; // Return true to indicate success
-    }
+    }    
     
 
     // Method to connect a user
@@ -1025,6 +1087,43 @@ class CuicuiManager extends CuicuiDB {
         );
     }
 
+    public function getPostDetails($postId) {
+        // Préparez votre requête pour récupérer les détails du post avec l'ID donné
+        $query = "SELECT * FROM posts WHERE textId = ?";
+        $stmt = $this->prepare($query);
+        $stmt->bind_param("s", $postId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        // Vérifiez s'il y a des résultats
+        if ($result->num_rows > 0) {
+            // Récupérez les détails du post
+            $postDetails = $result->fetch_assoc();
+            return $postDetails;
+        } else {
+            // Si aucun résultat n'est trouvé, retournez NULL ou une valeur par défaut
+            return null;
+        }
+    }
+
+    public function updatePostContent($postId, $newContent) {
+        // Préparez votre requête pour mettre à jour le contenu du post avec l'ID donné
+        $query = "UPDATE posts SET text_content = ? WHERE textId = ?";
+        $stmt = $this->prepare($query);
+        $stmt->bind_param("ss", $newContent, $postId);
+        
+        // Exécutez la requête
+        $stmt->execute();
+        
+        // Vérifiez si la mise à jour a réussi
+        if ($stmt->affected_rows > 0) {
+            // La mise à jour a réussi
+            return true;
+        } else {
+            // La mise à jour a échoué
+            return false;
+        }
+    }
 
     // ------------------------------------------------------------------------------------------- Admin
     public function deletePost($postID, $adminID): void {
@@ -1201,7 +1300,52 @@ class CuicuiManager extends CuicuiDB {
         $notif = new NotificationManager($this->getConn());
         // Insert the notification into the 'notifications' table
         $notif->insertNotification($userId, $notificationDate, $notificationTitle, $notificationText, $notificationType);
-    }   
+    }
+    
+    public function unbanUser($userId): void {
+        // Vérifier si l'utilisateur est déjà débanni
+        $banStatus = $this->alreadyBanned($userId);
+        if (!$banStatus->isBanned()) {
+            throw new Exception("L'utilisateur n'est pas banni !");
+        }
+
+        // Lever le bannissement de l'utilisateur
+        $this->liftBan($userId);
+    }
+
+    public function markAsNonSensitive($postId): void {
+        // Marquer le post avec l'ID $postId comme non-sensible
+        $update_query = "UPDATE `posts` SET sensitive_content=0 WHERE textId=?";
+        $stmt = $this->prepare($update_query);
+        $stmt->bind_param("s", $postId);
+        $stmt->execute();
+    }
+
+    public function getBannedUsers(): array {
+        // Requête SQL pour récupérer les utilisateurs bannis
+        $query = "SELECT u.UID, u.username FROM users u INNER JOIN bans b ON u.UID = b.userID";
+        $result = $this->query($query);
+    
+        $banned_users = array();
+        while ($row = $result->fetch_assoc()) {
+            $banned_users[] = $row;
+        }
+    
+        return $banned_users;
+    }
+    
+    public function getSensitivePosts(): array {
+        // Requête SQL pour récupérer les posts marqués comme sensibles
+        $query = "SELECT p.textId, u.username AS author, p.text_content FROM posts p INNER JOIN users u ON p.users_uid = u.UID WHERE p.sensitive_content = 1";
+        $result = $this->query($query);
+    
+        $sensitive_posts = array();
+        while ($row = $result->fetch_assoc()) {
+            $sensitive_posts[] = $row;
+        }
+    
+        return $sensitive_posts;
+    }    
 
     // ------------------------------------------------------------------------------------------- Follow
     // Method to check if user is following another user
@@ -1284,6 +1428,30 @@ class CuicuiManager extends CuicuiDB {
             return false; // Return false if insertion failed
         }
     }
+
+    public function insertChatMessage($content, $type, $srcId, $destId):bool {
+        $insert_query = "INSERT INTO `chat` (`content`, `type`, `chat_src_id`, `chat_dest_id`) VALUES (?, ?, ?, ?)";
+        $stmt = $this->prepare($insert_query);
+        $stmt->bind_param("ssii", $content, $type, $srcId, $destId);
+        $success = $stmt->execute();
+        return $success;
+    }
+
+    public function getChatMessages() {
+        $select_query = "SELECT `content`, `datetime`, `type`, `chat_src_id`, `chat_dest_id` FROM `chat`";
+        $result = $this->query($select_query);
+        $messages = array();
+        while ($row = $result->fetch_assoc()) {
+            $messages[] = array(
+                'content' => $row['content'],
+                'datetime' => $row['datetime'],
+                'type' => $row['type'],
+                'chat_src_id' => $row['chat_src_id'],
+                'chat_dest_id' => $row['chat_dest_id']
+            );
+        }
+        return $messages;
+    }
 }
 // ------------------------------------------------------------------------------------------------------------------------------------- CLASS - NOT_AN_ADMIN_EXCEPTION
 class NotAnAdminException extends Exception {
@@ -1303,6 +1471,10 @@ class BanStatus {
         $this->userID = $userID;
         $this->adminID = $adminID;
         $this->duration = $duration;
+    }
+
+    public function isBanned() {
+        return $this->isBanned;
     }
 }
 // ------------------------------------------------------------------------------------------------------------------------------------- CLASS - USER_INFO
